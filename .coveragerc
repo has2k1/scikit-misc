@@ -1,0 +1,15 @@
+# Configuration for coverage.py
+
+[run]
+branch = True
+source = onelib
+include = onelib/*
+omit =
+    setup.py
+    onelib/_version.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:

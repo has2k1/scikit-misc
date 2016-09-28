@@ -61,3 +61,7 @@ doc/generated/
 
 # PyBuilder
 target/
+
+# Specific to this project
+onelib/__config__.py
+onelib/loess/src/_loess.c

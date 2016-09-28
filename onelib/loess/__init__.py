@@ -12,5 +12,5 @@ __version__ = '1.0'
 __revision__ = "$Revision$"
 __date__     = '$Date$'
 
-import pyloess
-from pyloess import lowess, stl, loess, loess_anova
+import loess
+from loess import loess, loess_anova

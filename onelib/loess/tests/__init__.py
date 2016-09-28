@@ -1,5 +1,5 @@
 """
-Test suite for lowess, stl.
+Test suite for loess
 """
 __author__ = "Pierre GF Gerard-Marchant"
 __version__ = '1.0'

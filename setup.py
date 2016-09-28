@@ -86,7 +86,7 @@ def prepare_for_setup():
         generate_cython()
 
 
-def build_requires():
+def setup_requires():
     """
     Return required packages
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
           cmdclass=versioneer.get_cmdclass(),
           url=__url__,
           install_requires=get_required_packages(),
-          build_requires=build_requires(),
+          setup_requires=setup_requires(),
           packages=find_packages(),
           package_data=get_package_data(),
           classifiers=[

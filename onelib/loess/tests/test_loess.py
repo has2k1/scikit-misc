@@ -16,144 +16,32 @@ import os
 import numpy
 from numpy import bool_, complex_, float_, int_, str_, object_
 import numpy.core.numeric as numeric
+from numpy.core.records import recarray
 fromiter = numpy.fromiter
+narray = numpy.array
 
-from scipy.sandbox import maskedarray
-marray = maskedarray.masked_array
-masked_values = maskedarray.masked_values
 
 from numpy.testing import *
-from scipy.sandbox.maskedarray.testutils import build_err_msg, \
-        assert_equal, assert_almost_equal
 
-from onelib.pyloess.mpyloess import lowess, stl, loess, loess_anova
+from onelib.loess import loess, loess_anova
 
-#####---------------------------------------------------------------------------
-#---- --- LOWESS ---
-#####---------------------------------------------------------------------------
-class TestLowess(TestCase):
+data_path, _ = os.path.split(__file__)
+
+
+class TestLoess2d(TestCase):
     "Test class for lowess."
     #
     def __init__(self, *args, **kwds):
         TestCase.__init__(self, *args, **kwds)
-        X = marray([ 1, 2, 3, 4, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 8,10,12,14,50])
-        Y = marray([18, 2,15, 6,10, 4,16,11, 7, 3,14,17,20,12, 9,13, 1, 8, 5,19])
-        idx = X.argsort()
-        self.data = (X[idx], Y[idx])
-    #............................................
-    def test_lowess_1(self):
-        "Tests lowess on typical data. part #1."
-        (X, Y) = self.data
-        YS = [13.659,11.145, 8.701, 9.722,10.000,11.300,11.300,11.300,
-              11.300,11.300,11.300,11.300,11.300,11.300,11.300,13.000,
-              6.440, 5.596,  5.456,18.998]
-        Z = lowess(X, Y, span=0.25, nsteps=0, delta=0)
-        assert_almost_equal(Z.outputs.fitted_values, YS, decimal=3)
-        assert_almost_equal(Z.outputs.fitted_residuals+Z.outputs.fitted_values,
-                            Z.inputs.y, decimal=3)
-    #............................................
-    def test_lowess_2(self):
-        "Tests lowess on typical data. part #2."
-        (X, Y) = self.data
-        YS = [13.659,12.347,11.034, 9.722,10.511,11.300,11.300,11.300,
-              11.300,11.300,11.300,11.300,11.300,11.300,11.300,13.000,
-               6.440, 5.596, 5.456,18.998]
-        Z = lowess(X, Y, span=0.25, nsteps=0, delta=3)
-        assert_almost_equal(Z.outputs.fitted_values, YS, decimal=3)
-        assert_almost_equal(Z.outputs.fitted_residuals+Z.outputs.fitted_values,
-                            Z.inputs.y, decimal=3)
-    #............................................
-    def test_lowess_3(self):
-        "Tests lowess on typical data. part #3."
-        (X, Y) = self.data
-        YS = [14.811,12.115, 8.984, 9.676,10.000,11.346,11.346,11.346,
-              11.346,11.346,11.346,11.346,11.346,11.346,11.346,13.000,
-               6.734, 5.744, 5.415,18.998 ]
-        Z = lowess(X, Y, span=0.25, nsteps=2, delta=0)
-        assert_almost_equal(Z.outputs.fitted_values, YS, decimal=3)
-        assert_almost_equal(Z.outputs.fitted_residuals+Z.outputs.fitted_values,
-                            Z.inputs.y, decimal=3)
-    #............................................
-    def test_lowess_4(self):
-        "Tests lowess on masked data."
-        X = masked_values([ 1, 2, 3, 4, 5,-999, 6,   6, 6, 6, -999,-999,
-                            6, 6, 6, 6, 6,   6, 8,-999,10,12,14,50,-999],-999)
-        Y = marray([18, 2,15, 6,10,-999, 4,  16,11, 7, -999,-999,
-                     3,14,17,20,12,   9,13,-999, 1, 8, 5,19,-999])
-        YS = [14.811,12.115, 8.984, 9.676,10.000,11.346,11.346,11.346,
-              11.346,11.346,11.346,11.346,11.346,11.346,11.346,13.000,
-               6.734, 5.744, 5.415,18.998 ]
-        Z = lowess(X, Y, span=0.25, nsteps=2, delta=0)
-        assert_almost_equal(Z.outputs.fitted_values.compressed(), YS, decimal=3)
-        assert_almost_equal(Z.outputs.fitted_residuals + Z.outputs.fitted_values,
-                            Z.inputs.y, decimal=3)
-#
-
-#####---------------------------------------------------------------------------
-#---- --- STL ---
-#####---------------------------------------------------------------------------
-class TestStl(TestCase):
-    "Tests STL."
-    #
-    def __init__(self, *args, **kwds):
-        TestCase.__init__(self, *args, **kwds)
-        # Get CO2 data ................
-        filename = os.path.join('tests','co2_data')
-        F = open(filename, 'r')
-        data = []
-        for line in F.readlines():
-            data.append([float(x) for x in line.rstrip().split()])
-        co2_data = numpy.concatenate(data)
-        # Get CO2 results .............
-        filename = os.path.join('tests','co2_results_double')
-        F = open(filename, 'r')
-        co2_results = []
-        for line in F.readlines():
-            co2_results.append(fromiter((float(x) for x in line.rstrip().split()),
-                                        float_))
-        #
-        parameters = dict(np=12, ns=35, nt=19, nl=13, no=2, ni=1,
-                          nsjump=4, ntjump=2, nljump=2,
-                          isdeg=1, itdeg=1, ildeg=1)
-        self.d = (co2_data, co2_results, parameters)
-    #............................................
-    def test_stl_1(self):
-        "Tests a classic STL."
-        (co2_data, co2_results, parameters) = self.d
-        co2_fitted = stl(co2_data, robust=False, **parameters).outputs
-        assert_almost_equal(co2_fitted.seasonal, co2_results[0], 6)
-        assert_almost_equal(co2_fitted.trend, co2_results[1], 6)
-        assert_almost_equal(co2_fitted.weights, co2_results[2], 6)
-    #............................................
-    def test_stl_2(self):
-        "Tests a robust STL."
-        (co2_data, co2_results, parameters) = self.d
-        co2_fitted = stl(co2_data, robust=True, **parameters).outputs
-        assert_almost_equal(co2_fitted.seasonal, co2_results[4], 6)
-        assert_almost_equal(co2_fitted.trend, co2_results[5], 6)
-        assert_almost_equal(co2_fitted.weights, co2_results[6], 6)
-
-
-#####---------------------------------------------------------------------------
-#---- --- LOESS ---
-#####---------------------------------------------------------------------------
-
-class TestLoess2D(TestCase):
-    "Test class for lowess."
-    #
-    def __init__(self, *args, **kwds):
-        TestCase.__init__(self, *args, **kwds)
-        dfile = open(os.path.join('tests','madeup_data'), 'r')
+        dfile = open(os.path.join(data_path,'madeup_data'), 'r')
         dfile.readline()
         x = fromiter((float(v) for v in dfile.readline().rstrip().split()),
                      float_).reshape(-1,2)
-        x = marray(x)
         dfile.readline()
         y = fromiter((float(v) for v in dfile.readline().rstrip().split()),
                      float_)
-        y = marray(y)
         #
-        rfile = open(os.path.join('tests','madeup_result'), 'r')
+        rfile = open(os.path.join(data_path,'madeup_result'), 'r')
         results = []
         for i in range(8):
             rfile.readline()
@@ -287,25 +175,25 @@ class TestLoess2D(TestCase):
         assert_almost_equal(confinv.upper, results[6][2::3], 5)
 
 #####---------------------------------------------------------------------------
-#---- --- test 1D ---
+#---- --- test 2D
 #####---------------------------------------------------------------------------
 class TestLoessGas(TestCase):
     "Test class for lowess."
     #
     def __init__(self, *args, **kwds):
         TestCase.__init__(self, *args, **kwds)
-        NOx = marray([4.818, 2.849, 3.275, 4.691, 4.255, 5.064, 2.118, 4.602,
-                      2.286, 0.970, 3.965, 5.344, 3.834, 1.990, 5.199, 5.283,
-                      3.752, 0.537, 1.640, 5.055, 4.937, 1.561])
-        E = marray([0.831, 1.045, 1.021, 0.970, 0.825, 0.891, 0.71, 0.801,
-                    1.074, 1.148, 1.000, 0.928, 0.767, 0.701, 0.807, 0.902,
-                    0.997, 1.224, 1.089, 0.973, 0.980, 0.665])
+        NOx = numpy.array([4.818, 2.849, 3.275, 4.691, 4.255, 5.064, 2.118, 4.602,
+                           2.286, 0.970, 3.965, 5.344, 3.834, 1.990, 5.199, 5.283,
+                           3.752, 0.537, 1.640, 5.055, 4.937, 1.561])
+        E = numpy.array([0.831, 1.045, 1.021, 0.970, 0.825, 0.891, 0.71, 0.801,
+                         1.074, 1.148, 1.000, 0.928, 0.767, 0.701, 0.807, 0.902,
+                         0.997, 1.224, 1.089, 0.973, 0.980, 0.665])
         gas_fit_E = numpy.array([0.665, 0.949, 1.224])
         newdata = numpy.array([0.6650000, 0.7581667, 0.8513333, 0.9445000,
                                1.0376667, 1.1308333, 1.2240000])
         coverage = 0.99
 
-        rfile = open(os.path.join('tests','gas_result'), 'r')
+        rfile = open(os.path.join(data_path,'gas_result'), 'r')
         results = []
         for i in range(8):
             rfile.readline()
@@ -330,7 +218,7 @@ class TestLoessGas(TestCase):
         gas_null = loess(E, NOx)
         gas_null.model.span = 1.0
         gas_null.fit()
-        assert_almost_equal(gas_null.outputs.fitted_values, results[1], 5)
+        assert_almost_equal(gas_null.outputs.fitted_values, results[1], 6)
         assert_almost_equal(gas_null.outputs.enp, 3.5, 1)
         assert_almost_equal(gas_null.outputs.s, 0.5197, 4)
     #
@@ -393,34 +281,7 @@ class TestLoessGas(TestCase):
                           gas.predict, gas.predicted.values, stderror=False)
         # But this one should not ..........
         gas.predict(gas_fit_E, stderror=False)
-    #
-    def test_mask(self):
-        NOx = marray([4.818, 2.849, 3.275, 4.691, 4.255, 5.064, 2.118, 4.602,
-                      2.286, 0.970, 3.965, 5.344, 3.834, 1.990, 5.199, 5.283,
-                      -9999, -9999, 3.752, 0.537, 1.640, 5.055, 4.937, 1.561])
-        NOx = maskedarray.masked_values(NOx, -9999)
-        E = marray([0.831, 1.045, 1.021, 0.970, 0.825, 0.891, 0.71, 0.801,
-                    1.074, 1.148, 1.000, 0.928, 0.767, 0.701, 0.807, 0.902,
-                    -9999, -9999, 0.997, 1.224, 1.089, 0.973, 0.980, 0.665])
-        gas_fit_E = numpy.array([0.665, 0.949, 1.224])
-        newdata = numpy.array([0.6650000, 0.7581667, 0.8513333, 0.9445000,
-                               1.0376667, 1.1308333, 1.2240000])
-        coverage = 0.99
-
-        rfile = open(os.path.join('tests','gas_result'), 'r')
-        results = []
-        for i in range(8):
-            rfile.readline()
-            z = fromiter((float(v) for v in rfile.readline().rstrip().split()),
-                         float_)
-            results.append(z)
-        #
-        gas = loess(E,NOx)
-        gas.model.span = 2./3.
-        gas.fit()
-        assert_almost_equal(gas.outputs.fitted_values.compressed(), results[0], 6)
-        assert_almost_equal(gas.outputs.enp, 5.5, 1)
-        assert_almost_equal(gas.outputs.s, 0.3404, 4)
+        print "OK"
 
 
 

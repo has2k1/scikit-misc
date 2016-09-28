@@ -20,8 +20,8 @@ from numpy import bool_, float_
 
 #import maskedarray as MA
 
-import pyloess
-from pyloess import loess
+import loess
+from loess import loess
 
 com_example = [
 """

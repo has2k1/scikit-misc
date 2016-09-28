@@ -758,7 +758,8 @@ cdef class loess:
     def __init__(self, object x, object y, object weights=None, **options):
         #
         cdef ndarray x_ndr, y_ndr
-        cdef double *x_dat, *y_dat
+        cdef double *x_dat
+        cdef double *y_dat
         cdef int i
         # Initialize the inputs .......
         self.inputs = loess_inputs(x, y)

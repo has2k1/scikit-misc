@@ -23,7 +23,7 @@ narray = numpy.array
 
 from numpy.testing import *
 
-from scipy.sandbox.pyloess import lowess, stl, loess, loess_anova
+from onelib.pyloess import lowess, stl, loess, loess_anova
 
 data_path, _ = os.path.split(__file__)
 

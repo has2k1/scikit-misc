@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static double fmin(double a, double b)
+static double _fmin(double a, double b)
 {
     return(a < b ? a : b);
 }
 
-static double fmax(double a, double b)
+static double _fmax(double a, double b)
 {
     return(a > b ? a : b);
 }
@@ -268,12 +268,12 @@ double invibeta(double p, double a, double b)
 
 double invibeta_quick(double p, double a, double b)
 {
-    double x, m, s, fmax(), fmin(), invigauss_quick();
+    double x, m, s, _fmax(), _fmin(), invigauss_quick();
 
     x = a + b;
     m = a / x;
     s = sqrt((a*b) / (x*x*(x+1)));
-    return(fmax(0.0, fmin(1.0, invigauss_quick(p)*s + m)));
+    return(_fmax(0.0, _fmin(1.0, invigauss_quick(p)*s + m)));
 }
 
 int max(int a, int b)
@@ -286,13 +286,13 @@ typedef int integer;
 
 void Recover(char *a, int *b)
 {
-    printf(a);
+    printf("%s", a);
     exit(1);
 }
 
 void Warning(char *a, int *b)
 {
-    printf(a);
+    printf("%s", a);
 }
 
 /*  d1mach may be replaced by Fortran code:

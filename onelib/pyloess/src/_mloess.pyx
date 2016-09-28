@@ -129,13 +129,15 @@ cdef class loess_inputs:
         
         def __set__(self, w):
             cdef npy_intp *dims
-            cdef ndarray w_ndr, unmasked
+            cdef ndarray w_ndr, unmasked, weights
             unmasked = numpy.logical_not(self.masked)
             w_ndr = narray(w, copy=False, subok=False, dtype=float_)
             if w_ndr.ndim > 1 or w_ndr.size != self.nobs:
                 raise ValueError, "Invalid size of the 'weights' vector!"
             self.w_ndr = w_ndr
-            self._base.weights = <double *>w_ndr[unmasked].data
+            weights = narray(w_ndr[unmasked], copy=False,
+                             subok=False, dtype=float_)
+            self._base.weights = <double *>weights.data
 
 ######---------------------------------------------------------------------------
 ##---- ---- loess control ---
@@ -790,7 +792,8 @@ cdef class loess:
     def __init__(self, object x, object y, object weights=None, **options):
         #
         cdef ndarray x_ndr, y_ndr, m_ndr
-        cdef double *x_dat, *y_dat
+        cdef double *x_dat
+        cdef double *y_dat
         cdef int i
         # Initialize the inputs .......
         self.inputs = loess_inputs(x, y)

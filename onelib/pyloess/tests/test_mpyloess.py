@@ -26,7 +26,7 @@ from numpy.testing import *
 from scipy.sandbox.maskedarray.testutils import build_err_msg, \
         assert_equal, assert_almost_equal
 
-from scipy.sandbox.pyloess.mpyloess import lowess, stl, loess, loess_anova
+from onelib.pyloess.mpyloess import lowess, stl, loess, loess_anova
 
 #####---------------------------------------------------------------------------
 #---- --- LOWESS ---

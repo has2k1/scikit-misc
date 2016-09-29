@@ -70,9 +70,9 @@ class TestLoess2d(TestCase):
         (x, y, results, _, _, madeup) = self.d
         madeup = loess(x, y)
         madeup.model.span = 0.8
-        madeup.model.drop_square_flags = [True, False]
-        madeup.model.parametric_flags = [True, False]
-        assert_equal(madeup.model.parametric_flags[:2], [1, 0])
+        madeup.model.drop_square = [True, False]
+        madeup.model.parametric = [True, False]
+        assert_equal(madeup.model.parametric[:2], [1, 0])
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[1], 5)
         assert_almost_equal(madeup.outputs.enp, 6.9, 1)
@@ -82,8 +82,8 @@ class TestLoess2d(TestCase):
         "2D - family modification"
         (_, _, results, _, _, madeup) = self.d
         madeup.model.span = 0.8
-        madeup.model.drop_square_flags = [True, False]
-        madeup.model.parametric_flags = [True, False]
+        madeup.model.drop_square = [True, False]
+        madeup.model.parametric = [True, False]
         madeup.model.family = "symmetric"
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[2], 5)
@@ -94,8 +94,8 @@ class TestLoess2d(TestCase):
         "2D - normalization modification"
         (_, _, results, _, _, madeup) = self.d
         madeup.model.span = 0.8
-        madeup.model.drop_square_flags = [True, False]
-        madeup.model.parametric_flags = [True, False]
+        madeup.model.drop_square = [True, False]
+        madeup.model.parametric = [True, False]
         madeup.model.family = "symmetric"
         madeup.model.normalize = False
         madeup.fit()
@@ -219,7 +219,9 @@ class TestLoessGas(TestCase):
     def test_1dpredict_2(self):
         "Basic test 1d - new predictions"
         (E, NOx, _, newdata, _, results) = self.d
-        gas = loess(E, NOx, span=2./3.)
+        # gas = loess(E, NOx, span=2./3.)
+        gas = loess(E, NOx)
+        gas.model.span = 2./3.
         gas.predict(newdata, stderror=True)
         gas.predicted.confidence(0.99)
         assert_almost_equal(gas.predicted.confidence_intervals.lower,
@@ -248,16 +250,16 @@ class TestLoessGas(TestCase):
         (E, NOx, gas_fit_E, _, _, _) = self.d
         gas = loess(E, NOx, span=2./3.)
         # This one should fail (all parametric)
-        gas.model.parametric_flags = True
+        gas.model.parametric = True
         self.assertRaises(ValueError, gas.fit)
         # This one also (all drop_square)
-        gas.model.drop_square_flags = True
+        gas.model.drop_square = True
         self.assertRaises(ValueError, gas.fit)
         gas.model.degree = 1
         self.assertRaises(ValueError, gas.fit)
         # This one should not (revert to std)
-        gas.model.parametric_flags = False
-        gas.model.drop_square_flags = False
+        gas.model.parametric = False
+        gas.model.drop_square = False
         gas.model.degree = 2
         gas.fit()
         # Now, for predict .................

@@ -20,17 +20,17 @@ void anova(loess *one, loess *two, anova_struct *out)
             rssdiff, d1diff, tmp, pf();
     int     max_enp;
 
-    one_d1 = one->outputs.one_delta;
-    one_d2 = one->outputs.two_delta;
-    one_s = one->outputs.residual_scale;
-    two_d1 = two->outputs.one_delta;
-    two_d2 = two->outputs.two_delta;
-    two_s = two->outputs.residual_scale;
+    one_d1 = one->outputs->one_delta;
+    one_d2 = one->outputs->two_delta;
+    one_s = one->outputs->residual_scale;
+    two_d1 = two->outputs->one_delta;
+    two_d2 = two->outputs->two_delta;
+    two_s = two->outputs->residual_scale;
 
     rssdiff = fabs(one_s * one_s * one_d1 - two_s * two_s * two_d1);
     d1diff = fabs(one_d1 - two_d1);
     out->dfn = d1diff * d1diff / fabs(one_d2 - two_d2);
-    max_enp = (one->outputs.enp > two->outputs.enp);
+    max_enp = (one->outputs->enp > two->outputs->enp);
     tmp = max_enp ? one_d1 : two_d1;
     out->dfd = tmp * tmp / (max_enp ? one_d2 : two_d2);
     tmp = max_enp ? one_s : two_s;

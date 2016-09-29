@@ -17,38 +17,38 @@ predict(double *eval, int m, loess *lo, prediction *pre)
     if (pre->se) {
        pre->se_fit = (double *) malloc(m * sizeof(double));
     }
-    pre->residual_scale = lo->outputs.residual_scale;
-    pre->df = (lo->outputs.one_delta * lo->outputs.one_delta) /
-              lo->outputs.two_delta;
+    pre->residual_scale = lo->outputs->residual_scale;
+    pre->df = (lo->outputs->one_delta * lo->outputs->one_delta) /
+              lo->outputs->two_delta;
 
-    size_info[0] = lo->inputs.p;
-    size_info[1] = lo->inputs.n;
+    size_info[0] = lo->inputs->p;
+    size_info[1] = lo->inputs->n;
     size_info[2] = m;
     
     error_status = 0;
     lo->status.err_status = 0;
     lo->status.err_msg = NULL;
 
-    pred_(lo->inputs.y,
-          lo->inputs.x, eval,
+    pred_(lo->inputs->y,
+          lo->inputs->x, eval,
           size_info,
-          &lo->outputs.residual_scale,
-          lo->inputs.weights,
-          lo->outputs.robust,
-          &lo->model.span,
-          &lo->model.degree,
-          &lo->model.normalize,
-          lo->model.parametric,
-          lo->model.drop_square,
-          &lo->control.surface,
-          &lo->control.cell,
-          &lo->model.family,
-          lo->kd_tree.parameter,
-          lo->kd_tree.a,
-          lo->kd_tree.xi,
-          lo->kd_tree.vert,
-          lo->kd_tree.vval,
-          lo->outputs.divisor,
+          &lo->outputs->residual_scale,
+          lo->inputs->weights,
+          lo->outputs->robust,
+          &lo->model->span,
+          &lo->model->degree,
+          &lo->model->normalize,
+          lo->model->parametric,
+          lo->model->drop_square,
+          &lo->control->surface,
+          &lo->control->cell,
+          &lo->model->family,
+          lo->kd_tree->parameter,
+          lo->kd_tree->a,
+          lo->kd_tree->xi,
+          lo->kd_tree->vert,
+          lo->kd_tree->vval,
+          lo->outputs->divisor,
           &pre->se,
           pre->fit,
           pre->se_fit);

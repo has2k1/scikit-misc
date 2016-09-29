@@ -50,58 +50,75 @@ cdef boolarray_from_data(int rows, int cols, int *data):
 #---- ---- loess model ---
 #####---------------------------------------------------------------------------
 cdef class loess_inputs:
-    """Loess inputs
-    
-:IVariables:
-    x : ndarray
-        A (n,p) ndarray of independent variables, with n the number of observations
-        and p the number of variables.
-    y : ndarray
-        A (n,) ndarray of observations
-    nobs : integer
-        Number of observations: nobs=n.
-    npar : integer
-        Number of independent variables: npar=p.
-    weights : ndarray
-        A (n,) ndarray of weights to be given to individual observations in the 
-        sum of squared residuals that forms the local fitting criterion. If not
-        None, the weights should be non negative. If the different observations
-        have non-equal variances, the weights should be inversely proportional 
-        to the variances.
-        By default, an unweighted fit is carried out (all the weights are one).
     """
-    cdef c_loess.c_loess_inputs *_base
-    cdef ndarray w_ndr
-    cdef readonly ndarray x, y, weights, x_eff, y_eff
-    cdef readonly long nobs, npar
+    Loess inputs
 
-    def __init__(self, x_data, y_data, weights=None):
-        self.x = np.array(x_data, copy=False, subok=True,
-                          dtype=np.float_, order='C')
-        self.y = np.array(y_data, copy=False, subok=True,
-                          dtype=np.float_, order='C')
-        # Check the dimensions ........
-        if self.x.ndim == 1:
-            self.npar = 1
-        elif self.x.ndim == 2:
-            self.npar = self.x.shape[1]
+    Parameters
+    ----------
+    x : ndarray of shape (n, p)
+        n independent observations for p no. of variables
+    y : ndarray of shape (n,)
+        A (n,) ndarray of response observations
+    weights : ndarray of shape (n,) or None
+        Weights to be given to individual observations
+        in the sum of squared residuals that forms the local fitting
+        criterion. If not None, the weights should be non negative. If
+        the different observations have non-equal variances, the weights
+        should be inversely proportional to the variances. By default,
+        an unweighted fit is carried out (all the weights are one).
+    """
+    cdef c_loess.c_loess_inputs _base
+    cdef ndarray w_ndr
+
+    def __init__(self, x, y, weights=None):
+        cdef ndarray _x, _y, _w
+
+        x = np.array(x, copy=False, subok=True,
+                      dtype=np.float_, order='C')
+        y = np.array(y, copy=False, subok=True,
+                      dtype=np.float_, order='C')
+
+        # Check the dimensions
+        if x.ndim == 1:
+            p = 1
+        elif x.ndim == 2:
+            p = x.shape[1]
         else:
             raise ValueError("The array of indepedent varibales "
                              "should be 2D at most!")
-        self.nobs = len(self.x)
+        n = len(x)
 
         if weights is None:
-            weights = np.ones((self.nobs,), dtype=np.float_)
+            weights = np.ones((n,), dtype=np.float_)
 
-        if weights.ndim > 1 or weights.size != self.nobs:
+        if weights.ndim > 1 or weights.size != n:
             raise ValueError("Invalid size of the 'weights' vector!")
 
-        self.weights = np.array(weights, copy=False, subok=True,
-                                dtype=np.float_, order='C')
+        weights = np.array(weights, copy=False, subok=True,
+                           dtype=np.float_, order='C')
 
-        # Get the effective data
-        self.x_eff = self.x.ravel()
-        self.y_eff = self.y
+        # Python objects -> C structures -> *data in C structures
+        _x = x.ravel()
+        _y = y
+        _w = weights
+
+        x_dat = <double *>_x.data
+        y_dat = <double *>_y.data
+        w_dat = <double *>_w.data
+
+        c_loess.loess_inputs_setup(x_dat, y_dat, w_dat, n, p, &self._base)
+
+    property n:
+        def __get__(self):
+            return self._base.n
+
+    property p:
+        def __get__(self):
+            return self._base.p
+
+    property x:
+        def __get__(self):
+            return floatarray_from_data(self.n, self.p, self._base.x)
 
 
 cdef class loess_control:
@@ -139,8 +156,20 @@ cdef class loess_control:
         is interpolated.
     
     """
-    cdef c_loess.c_loess_control *_base
-    #.........    
+
+    cdef c_loess.c_loess_control _base
+
+    def __init__(self, surface='interpolate', statistics='approximate',
+                 trace_hat='wait.to.decide', iterations=4, cell=0.2):
+
+        c_loess.loess_control_setup(&self._base)
+
+        self.surface = surface
+        self.statistics = statistics
+        self.trace_hat = trace_hat
+        self.iterations = iterations
+        self.cell = cell
+
     property surface:
         """
     surface : string ["interpolate"]
@@ -152,12 +181,12 @@ cdef class loess_control:
         def __get__(self):
             return self._base.surface
         def __set__(self, surface):
-            if surface.lower() not in ('interpolate', 'direct'):
-                raise ValueError("Invalid value for the 'surface' argument: "+
-                                 "should be in ('interpolate', 'direct').")
-            tmpx = surface.lower()
-            self._base.surface = tmpx
-    #.........
+            if surface not in ('interpolate', 'direct'):
+                raise ValueError(
+                    "Invalid value for the 'surface' argument: "
+                    "should be in ('interpolate', 'direct').")
+            self._base.surface = surface
+
     property statistics:
         """
     statistics : string ["approximate"]
@@ -169,12 +198,12 @@ cdef class loess_control:
         def __get__(self):
             return self._base.statistics
         def __set__(self, statistics):
-            if statistics.lower() not in ('approximate', 'exact'):
-                raise ValueError("Invalid value for the 'statistics' argument: "\
-                                 "should be in ('approximate', 'exact').")
-            tmpx = statistics.lower()
-            self._base.statistics = tmpx
-    #.........
+            if statistics not in ('approximate', 'exact'):
+                raise ValueError(
+                    "Invalid value for the 'statistics' argument: "
+                    "should be in ('approximate', 'exact').")
+            self._base.statistics = statistics
+
     property trace_hat:
         """
     trace_hat : string ["wait.to.decide"]
@@ -191,12 +220,12 @@ cdef class loess_control:
         def __get__(self):
             return self._base.trace_hat
         def __set__(self, trace_hat):
-            if trace_hat.lower() not in ('approximate', 'exact'):
-                raise ValueError("Invalid value for the 'trace_hat' argument: "\
-                                 "should be in ('approximate', 'exact').")
-            tmpx = trace_hat.lower()
-            self._base.trace_hat = tmpx
-    #.........
+            if trace_hat not in ('wait.to.decide', 'approximate', 'exact'):
+                raise ValueError(
+                    "Invalid value for the 'trace_hat' argument: "
+                    "should be in ('approximate', 'exact').")
+            self._base.trace_hat = trace_hat
+
     property iterations:
         """
     iterations : integer
@@ -225,30 +254,7 @@ cdef class loess_control:
             if cell <= 0:
                 raise ValueError("Invalid value for the cell argument: should be positive")
             self._base.cell = cell
-    #.........
-    def update(self, **cellargs):
-        """Updates several parameters at once."""
-        surface = cellargs.get('surface', None)
-        if surface is not None:
-            self.surface = surface
-        #
-        statistics = cellargs.get('statistics', None)
-        if statistics is not None:
-            self.statistics = statistics
-        #    
-        trace_hat = cellargs.get('trace_hat', None)
-        if trace_hat is not None:
-            self.trace_hat = trace_hat
-        #
-        iterations = cellargs.get('iterations', None)
-        if iterations is not None:
-            self.iterations = iterations
-        #
-        cell = cellargs.get('cell', None)
-        if cell is not None:
-            self.parametric_flags = cell
-        #
-    #.........
+
     def __str__(self):
         strg = ["Control",
                 "-------",
@@ -264,6 +270,10 @@ cdef class loess_control:
 ##---- ---- loess kd_tree ---
 ######---------------------------------------------------------------------------
 cdef class loess_kd_tree:
+    cdef c_loess.c_loess_kd_tree _base
+
+    def __init__(self, n, p):
+        c_loess.loess_kd_tree_setup(n, p, &self._base)
     cdef c_loess.c_loess_kd_tree *_base
 
 ######---------------------------------------------------------------------------
@@ -307,12 +317,25 @@ cdef class loess_model:
         sequence must be given.
 
     """
-        
-    cdef c_loess.c_loess_model *_base
-    cdef long npar
 
-    def __init__(self, npar):
-        self.npar = npar
+    cdef c_loess.c_loess_model _base
+    cdef long p
+
+    def __init__(self, p, family="gaussian", span=0.75,
+                 degree=2, normalize=True, parametric=False,
+                 drop_square=False):
+
+        c_loess.loess_model_setup(&self._base)
+
+        self.p = p
+
+        self.family = family
+        self.span = span
+        self.degree = degree
+        self.normalize = normalize
+        self.parametric = parametric
+        self.drop_square = drop_square
+
     #.........
     property normalize:
         def __get__(self):
@@ -345,52 +368,46 @@ cdef class loess_model:
                                  "should be in ('symmetric', 'gaussian').")
             self._base.family = family
     #.........
-    property parametric_flags:
+    property parametric:
         def __get__(self):
-            return boolarray_from_data(self.npar, 1, self._base.parametric)
+            return boolarray_from_data(self.p, 1, self._base.parametric)
         def __set__(self, paramf):
             cdef ndarray p_ndr
             cdef int i
-            p_ndr = np.atleast_1d(np.array(paramf, copy=False, subok=True, 
+
+            if paramf in (True, False):
+                paramf = [paramf] * self.p
+            elif len(paramf) != self.p:
+                raise ValueError(
+                    "'parametric' should be a boolean or a list "
+                    "of booleans with length equal to the number "
+                    "of independent variables")
+
+            p_ndr = np.atleast_1d(np.array(paramf, copy=False, subok=True,
                                            dtype=np.bool))
-            for i from 0 <= i < min(self.npar, p_ndr.size):
+            for i from 0 <= i < self.p:
                 self._base.parametric[i] = p_ndr[i]
     #.........
-    property drop_square_flags:
+    property drop_square:
         def __get__(self):
-            return boolarray_from_data(self.npar, 1, self._base.drop_square)
+            return boolarray_from_data(self.p, 1, self._base.drop_square)
         def __set__(self, drop_sq):
             cdef ndarray d_ndr
             cdef int i
+
+            if drop_sq in (True, False):
+                drop_sq = [drop_sq] * self.p
+            elif len(drop_sq) != self.p:
+                raise ValueError(
+                    "'drop_square' should be a boolean or a list "
+                    "of booleans with length equal to the number "
+                    "of independent variables")
+
             d_ndr = np.atleast_1d(np.array(drop_sq, copy=False,
                                            subok=True, dtype=np.bool))
-            for i from 0 <= i < min(self.npar, d_ndr.size):
+            for i from 0 <= i < self.p:
                 self._base.drop_square[i] = d_ndr[i]
-    #........
-    def update(self, **modelargs):
-        family = modelargs.get('family', None)
-        if family is not None:
-            self.family = family
-        #
-        span = modelargs.get('span', None)
-        if span is not None:
-            self.span = span
-        #    
-        degree = modelargs.get('degree', None)
-        if degree is not None:
-            self.degree = degree
-        #
-        normalize = modelargs.get('normalize', None)
-        if normalize is not None:
-            self.normalize = normalize
-        #
-        parametric = modelargs.get('parametric', None)
-        if parametric is not None:
-            self.parametric_flags = parametric
-        #
-        drop_square = modelargs.get('drop_square', None)
-        if drop_square is not None:
-            self.drop_square_flags = drop_square
+
     #.........
     def __repr__(self):
         return "<loess object: model parameters>"
@@ -402,8 +419,8 @@ cdef class loess_model:
                 "Span            : %s" % self.span,
                 "Degree          : %s" % self.degree,
                 "Normalized      : %s" % self.normalize,
-                "Parametric      : %s" % self.parametric_flags[:self.npar],
-                "Drop_square     : %s" % self.drop_square_flags[:self.npar]
+                "Parametric      : %s" % self.parametric_flags[:self.p],
+                "Drop_square     : %s" % self.drop_square_flags[:self.p]
                 ]
         return '\n'.join(strg)
         
@@ -440,24 +457,26 @@ loess.fit() method is called.
     divisor : ndarray
         The (p,) array of normalization divisors for numeric predictors.
     """
-    cdef c_loess.c_loess_outputs *_base
-    cdef char *family
-    cdef long nobs, npar
+    cdef c_loess.c_loess_outputs _base
+    cdef readonly char *family
+    cdef readonly long n, p
     cdef readonly int activated
 
     def __init__(self, n, p, family):
-        self.nobs = n
-        self.npar = p
+        c_loess.loess_outputs_setup(n, p, &self._base)
+
+        self.n = n
+        self.p = p
         self.family = family
         self.activated = False
     #........
     property fitted_values:    
         def __get__(self):
-            return floatarray_from_data(self.nobs, 1, self._base.fitted_values)
+            return floatarray_from_data(self.n, 1, self._base.fitted_values)
     #.........
     property fitted_residuals:
         def __get__(self):
-            return floatarray_from_data(self.nobs, 1, self._base.fitted_residuals)
+            return floatarray_from_data(self.n, 1, self._base.fitted_residuals)
     #.........
     property pseudovalues:
         def __get__(self):
@@ -466,20 +485,20 @@ loess.fit() method is called.
                     "pseudovalues are available only when "
                     "robust fitting. Use family='symmetric' "
                     "for robust fitting")
-            return floatarray_from_data(self.nobs, 1, self._base.pseudovalues)
+            return floatarray_from_data(self.n, 1, self._base.pseudovalues)
     #.........
     property diagonal:
         def __get__(self):
-            return floatarray_from_data(self.nobs, 1, self._base.diagonal)
+            return floatarray_from_data(self.n, 1, self._base.diagonal)
     #.........
     property robust:
         def __get__(self):
-            return floatarray_from_data(self.nobs, 1, self._base.robust)
+            return floatarray_from_data(self.n, 1, self._base.robust)
     #.........
     property divisor:
         def __get__(self):
-            return floatarray_from_data(self.npar, 1, self._base.divisor)
-    #.........    
+            return floatarray_from_data(self.n, 1, self._base.divisor)
+    #.........
     property enp:
         def __get__(self):
             return self._base.enp
@@ -754,53 +773,40 @@ cdef class loess:
     cdef readonly loess_predicted predicted
     
     def __init__(self, object x, object y, object weights=None, **options):
-        #
-        cdef ndarray x_ndr, y_ndr
-        cdef double *x_dat
-        cdef double *y_dat
-        cdef double *w
-        cdef int i
+        # Process options
+        model_options = {}
+        control_options= {}
+        for (k, v) in options.items():
+            if k in ('family', 'span', 'degree', 'normalize',
+                     'parametric', 'drop_square',):
+                model_options[k] = v
+            elif k in ('surface', 'statistics', 'trace_hat',
+                       'iterations', 'cell'):
+                control_options[k] = v
 
-        # Initialize the inputs .......
+
+        # Initialize the inputs
         self.inputs = loess_inputs(x, y, weights)
-        x_dat = <double *>self.inputs.x_eff.data
-        y_dat = <double *>self.inputs.y_eff.data
-        w = <double *>self.inputs.weights.data
-        n = self.inputs.nobs
-        p = self.inputs.npar
-        c_loess.loess_setup(x_dat, y_dat, w, n, p, &self._base)
-        # Sets the _base input .........
-        self.inputs._base = &self._base.inputs
+        self._base.inputs = &self.inputs._base
 
-        # Initialize the model parameters
-        self.model = loess_model(p)
-        self.model._base = &self._base.model
+        n = self.inputs.n
+        p = self.inputs.p
 
         # Initialize the control parameters
-        self.control = loess_control()
-        self.control._base = &self._base.control
+        self.control = loess_control(**control_options)
+        self._base.control = &self.control._base
 
-        # Initialize the kd tree ......
-        self.kd_tree = loess_kd_tree()
-        self.kd_tree._base = &self._base.kd_tree
+        # Initialize the model parameters
+        self.model = loess_model(p, **model_options)
+        self._base.model = &self.model._base
 
-        # Process options .............
-        modelopt = {}
-        controlopt = {}
-        for (k,v) in options.iteritems():
-            if k in ('family', 'span', 'degree', 'normalize', 
-                     'parametric', 'drop_square',):
-                modelopt[k] = v
-            elif k in ('surface', 'statistics', 'trace_hat', 
-                       'iterations', 'cell'):
-                controlopt[k] = v
-        self.control.update(**controlopt)
-        self.model.update(**modelopt)
-
-        # Initialize the outputs ......
+        # Initialize the outputs
         self.outputs = loess_outputs(n, p, self.model.family)
-        self.outputs._base = &self._base.outputs
+        self._base.outputs = &self.outputs._base
 
+        # Initialize the kd tree
+        self.kd_tree = loess_kd_tree(n, p)
+        self._base.kd_tree = &self.kd_tree._base
     #......................................................
     def fit(self):
         """Computes the loess parameters on the current inputs and sets of parameters."""
@@ -829,7 +835,7 @@ cdef class loess:
 
         strg = ["Output Summary",
                 "--------------",
-                "Number of Observations         : %d" % self.inputs.nobs,
+                "Number of Observations         : %d" % self.inputs.n,
                 "Fit flag                       : %d" % fit_flag,
                 "Equivalent Number of Parameters: %.1f" % self.outputs.enp,
                 rse
@@ -879,7 +885,7 @@ a loess_predicted object, whose attributes are described below.
         # Test the compatibility of sizes .......
         if p_ndr.size == 0:
             raise ValueError("Can't predict without input data !")
-        (m, notOK) = divmod(len(p_ndr), self.inputs.npar)
+        (m, notOK) = divmod(len(p_ndr), self.inputs.p)
         if notOK:
             raise ValueError(
                   "Incompatible data size: there should be as many rows as parameters")
@@ -942,4 +948,3 @@ cdef class anova:
         self.F_value = F_value
 
         
-

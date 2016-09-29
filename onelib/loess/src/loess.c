@@ -10,51 +10,84 @@ static char *surf_stat;
 int error_status = 0;
 char *error_message = NULL;
 
+
+void
+loess_model_setup(loess_model *model) {
+    int i;
+
+    model->span = 0.75;
+    model->degree = 2;
+    model->normalize = TRUE;
+
+    for(i = 0; i < 8; i++) {
+        model->parametric[i] = FALSE;
+        model->drop_square[i] = FALSE;
+    }
+
+    model->family = "gaussian";
+}
+
+void
+loess_inputs_setup(double *x, double *y, double *w, long n,
+      long p, loess_inputs *inputs) {
+    int i;
+
+    inputs->y = (double *) malloc(n * sizeof(double));
+    inputs->x = (double *) malloc(n * p * sizeof(double));
+    inputs->weights = (double *) malloc(n * sizeof(double));
+
+    for(i = 0; i < (n * p); i++) {
+        inputs->x[i] = x[i];
+    }
+
+    for(i = 0; i < n; i++) {
+        inputs->y[i] = y[i];
+        inputs->weights[i] = w[i];
+    }
+
+    inputs->n = n;
+    inputs->p = p;
+}
+
+void loess_outputs_setup(long n, long p, loess_outputs *outputs) {
+   outputs->fitted_values = (double *) malloc(n * sizeof(double));
+   outputs->fitted_residuals = (double *) malloc(n * sizeof(double));
+   outputs->diagonal = (double *) malloc(n * sizeof(double));
+   outputs->robust = (double *) malloc(n * sizeof(double));
+   outputs->divisor = (double *) malloc(p * sizeof(double));
+   outputs->pseudovalues = (double *) malloc(n * sizeof(double));
+}
+
+void
+loess_kd_tree_setup(long n, long p, loess_kd_tree *kd_tree) {
+   int max_kd;
+
+   max_kd = n > 200 ? n : 200;
+
+   kd_tree->parameter = (long *) malloc(7 * sizeof(long));
+   kd_tree->a = (long *) malloc(max_kd * sizeof(long));
+   kd_tree->xi = (double *) malloc(max_kd * sizeof(double));
+   kd_tree->vert = (double *) malloc(p * 2 * sizeof(double));
+   kd_tree->vval = (double *) malloc((p + 1) * max_kd * sizeof(double));
+}
+
+void
+loess_control_setup(loess_control *control) {
+   control->surface = "interpolate";
+   control->statistics = "approximate";
+   control->cell = 0.2;
+   control->trace_hat = "wait.to.decide";
+   control->iterations = 4;
+}
+
 void
 loess_setup(double *x, double *y, double *w, long n, long p, loess *lo)
 {
-    int i, max_kd;
-
-    max_kd = n > 200 ? n : 200;
-
-    lo->inputs.y = (double *) malloc(n * sizeof(double));
-    lo->inputs.x = (double *) malloc(n * p * sizeof(double));
-    lo->inputs.weights = (double *) malloc(n * sizeof(double));
-    for(i = 0; i < (n * p); i++)
-        lo->inputs.x[i] = x[i];
-    for(i = 0; i < n; i++) {
-        lo->inputs.y[i] = y[i];
-        lo->inputs.weights[i] = w[i];
-    }
-    lo->inputs.n = n;
-    lo->inputs.p = p;
-    lo->model.span = 0.75;
-    lo->model.degree = 2;
-    lo->model.normalize = TRUE;
-    for(i = 0; i < 8; i++)
-        lo->model.parametric[i] = lo->model.drop_square[i] = FALSE;
-    lo->model.family = "gaussian";
-
-    lo->control.surface = "interpolate";
-    lo->control.statistics = "approximate";
-    lo->control.cell = 0.2;
-    lo->control.trace_hat = "wait.to.decide";
-    lo->control.iterations = 4;
-
-    lo->outputs.fitted_values = (double *) malloc(n * sizeof(double));
-    lo->outputs.fitted_residuals = (double *) malloc(n * sizeof(double));
-    lo->outputs.diagonal = (double *) malloc(n * sizeof(double));
-    lo->outputs.robust = (double *) malloc(n * sizeof(double));
-    lo->outputs.divisor = (double *) malloc(p * sizeof(double));
-    if(strcmp(lo->model.family, "symmetric")) {
-       lo->outputs.pseudovalues = (double *) malloc(n * sizeof(double));
-    }
-
-    lo->kd_tree.parameter = (long *) malloc(7 * sizeof(long));
-    lo->kd_tree.a = (long *) malloc(max_kd * sizeof(long));
-    lo->kd_tree.xi = (double *) malloc(max_kd * sizeof(double));
-    lo->kd_tree.vert = (double *) malloc(p * 2 * sizeof(double));
-    lo->kd_tree.vval = (double *) malloc((p + 1) * max_kd * sizeof(double));
+   loess_inputs_setup(x, y, w, n, p, lo->inputs);
+   loess_model_setup(lo->model);
+   loess_control_setup(lo->control);
+   loess_outputs_setup(n, p, lo->outputs);
+   loess_kd_tree_setup(n, p, lo->kd_tree);
 }
 
 void
@@ -63,49 +96,49 @@ loess_fit(loess *lo)
     int    size_info[2], iterations;
     void    loess_();
 
-    size_info[0] = lo->inputs.p;
-    size_info[1] = lo->inputs.n;
+    size_info[0] = lo->inputs->p;
+    size_info[1] = lo->inputs->n;
     
     //Reset the default error status...
     error_status = 0;
     lo->status.err_status = 0;
     lo->status.err_msg = NULL;
 
-    iterations = (!strcmp(lo->model.family, "gaussian")) ? 0 :
-    lo->control.iterations;
-    if(!strcmp(lo->control.trace_hat, "wait.to.decide")) {
-        if(!strcmp(lo->control.surface, "interpolate"))
-            lo->control.trace_hat = (lo->inputs.n < 500) ? "exact" : "approximate";
+    iterations = (!strcmp(lo->model->family, "gaussian")) ? 0 :
+    lo->control->iterations;
+    if(!strcmp(lo->control->trace_hat, "wait.to.decide")) {
+        if(!strcmp(lo->control->surface, "interpolate"))
+            lo->control->trace_hat = (lo->inputs->n < 500) ? "exact" : "approximate";
         else
-            lo->control.trace_hat = "exact";
+            lo->control->trace_hat = "exact";
         }
-    loess_(lo->inputs.y, lo->inputs.x, size_info, lo->inputs.weights,
-           &lo->model.span,
-           &lo->model.degree,
-           lo->model.parametric,
-           lo->model.drop_square,
-           &lo->model.normalize,
-           &lo->control.statistics,
-           &lo->control.surface,
-           &lo->control.cell,
-           &lo->control.trace_hat,
+    loess_(lo->inputs->y, lo->inputs->x, size_info, lo->inputs->weights,
+           &lo->model->span,
+           &lo->model->degree,
+           lo->model->parametric,
+           lo->model->drop_square,
+           &lo->model->normalize,
+           &lo->control->statistics,
+           &lo->control->surface,
+           &lo->control->cell,
+           &lo->control->trace_hat,
            &iterations,
-           lo->outputs.fitted_values,
-           lo->outputs.fitted_residuals,
-           &lo->outputs.enp,
-           &lo->outputs.residual_scale,
-           &lo->outputs.one_delta,
-           &lo->outputs.two_delta,
-           lo->outputs.pseudovalues,
-           &lo->outputs.trace_hat,
-           lo->outputs.diagonal,
-           lo->outputs.robust,
-           lo->outputs.divisor,
-           lo->kd_tree.parameter,
-           lo->kd_tree.a,
-           lo->kd_tree.xi,
-           lo->kd_tree.vert,
-           lo->kd_tree.vval);
+           lo->outputs->fitted_values,
+           lo->outputs->fitted_residuals,
+           &lo->outputs->enp,
+           &lo->outputs->residual_scale,
+           &lo->outputs->one_delta,
+           &lo->outputs->two_delta,
+           lo->outputs->pseudovalues,
+           &lo->outputs->trace_hat,
+           lo->outputs->diagonal,
+           lo->outputs->robust,
+           lo->outputs->divisor,
+           lo->kd_tree->parameter,
+           lo->kd_tree->a,
+           lo->kd_tree->xi,
+           lo->kd_tree->vert,
+           lo->kd_tree->vval);
 
     if(error_status){
         lo->status.err_status = error_status;
@@ -287,35 +320,34 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
 void
 loess_free_mem(loess *lo)
 {
-    free(lo->inputs.x);
-    free(lo->inputs.y);
-    free(lo->inputs.weights);
-    free(lo->outputs.fitted_values);
-    free(lo->outputs.fitted_residuals);
-    free(lo->outputs.diagonal);
-    free(lo->outputs.robust);
-    free(lo->outputs.divisor);
-    if(strcmp(lo->model.family, "symmetric")) {
-       free(lo->outputs.pseudovalues);
-    }
+    free(lo->inputs->x);
+    free(lo->inputs->y);
+    free(lo->inputs->weights);
 
-    free(lo->kd_tree.parameter);
-    free(lo->kd_tree.a);
-    free(lo->kd_tree.xi);
-    free(lo->kd_tree.vert);
-    free(lo->kd_tree.vval);
+    free(lo->outputs->fitted_values);
+    free(lo->outputs->fitted_residuals);
+    free(lo->outputs->diagonal);
+    free(lo->outputs->robust);
+    free(lo->outputs->divisor);
+    free(lo->outputs->pseudovalues);
+
+    free(lo->kd_tree->parameter);
+    free(lo->kd_tree->a);
+    free(lo->kd_tree->xi);
+    free(lo->kd_tree->vert);
+    free(lo->kd_tree->vval);
 }
 
 void
 loess_summary(loess *lo)
 {
-    printf("Number of Observations         : %d\n", lo->inputs.n);
-    printf("Equivalent Number of Parameters: %.1f\n", lo->outputs.enp);
-    if(!strcmp(lo->model.family, "gaussian"))
+    printf("Number of Observations         : %d\n", lo->inputs->n);
+    printf("Equivalent Number of Parameters: %.1f\n", lo->outputs->enp);
+    if(!strcmp(lo->model->family, "gaussian"))
         printf("Residual Standard Error        : ");
     else
         printf("Residual Scale Estimate: ");
-    printf("%.4f\n", lo->outputs.residual_scale);
+    printf("%.4f\n", lo->outputs->residual_scale);
 }
 
 void

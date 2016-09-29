@@ -57,11 +57,11 @@ typedef struct {
     } loess_outputs;
 
 typedef struct {
-    loess_inputs inputs;
-    loess_model model;
-    loess_control control;
-    loess_kd_tree kd_tree;
-    loess_outputs outputs;
+    loess_inputs *inputs;
+    loess_model *model;
+    loess_control *control;
+    loess_kd_tree *kd_tree;
+    loess_outputs *outputs;
     loess_errstatus status;
 } loess;
 

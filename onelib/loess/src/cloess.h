@@ -3,7 +3,12 @@
 
 
 // from loess.c
-void loess_setup(double *x, double *y, int n, int p, loess *lo);
+void loess_model_setup(loess_model *model);
+void loess_inputs_setup(double *x, double *y, double *w, long n, long p, loess_inputs *inputs);
+void loess_outputs_setup(long n, long p, loess_outputs *outputs);
+void loess_control_setup(loess_control *control);
+void loess_kd_tree_setup(long n, long p, loess_kd_tree *kd_tree);
+void loess_setup(double *x, double *y, double *w, int n, int p, loess *lo);
 char loess_fit(loess *lo);
 void loess_free_mem(loess *lo);
 void loess_summary(loess *lo);

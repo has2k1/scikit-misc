@@ -108,11 +108,11 @@ class TestLoess2d(TestCase):
         (_, _, results, newdata1, _, madeup) = self.d
         madeup.model.span = 0.5
         madeup.model.normalize = True
-        madeup.predict(newdata1, stderror=False)
-        assert_almost_equal(madeup.predicted.values, results[4], 5)
+        prediction = madeup.predict(newdata1, stderror=False)
+        assert_almost_equal(prediction.values, results[4], 5)
         #
-        madeup_pred = madeup.predict(newdata1, stderror=False)
-        assert_almost_equal(madeup_pred.values, results[4], 5)
+        prediction = madeup.predict(newdata1, stderror=False)
+        assert_almost_equal(prediction.values, results[4], 5)
 
     def test_2d_pred_nodata(self):
         "2D prediction - nodata"
@@ -129,36 +129,28 @@ class TestLoess2d(TestCase):
         (_, _, results, _, newdata2, madeup) = self.d
         madeup.model.span = 0.5
         madeup.model.normalize = True
-        madeup_pred = madeup.predict(newdata2, stderror=True)
-        assert_almost_equal(madeup_pred.values, results[5], 5)
-        assert_almost_equal(madeup_pred.stderr, [0.276746, 0.278009], 5)
-        assert_almost_equal(madeup_pred.residual_scale, 0.969302, 6)
-        assert_almost_equal(madeup_pred.df, 81.2319, 4)
+        prediction = madeup.predict(newdata2, stderror=True)
+        assert_almost_equal(prediction.values, results[5], 5)
+        assert_almost_equal(prediction.stderr, [0.276746, 0.278009], 5)
+        assert_almost_equal(prediction.residual_scale, 0.969302, 6)
+        assert_almost_equal(prediction.df, 81.2319, 4)
         # Direct access
-        madeup.predict(newdata2, stderror=True)
-        assert_almost_equal(madeup.predicted.values, results[5], 5)
-        assert_almost_equal(madeup.predicted.stderr, [0.276746, 0.278009], 5)
-        assert_almost_equal(madeup.predicted.residual_scale, 0.969302, 6)
-        assert_almost_equal(madeup.predicted.df, 81.2319, 4)
+        prediction = madeup.predict(newdata2, stderror=True)
+        assert_almost_equal(prediction.values, results[5], 5)
+        assert_almost_equal(prediction.stderr, [0.276746, 0.278009], 5)
+        assert_almost_equal(prediction.residual_scale, 0.969302, 6)
+        assert_almost_equal(prediction.df, 81.2319, 4)
 
     def test_2d_pred_confinv(self):
         "2D prediction - confidence"
         (_, _, results, _, newdata2, madeup) = self.d
         madeup.model.span = 0.5
         madeup.model.normalize = True
-        madeup.predict(newdata2, stderror=True)
-        madeup.predicted.confidence(coverage=0.99)
-        assert_almost_equal(madeup.predicted.confidence_intervals.lower,
-                            results[6][::3], 5)
-        assert_almost_equal(madeup.predicted.confidence_intervals.fit,
-                            results[6][1::3], 5)
-        assert_almost_equal(madeup.predicted.confidence_intervals.upper,
-                            results[6][2::3], 5)
-        # Direct access
-        confinv = madeup.predicted.confidence(coverage=0.99)
-        assert_almost_equal(confinv.lower, results[6][::3], 5)
-        assert_almost_equal(confinv.fit, results[6][1::3], 5)
-        assert_almost_equal(confinv.upper, results[6][2::3], 5)
+        prediction = madeup.predict(newdata2, stderror=True)
+        ci = prediction.confidence(alpha=0.01)
+        assert_almost_equal(ci.lower, results[6][::3], 5)
+        assert_almost_equal(ci.fit, results[6][1::3], 5)
+        assert_almost_equal(ci.upper, results[6][2::3], 5)
 
 
 class TestLoessGas(TestCase):
@@ -175,7 +167,7 @@ class TestLoessGas(TestCase):
         gas_fit_E = np.array([0.665, 0.949, 1.224])
         newdata = np.array([0.6650000, 0.7581667, 0.8513333, 0.9445000,
                             1.0376667, 1.1308333, 1.2240000])
-        coverage = 0.99
+        alpha = 0.01
 
         rfile = os.path.join(data_path, 'gas_result')
         results = []
@@ -186,7 +178,7 @@ class TestLoessGas(TestCase):
                     (float(v) for v in f.readline().rstrip().split()),
                     np.float_)
                 results.append(z)
-        self.d = (E, NOx, gas_fit_E, newdata, coverage, results)
+        self.d = (E, NOx, gas_fit_E, newdata, alpha, results)
 
     def test_1dbasic(self):
         "Basic test 1d"
@@ -213,8 +205,8 @@ class TestLoessGas(TestCase):
         (E, NOx, gas_fit_E, _, _, results) = self.d
         gas = loess(E, NOx, span=2./3.)
         gas.fit()
-        gas.predict(gas_fit_E, stderror=False)
-        assert_almost_equal(gas.predicted.values, results[2], 6)
+        prediction = gas.predict(gas_fit_E, stderror=False)
+        assert_almost_equal(prediction.values, results[2], 6)
 
     def test_1dpredict_2(self):
         "Basic test 1d - new predictions"
@@ -222,14 +214,11 @@ class TestLoessGas(TestCase):
         # gas = loess(E, NOx, span=2./3.)
         gas = loess(E, NOx)
         gas.model.span = 2./3.
-        gas.predict(newdata, stderror=True)
-        gas.predicted.confidence(0.99)
-        assert_almost_equal(gas.predicted.confidence_intervals.lower,
-                            results[3][0::3], 6)
-        assert_almost_equal(gas.predicted.confidence_intervals.fit,
-                            results[3][1::3], 6)
-        assert_almost_equal(gas.predicted.confidence_intervals.upper,
-                            results[3][2::3], 6)
+        prediction = gas.predict(newdata, stderror=True)
+        ci = prediction.confidence(alpha=0.01)
+        assert_almost_equal(ci.lower, results[3][0::3], 6)
+        assert_almost_equal(ci.fit, results[3][1::3], 6)
+        assert_almost_equal(ci.upper, results[3][2::3], 6)
 
     def test_anova(self):
         "Tests anova"
@@ -263,10 +252,10 @@ class TestLoessGas(TestCase):
         gas.model.degree = 2
         gas.fit()
         # Now, for predict .................
-        gas.predict(gas_fit_E, stderror=False)
+        prediction = gas.predict(gas_fit_E, stderror=False)
         # This one should fail (extrapolation & blending)
         self.assertRaises(ValueError,
-                          gas.predict, gas.predicted.values, stderror=False)
+                          gas.predict, prediction.values, stderror=False)
         # But this one should not ..........
         gas.predict(gas_fit_E, stderror=False)
 

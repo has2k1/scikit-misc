@@ -579,22 +579,38 @@ cdef class conf_intervals:
         Upper bounds of the confidence intervals.
     """
     cdef c_loess.c_conf_inv _base
-    cdef readonly ndarray lower, fit, upper
-    #.........
+    cdef readonly int m
+
+    def __cinit__(conf_intervals self, loess_prediction pred,
+                  float alpha):
+        coverage = 1 - alpha
+        if coverage < .5:
+            coverage = 1 - coverage
+
+        if not 0 < alpha < 1. :
+            raise ValueError("The alpha value should be "
+                             "between 0 and 1.")
+        if not pred._base.se:
+            raise ValueError("Cannot compute confidence intervals "
+                             "without standard errors.")
+
+        c_loess.c_pointwise(&pred._base, pred.m, coverage, &self._base)
+        self.m = pred.m
+
     def __dealloc__(self):
         c_loess.pw_free_mem(&self._base)
-    #.........
-    cdef setup(self, c_loess.c_conf_inv base, long nest):
-        self._base = base
-        self.fit = floatarray_from_data(nest, 1, base.fit)
-        self.upper = floatarray_from_data(nest, 1, base.upper)
-        self.lower = floatarray_from_data(nest, 1, base.lower)
-    #.........
-    def __str__(self):
-        cdef ndarray tmp_ndr
-        tmp_ndr = np.r_[[self.lower,self.fit,self.upper]].T
-        return "Confidence intervals....\nLower b./ fit / upper b.\n%s" % \
-               tmp_ndr 
+
+    property fit:
+        def __get__(self):
+            return  floatarray_from_data(self.m, 1, self._base.fit)
+
+    property upper:
+        def __get__(self):
+            return  floatarray_from_data(self.m, 1, self._base.upper)
+
+    property lower:
+        def __get__(self):
+            return  floatarray_from_data(self.m, 1, self._base.lower)
 
 #####---------------------------------------------------------------------------
 #---- ---- loess predictions ---
@@ -682,37 +698,24 @@ cdef class loess_predicted:
     property m:
         def __get__(self):
             return self._base.m
-    #.........
-    def confidence(self, coverage=0.95):
-        """Returns the pointwise confidence intervals for each predicted values,
-at the given confidence interval coverage.
-        
-:Parameters:
-    coverage : float
-        Confidence level of the confidence intervals limits, as a fraction.
-        
-:Returns:
-    A new conf_intervals object, consisting of:
-    fit : ndarray
-        Predicted values.
-    lower : ndarray
-        Lower bounds of the confidence intervals.
-    upper : ndarray
-        Upper bounds of the confidence intervals.
+
+    def confidence(self, alpha=0.05):
         """
-        cdef c_loess.c_conf_inv _confintv
-        if coverage < 0.5:
-            coverage = 1. - coverage 
-        if coverage > 1. :
-            raise ValueError("The coverage precentage should be between 0 and 1!")
-        if not self._base.se:
-            raise ValueError("Cannot compute confidence intervals "
-                             "without standard errors.")
-        c_loess.c_pointwise(&self._base, self.nest, coverage, &_confintv)
-        self.confidence_intervals = conf_intervals()
-        self.confidence_intervals.setup(_confintv, self.nest)
-        return self.confidence_intervals
-    #.........
+        Returns the pointwise confidence intervals
+
+        Parameters
+        ----------
+        alpha : float
+            The alpha level for the confidence interval The default
+            `alpha`=.05 returns a 95% confidence interval. Therefore
+            it must be in the range (0, 1)
+
+        Returns
+        -------
+        A conf_intervals object with attributes
+        """
+        return conf_intervals(self, alpha)
+
     def __str__(self):
         try:
             stderr = "Predicted std error   : %s\n" % self.stderr
@@ -838,8 +841,7 @@ cdef class loess:
     cdef readonly loess_control control
     cdef readonly loess_kd_tree kd_tree
     cdef readonly loess_outputs outputs
-    cdef readonly loess_predicted predicted
-    
+
     def __init__(self, object x, object y, object weights=None, **options):
         # Process options
         model_options = {}
@@ -978,3 +980,4 @@ cdef class anova:
         self.F_value = F_value
 
         
+

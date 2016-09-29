@@ -436,7 +436,7 @@ loess.fit() method is called.
         The (n,) ndarray of fitted residuals (observations - fitted values).
     enp : float
         Equivalent number of parameters.
-    s : float
+    residual_scale : float
         Estimate of the scale of residuals.
     one_delta: float
         Statistical parameter used in the computation of standard errors.
@@ -491,9 +491,9 @@ loess.fit() method is called.
         def __get__(self):
             return self._base.enp
     #.........
-    property s:
+    property residual_scale:
         def __get__(self):
-            return self._base.s
+            return self._base.residual_scale
     #.........
     property one_delta:
         def __get__(self):
@@ -811,9 +811,9 @@ cdef class loess:
         print "Fit flag                       : %d" % bool(self.outputs.activated)
         print "Equivalent Number of Parameters: %.1f" % self.outputs.enp
         if self.model.family == "gaussian":
-            print "Residual Standard Error        : %.4f" % self.outputs.s
+            print "Residual Standard Error        : %.4f" % self.outputs.residual_scale
         else:
-            print "Residual Scale Estimate        : %.4f" % self.outputs.s
+            print "Residual Scale Estimate        : %.4f" % self.outputs.residual_scale
     #......................................................
     def predict(self, newdata, stderror=False):
         """Computes loess estimates at the given new data points newdata. Returns
@@ -897,11 +897,11 @@ cdef class anova:
         #
         one_d1 = out_one.one_delta
         one_d2 = out_one.two_delta
-        one_s = out_one.s
+        one_s = out_one.residual_scale
         #
         two_d1 = out_two.one_delta
         two_d2 = out_two.two_delta
-        two_s = out_two.s
+        two_s = out_two.residual_scale
         #
         rssdiff = abs(one_s * one_s * one_d1 - two_s * two_s * two_d1)
         d1diff = abs(one_d1 - two_d1)

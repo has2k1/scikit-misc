@@ -29,7 +29,7 @@ cdef extern from "loess.h":
         double  *fitted_values
         double  *fitted_residuals
         double  enp
-        double  s
+        double  residual_scale
         double  one_delta
         double  two_delta
         double  *pseudovalues

@@ -91,7 +91,7 @@ loess_fit(loess *lo)
            lo->outputs.fitted_values,
            lo->outputs.fitted_residuals,
            &lo->outputs.enp,
-           &lo->outputs.s,
+           &lo->outputs.residual_scale,
            &lo->outputs.one_delta,
            &lo->outputs.two_delta,
            lo->outputs.pseudovalues,
@@ -116,7 +116,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
        int *degree, int *parametric, int *drop_square, int *normalize,
        char **statistics, char **surface, double *cell, char **trace_hat_in,
        int *iterations, double *fitted_values, double *fitted_residuals,
-       double *enp, double *s, double *one_delta, double *two_delta,
+       double *enp, double *residual_scale, double *one_delta, double *two_delta,
        double *pseudovalues, double *trace_hat_out, double *diagonal,
        double *robust, double *divisor, long *parameter, int *a, double *xi,
        double *vert, double *vval)
@@ -264,7 +264,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
             sum_squares = sum_squares + weights[i] *
                     pseudo_resid[i] * pseudo_resid[i];
     *enp = (*one_delta) + 2 * (*trace_hat_out) - N;
-    *s = sqrt(sum_squares / (*one_delta));
+    *residual_scale = sqrt(sum_squares / (*one_delta));
     
     //Clean the mess and leave ..................
     free(x);
@@ -310,7 +310,7 @@ loess_summary(loess *lo)
         printf("Residual Standard Error        : ");
     else
         printf("Residual Scale Estimate: ");
-    printf("%.4f\n", lo->outputs.s);
+    printf("%.4f\n", lo->outputs.residual_scale);
 }
 
 void

@@ -63,7 +63,7 @@ class TestLoess2d(TestCase):
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[0], 5)
         assert_almost_equal(madeup.outputs.enp, 14.9, 1)
-        assert_almost_equal(madeup.outputs.s, 0.9693, 4)
+        assert_almost_equal(madeup.outputs.residual_scale, 0.9693, 4)
 
     def test_2d_modflags(self):
         "2D - modification of model flags"
@@ -76,7 +76,7 @@ class TestLoess2d(TestCase):
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[1], 5)
         assert_almost_equal(madeup.outputs.enp, 6.9, 1)
-        assert_almost_equal(madeup.outputs.s, 1.4804, 4)
+        assert_almost_equal(madeup.outputs.residual_scale, 1.4804, 4)
 
     def test_2d_modfamily(self):
         "2D - family modification"
@@ -88,7 +88,7 @@ class TestLoess2d(TestCase):
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[2], 5)
         assert_almost_equal(madeup.outputs.enp, 6.9, 1)
-        assert_almost_equal(madeup.outputs.s, 1.0868, 4)
+        assert_almost_equal(madeup.outputs.residual_scale, 1.0868, 4)
 
     def test_2d_modnormalize(self):
         "2D - normalization modification"
@@ -101,7 +101,7 @@ class TestLoess2d(TestCase):
         madeup.fit()
         assert_almost_equal(madeup.outputs.fitted_values, results[3], 5)
         assert_almost_equal(madeup.outputs.enp, 6.9, 1)
-        assert_almost_equal(madeup.outputs.s, 1.0868, 4)
+        assert_almost_equal(madeup.outputs.residual_scale, 1.0868, 4)
 
     def test_2d_pred_nostderr(self):
         "2D prediction - no stderr"
@@ -196,7 +196,7 @@ class TestLoessGas(TestCase):
         gas.fit()
         assert_almost_equal(gas.outputs.fitted_values, results[0], 6)
         assert_almost_equal(gas.outputs.enp, 5.5, 1)
-        assert_almost_equal(gas.outputs.s, 0.3404, 4)
+        assert_almost_equal(gas.outputs.residual_scale, 0.3404, 4)
 
     def test_1dbasic_alt(self):
         "Basic test 1d - part #2"
@@ -206,7 +206,7 @@ class TestLoessGas(TestCase):
         gas_null.fit()
         assert_almost_equal(gas_null.outputs.fitted_values, results[1], 6)
         assert_almost_equal(gas_null.outputs.enp, 3.5, 1)
-        assert_almost_equal(gas_null.outputs.s, 0.5197, 4)
+        assert_almost_equal(gas_null.outputs.residual_scale, 0.5197, 4)
 
     def test_1dpredict(self):
         "Basic test 1d - prediction"

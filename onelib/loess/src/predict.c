@@ -17,7 +17,7 @@ predict(double *eval, int m, loess *lo, prediction *pre)
     if (pre->se) {
        pre->se_fit = (double *) malloc(m * sizeof(double));
     }
-    pre->residual_scale = lo->outputs.s;
+    pre->residual_scale = lo->outputs.residual_scale;
     pre->df = (lo->outputs.one_delta * lo->outputs.one_delta) /
               lo->outputs.two_delta;
 
@@ -32,7 +32,7 @@ predict(double *eval, int m, loess *lo, prediction *pre)
     pred_(lo->inputs.y,
           lo->inputs.x, eval,
           size_info,
-          &lo->outputs.s,
+          &lo->outputs.residual_scale,
           lo->inputs.weights,
           lo->outputs.robust,
           &lo->model.span,
@@ -60,7 +60,7 @@ predict(double *eval, int m, loess *lo, prediction *pre)
 }
 
 void
-pred_(double *y, double *x_, double *new_x, int *size_info, double *s,
+pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_scale,
       double *weights, double *robust, double *span, int *degree,
       int *normalize, int *parametric, int *drop_square, char **surface,
       double *cell, char **family, int *parameter, int *a, double *xi,
@@ -163,7 +163,7 @@ pred_(double *y, double *x_, double *new_x, int *size_info, double *s,
             tmp = 0;
             for(j = 0; j < N; j++)
                 tmp = tmp + L[i + j * M];
-            se_fit[i] = (*s) * sqrt(tmp);
+            se_fit[i] = (*residual_scale) * sqrt(tmp);
         }
     }
     free(x);

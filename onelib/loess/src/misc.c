@@ -22,10 +22,10 @@ void anova(loess *one, loess *two, anova_struct *out)
 
     one_d1 = one->outputs.one_delta;
     one_d2 = one->outputs.two_delta;
-    one_s = one->outputs.s;
+    one_s = one->outputs.residual_scale;
     two_d1 = two->outputs.one_delta;
     two_d2 = two->outputs.two_delta;
-    two_s = two->outputs.s;
+    two_s = two->outputs.residual_scale;
 
     rssdiff = fabs(one_s * one_s * one_d1 - two_s * two_s * two_d1);
     d1diff = fabs(one_d1 - two_d1);

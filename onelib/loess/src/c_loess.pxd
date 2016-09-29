@@ -47,6 +47,7 @@ cdef extern from "loess.h":
     ctypedef struct c_prediction "prediction": 
         double  *fit
         double  *se_fit
+        int se
         double  residual_scale
         double  df
 #    ctypedef struct c_anova "anova_struct":
@@ -65,7 +66,7 @@ cdef extern from "cloess.h":
     void loess_free_mem(c_loess *lo)
     void loess_summary(c_loess *lo)
     #
-    void c_predict "predict" (double *eval, int m, c_loess *lo, c_prediction *pre, int se) 
+    void c_predict "predict" (double *eval, int m, c_loess *lo, c_prediction *pre) 
     void pred_free_mem(c_prediction *pre)
     #
     void c_pointwise "pointwise" (c_prediction *pre, int m, double coverage, c_conf_inv *ci)

@@ -15,7 +15,7 @@ double pf(double q, double df1, double df2);
 double ibeta(double x, double a, double b);
 ////
 // from predict.c
-void predict(double *eval, int m, loess *lo, prediction *pre, int se);
+void predict(double *eval, int m, loess *lo, prediction *pre);
 void pred_free_mem(prediction *pre);
 //
 

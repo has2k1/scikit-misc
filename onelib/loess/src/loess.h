@@ -68,6 +68,7 @@ typedef struct {
 typedef struct {
     double *fit;
     double *se_fit;
+    int se;
     double residual_scale;
     double df;
     } prediction;

@@ -8,13 +8,15 @@ extern char *error_message;
 extern int error_status;
 
 void
-predict(double *eval, int m, loess *lo, prediction *pre, int se)
+predict(double *eval, int m, loess *lo, prediction *pre)
 {
     int  size_info[3];
     void pred_();
 
     pre->fit = (double *) malloc(m * sizeof(double));
-    pre->se_fit = (double *) malloc(m * sizeof(double));
+    if (pre->se) {
+       pre->se_fit = (double *) malloc(m * sizeof(double));
+    }
     pre->residual_scale = lo->outputs.s;
     pre->df = (lo->outputs.one_delta * lo->outputs.one_delta) /
               lo->outputs.two_delta;
@@ -47,7 +49,7 @@ predict(double *eval, int m, loess *lo, prediction *pre, int se)
           lo->kd_tree.vert,
           lo->kd_tree.vval,
           lo->outputs.divisor,
-          &se,
+          &pre->se,
           pre->fit,
           pre->se_fit);
 
@@ -177,7 +179,9 @@ void
 pred_free_mem(prediction *pre)
 {
     free(pre->fit);
-    free(pre->se_fit);
+    if(pre->se) {
+       free(pre->se_fit);
+    }
 }
 
 

@@ -589,6 +589,9 @@ cdef class loess_predicted:
     #.........
     property stderr:
         def __get__(self):
+            if not self._base.se:
+                raise ValueError("Standard error was not computed."
+                                 "Use 'stderror=True' when predicting.")
             return floatarray_from_data(self.nest, 1, self._base.se_fit)
     #.........
     property residual_scale:
@@ -860,7 +863,8 @@ a loess_predicted object, whose attributes are described below.
             raise ValueError(
                   "Incompatible data size: there should be as many rows as parameters")
         #.....
-        c_loess.c_predict(p_dat, m, &self._base, &_prediction, stderror)
+        _prediction.se = 1 if stderror else 0
+        c_loess.c_predict(p_dat, m, &self._base, &_prediction)
         if self._base.status.err_status:
             raise ValueError(self._base.status.err_msg)
         self.predicted = loess_predicted()

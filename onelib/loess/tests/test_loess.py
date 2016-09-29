@@ -49,7 +49,7 @@ class TestLoess2d(TestCase):
                     np.float_)
                 results.append(z)
 
-        newdata1 = np.array([[-2.5, 0.0, 2.5], [0., 0., 0.]])
+        newdata1 = np.array([[-2.5, 0.], [2.5, 0.], [0., 0.]])
         newdata2 = np.array([[-0.5, 0.5], [0., 0.]])
         madeup = loess(x, y)
         self.d = (x, y, results, newdata1, newdata2, madeup)

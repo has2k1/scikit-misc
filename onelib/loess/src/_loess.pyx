@@ -630,20 +630,23 @@ cdef class loess_predicted:
         # Note : we need a copy as we may have to normalize
         p_ndr = np.array(newdata, copy=True, subok=True, order='C')
 
-        # Note : we need a copy as we may have to normalize
-        p_ndr = np.array(newdata, copy=True,
-                         subok=True, order='C').ravel()
-        p_dat = <double *>p_ndr.data
-
-        # Test the compatibility of sizes
-        if p_ndr.size == 0:
+        # Dimensions should match those of the input
+        if p_ndr.size == 0 or p_ndr.ndim == 0:
             raise ValueError("Can't predict without input data !")
 
-        (m, notOK) = divmod(len(p_ndr), loess.inputs.p)
+        if p_ndr.ndim > 2:
+            raise ValueError("New data has more than 2 dimensions.")
 
-        if notOK:
-            raise ValueError("Incompatible data size: there should "
-                             "be as many rows as parameters")
+        _p = 1 if p_ndr.ndim == 1 else p_ndr.shape[1]
+        if _p != loess.inputs.p:
+            msg = ("Incompatible data size: there should be as many "
+                   "columns as parameters. Got %d instead of %d "
+                   "parameters" % (_p, loess.inputs.p))
+            raise ValueError(msg)
+
+        m = len(p_ndr)
+        p_ndr = p_ndr.ravel()
+        p_dat = <double *>p_ndr.data
 
         self._base.se = 1 if stderror else 0
         self._base.m = m

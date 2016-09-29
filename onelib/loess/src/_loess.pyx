@@ -455,12 +455,17 @@ loess.fit() method is called.
         The (p,) array of normalization divisors for numeric predictors.
     """
     cdef c_loess.c_loess_outputs *_base
+    cdef char *family
     cdef long nobs, npar
     cdef readonly int activated
-    cdef setup(self,c_loess.c_loess_outputs *base, long nobs, long npar):
+    cdef setup(self,
+               c_loess.c_loess_outputs *base,
+               c_loess.c_loess_inputs *inputs,
+               c_loess.c_loess_model *model):
         self._base = base
-        self.nobs = nobs
-        self.npar = npar
+        self.nobs = inputs.n
+        self.npar = inputs.p
+        self.family = model.family
         self.activated = False
     #........
     property fitted_values:    
@@ -473,6 +478,11 @@ loess.fit() method is called.
     #.........
     property pseudovalues:
         def __get__(self):
+            if self.family not in ('symmetric'):
+                raise ValueError(
+                    "pseudovalues are available only when "
+                    "robust fitting. Use family='symmetric' "
+                    "for robust fitting")
             return floatarray_from_data(self.nobs, 1, self._base.pseudovalues)
     #.........
     property diagonal:
@@ -775,9 +785,6 @@ cdef class loess:
         # Initialize the kd tree ......
         self.kd_tree = loess_kd_tree()
         self.kd_tree._base = &self._base.kd_tree
-        # Initialize the outputs ......
-        self.outputs = loess_outputs()
-        self.outputs.setup(&self._base.outputs, n, p,)
         # Process options .............
         modelopt = {}
         controlopt = {}
@@ -790,6 +797,11 @@ cdef class loess:
                 controlopt[k] = v
         self.control.update(**controlopt)
         self.model.update(**modelopt)
+
+        # Initialize the outputs ......
+        self.outputs = loess_outputs()
+        self.outputs.setup(&self._base.outputs, &self._base.inputs,
+                           &self._base.model)
     #......................................................
     def fit(self):
         """Computes the loess parameters on the current inputs and sets of parameters."""

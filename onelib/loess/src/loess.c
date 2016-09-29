@@ -43,10 +43,12 @@ loess_setup(double *x, double *y, long n, long p, loess *lo)
 
     lo->outputs.fitted_values = (double *) malloc(n * sizeof(double));
     lo->outputs.fitted_residuals = (double *) malloc(n * sizeof(double));
-    lo->outputs.pseudovalues = (double *) malloc(n * sizeof(double));
     lo->outputs.diagonal = (double *) malloc(n * sizeof(double));
     lo->outputs.robust = (double *) malloc(n * sizeof(double));
     lo->outputs.divisor = (double *) malloc(p * sizeof(double));
+    if(strcmp(lo->model.family, "symmetric")) {
+       lo->outputs.pseudovalues = (double *) malloc(n * sizeof(double));
+    }
 
     lo->kd_tree.parameter = (long *) malloc(7 * sizeof(long));
     lo->kd_tree.a = (long *) malloc(max_kd * sizeof(long));
@@ -290,10 +292,13 @@ loess_free_mem(loess *lo)
     free(lo->inputs.weights);
     free(lo->outputs.fitted_values);
     free(lo->outputs.fitted_residuals);
-    free(lo->outputs.pseudovalues);
     free(lo->outputs.diagonal);
     free(lo->outputs.robust);
     free(lo->outputs.divisor);
+    if(strcmp(lo->model.family, "symmetric")) {
+       free(lo->outputs.pseudovalues);
+    }
+
     free(lo->kd_tree.parameter);
     free(lo->kd_tree.a);
     free(lo->kd_tree.xi);

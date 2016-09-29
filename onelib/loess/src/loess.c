@@ -118,7 +118,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
        int *iterations, double *fitted_values, double *fitted_residuals,
        double *enp, double *s, double *one_delta, double *two_delta,
        double *pseudovalues, double *trace_hat_out, double *diagonal,
-       double *robust, double *divisor, int *parameter, int *a, double *xi,
+       double *robust, double *divisor, long *parameter, int *a, double *xi,
        double *vert, double *vval)
 {
     double  *x, *x_tmp, new_cell, trL, delta1, delta2, sum_squares = 0,
@@ -126,7 +126,8 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
             *diag_tmp, trL_tmp = 0, d1_tmp = 0, d2_tmp = 0, sum, mean;
     int    i, j, k, p, N, D, sum_drop_sqr = 0, sum_parametric = 0,
             setLf, nonparametric = 0, *order_parametric,
-            *order_drop_sqr, zero = 0, max_kd, *a_tmp, *param_tmp;
+            *order_drop_sqr, zero = 0, max_kd, *a_tmp;
+    long *param_tmp;
     int     cut, comp();
     char    *new_stat, *mess;
     void    condition();
@@ -144,7 +145,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     vert_tmp = (double *) malloc(D * 2 * sizeof(double));
     vval_tmp = (double *) malloc((D + 1) * max_kd * sizeof(double));
     diag_tmp = (double *) malloc(N * sizeof(double));
-    param_tmp = (int *) malloc(N * sizeof(int));
+    param_tmp = (long *) malloc(N * sizeof(long));
     order_parametric = (int *) malloc(D * sizeof(int));
     order_drop_sqr = (int *) malloc(D * sizeof(int));
     if((*iterations) > 0)

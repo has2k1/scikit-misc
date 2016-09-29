@@ -567,7 +567,7 @@ loess.fit() method is called.
 #####---------------------------------------------------------------------------
 #---- ---- loess confidence ---
 #####---------------------------------------------------------------------------
-cdef class conf_intervals:
+cdef class confidence_intervals:
     """Pointwise confidence intervals of a loess-predicted object:
     
 :IVariables:
@@ -578,10 +578,10 @@ cdef class conf_intervals:
     upper : ndarray
         Upper bounds of the confidence intervals.
     """
-    cdef c_loess.c_conf_inv _base
+    cdef c_loess.c_confidence_intervals _base
     cdef readonly int m
 
-    def __cinit__(conf_intervals self, loess_prediction pred,
+    def __cinit__(confidence_intervals self, loess_prediction pred,
                   float alpha):
         coverage = 1 - alpha
         if coverage < .5:
@@ -594,7 +594,7 @@ cdef class conf_intervals:
             raise ValueError("Cannot compute confidence intervals "
                              "without standard errors.")
 
-        c_loess.c_pointwise(&pred._base, pred.m, coverage, &self._base)
+        c_loess.c_pointwise(&pred._base, coverage, &self._base)
         self.m = pred.m
 
     def __dealloc__(self):
@@ -712,9 +712,11 @@ cdef class loess_predicted:
 
         Returns
         -------
-        A conf_intervals object with attributes
+        out : confidence_intervals
+            Confidence intervals object. It has attributes `fit`,
+            `lower` and `upper`
         """
-        return conf_intervals(self, alpha)
+        return confidence_intervals(self, alpha)
 
     def __str__(self):
         try:
@@ -980,4 +982,3 @@ cdef class anova:
         self.F_value = F_value
 
         
-

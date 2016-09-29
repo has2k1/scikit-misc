@@ -85,5 +85,5 @@ typedef struct {
     double *fit;
     double *upper;
     double *lower;
-    } conf_inv;
+    } confidence_intervals;
 

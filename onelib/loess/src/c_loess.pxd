@@ -56,7 +56,7 @@ cdef extern from "loess.h":
 #        double  dfd
 #        double  F_value
 #        double  Pr_F
-    ctypedef struct c_conf_inv "conf_inv":
+    ctypedef struct c_confidence_intervals "confidence_intervals":
         double  *fit
         double  *upper
         double  *lower
@@ -77,12 +77,12 @@ cdef extern from "cloess.h":
     void loess_free_mem(c_loess *lo)
 
     void loess_summary(c_loess *lo)
-    #
+
     void c_predict "predict" (double *eval, c_loess *lo, c_prediction *pre) 
     void pred_free_mem(c_prediction *pre)
-    #
-    void c_pointwise "pointwise" (c_prediction *pre, int m, double coverage, c_conf_inv *ci)
+
+    void c_pointwise "pointwise" (c_prediction *pre, double coverage, c_confidence_intervals *ci)
     double pf (double q, double df1, double df2)
     double ibeta (double x, double a, double b)
-    void pw_free_mem (c_conf_inv *ci)
+    void pw_free_mem (c_confidence_intervals *ci)
     

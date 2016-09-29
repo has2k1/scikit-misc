@@ -17,8 +17,8 @@ void loess_free_mem(loess *lo);
 void loess_summary(loess *lo);
                
 // from misc.c
-void pointwise(prediction *pre, int m, double coverage, conf_inv *ci); 
-void pw_free_mem(conf_inv *ci);
+void pointwise(prediction *pre, double coverage, confidence_intervals *ci); 
+void pw_free_mem(confidence_intervals *ci);
 double pf(double q, double df1, double df2);
 double ibeta(double x, double a, double b);
 ////

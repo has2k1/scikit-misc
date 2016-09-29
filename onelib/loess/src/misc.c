@@ -38,17 +38,18 @@ void anova(loess *one, loess *two, anova_struct *out)
     out->Pr_F = 1 - pf(out->F_value, out->dfn, out->dfd);
 }
 
-void pointwise(prediction *pre, int m, double coverage, conf_inv *ci)
+void pointwise(prediction *pre, double coverage,
+      confidence_intervals *ci)
 {
     double    t_dist, limit, fit, qt();
     int    i;
 
-    ci->fit = (double *) malloc(m * sizeof(double));
-    ci->upper = (double *) malloc(m * sizeof(double));
-    ci->lower = (double *) malloc(m * sizeof(double));
+    ci->fit = (double *) malloc(pre->m * sizeof(double));
+    ci->upper = (double *) malloc(pre->m * sizeof(double));
+    ci->lower = (double *) malloc(pre->m * sizeof(double));
 
     t_dist = qt(1 - (1 - coverage)/2, pre->df);
-    for(i = 0; i < m; i++) {
+    for(i = 0; i < pre->m; i++) {
         limit = pre->se_fit[i] * t_dist;
         ci->fit[i] = fit = pre->fit[i];
         ci->upper[i] = fit + limit;
@@ -56,7 +57,7 @@ void pointwise(prediction *pre, int m, double coverage, conf_inv *ci)
     }
 }
 
-void pw_free_mem(conf_inv *ci)
+void pw_free_mem(confidence_intervals *ci)
 {
     free(ci->fit);
     free(ci->upper);

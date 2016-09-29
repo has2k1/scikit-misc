@@ -1,36 +1,27 @@
 # -*- Mode: Python -*-  
-cimport c_python
-cimport c_numpy
-from c_numpy cimport ndarray, npy_intp, \
-    PyArray_SIZE, PyArray_EMPTY, PyArray_FROMANY, \
-    NPY_INT, NPY_DOUBLE, NPY_OWNDATA, NPY_ALIGNED, NPY_FORTRAN, \
-    PyArray_SimpleNewFromData
-import numpy
-narray = numpy.array
-float_ = numpy.float_
+import numpy as np
+cimport numpy as np
+from numpy cimport (ndarray, npy_intp,
+                    NPY_DOUBLE, PyArray_SimpleNewFromData)
+cimport c_loess
 
 # NumPy must be initialized
-c_numpy.import_array()
+np.import_array()
 
-cimport c_loess
 
 cdef floatarray_from_data(int rows, int cols, double *data):
     cdef ndarray a_ndr
-    cdef npy_intp size
-    size = rows*cols
-    a_ndr = <object>PyArray_SimpleNewFromData(1, &size, NPY_DOUBLE, data)
-    if cols > 1:
-        a_ndr.shape = (rows, cols)
+    cdef npy_intp dims[2]
+    dims = (rows, cols)
+    a_ndr = <object>PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data)
     return a_ndr
 
 cdef boolarray_from_data(int rows, int cols, int *data):
     cdef ndarray a_ndr
-    cdef npy_intp size
-    size = rows*cols
-    a_ndr = <object>PyArray_SimpleNewFromData(1, &size, NPY_DOUBLE, data)
-    if cols > 1:
-        a_ndr.shape = (rows, cols)
-    return a_ndr.astype(numpy.bool)
+    cdef npy_intp dims[2]
+    dims = (rows, cols)
+    a_ndr = <object>PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data)
+    return a_ndr.astype(np.bool)
 
 
 """
@@ -86,20 +77,22 @@ cdef class loess_inputs:
     #.........
     def __init__(self, x_data, y_data):
         cdef ndarray unmasked
-        self.x = narray(x_data, copy=False, subok=True, dtype=float_, order='C')
-        self.y = narray(y_data, copy=False, subok=True, dtype=float_, order='C')
+        self.x = np.array(x_data, copy=False, subok=True,
+                          dtype=np.float_, order='C')
+        self.y = np.array(y_data, copy=False, subok=True,
+                          dtype=np.float_, order='C')
         # Check the dimensions ........
         if self.x.ndim == 1:
             self.npar = 1
         elif self.x.ndim == 2:
-            self.npar = self.x.shape[-1]
+            self.npar = self.x.shape[1]
         else:
             raise ValueError("The array of indepedent varibales should be 2D at most!")
         self.nobs = len(self.x)         
         # Get the effective data ......
         self.x_eff = self.x.ravel()
         self.y_eff = self.y
-        self.w_ndr = numpy.ones((self.nobs,), dtype=float_)
+        self.w_ndr = np.ones((self.nobs,), dtype=np.float_)
 
     #.........    
     property weights:
@@ -116,7 +109,7 @@ cdef class loess_inputs:
         def __set__(self, w):
             cdef npy_intp *dims
             cdef ndarray w_ndr
-            w_ndr = narray(w, copy=False, subok=False)
+            w_ndr = np.array(w, copy=False, subok=False)
             if w_ndr.ndim > 1 or w_ndr.size != self.nobs:
                 raise ValueError, "Invalid size of the 'weights' vector!"
             self.w_ndr = w_ndr
@@ -373,8 +366,8 @@ cdef class loess_model:
         def __set__(self, paramf):
             cdef ndarray p_ndr
             cdef int i
-            p_ndr = numpy.atleast_1d(narray(paramf, copy=False, subok=True, 
-                                            dtype=numpy.bool))
+            p_ndr = np.atleast_1d(np.array(paramf, copy=False, subok=True, 
+                                           dtype=np.bool))
             for i from 0 <= i < min(self.npar, p_ndr.size):
                 self._base.parametric[i] = p_ndr[i]
     #.........
@@ -384,8 +377,8 @@ cdef class loess_model:
         def __set__(self, drop_sq):
             cdef ndarray d_ndr
             cdef int i
-            d_ndr = numpy.atleast_1d(narray(drop_sq, copy=False, subok=True, 
-                                            dtype=numpy.bool))
+            d_ndr = np.atleast_1d(np.array(drop_sq, copy=False,
+                                           subok=True, dtype=np.bool))
             for i from 0 <= i < min(self.npar, d_ndr.size):
                 self._base.drop_square[i] = d_ndr[i]
     #........
@@ -554,7 +547,7 @@ cdef class conf_intervals:
     #.........
     def __str__(self):
         cdef ndarray tmp_ndr
-        tmp_ndr = numpy.r_[[self.lower,self.fit,self.upper]].T
+        tmp_ndr = np.r_[[self.lower,self.fit,self.upper]].T
         return "Confidence intervals....\nLower b./ fit / upper b.\n%s" % \
                tmp_ndr 
 
@@ -857,7 +850,7 @@ a loess_predicted object, whose attributes are described below.
             if self._base.status.err_status:
                 raise ValueError(self._base.status.err_msg)
         # Note : we need a copy as we may have to normalize
-        p_ndr = narray(newdata, copy=True, subok=True, order='C').ravel()
+        p_ndr = np.array(newdata, copy=True, subok=True, order='C').ravel()
         p_dat = <double *>p_ndr.data
         # Test the compatibility of sizes .......
         if p_ndr.size == 0:

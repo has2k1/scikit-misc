@@ -23,7 +23,7 @@ def configuration(parent_package='', top_path=None):
     sources = ['_loess.c', 'loess.c', 'loessc.c', 'misc.c', 'predict.c']
     depends = ['S.h', 'cloess.h', 'loess.h',
                '_loess.pyx',
-               'c_loess.pxd', 'c_numpy.pxd', 'c_python.pxd']
+               'c_loess.pxd']
     config.add_extension('_loess',
                          sources=[join('src', x) for x in sources],
                          depends=[join('src', x) for x in depends],

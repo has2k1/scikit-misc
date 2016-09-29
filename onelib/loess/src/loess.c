@@ -11,7 +11,7 @@ int error_status = 0;
 char *error_message = NULL;
 
 void
-loess_setup(double *x, double *y, long n, long p, loess *lo)
+loess_setup(double *x, double *y, double *w, long n, long p, loess *lo)
 {
     int i, max_kd;
 
@@ -24,7 +24,7 @@ loess_setup(double *x, double *y, long n, long p, loess *lo)
         lo->inputs.x[i] = x[i];
     for(i = 0; i < n; i++) {
         lo->inputs.y[i] = y[i];
-        lo->inputs.weights[i] = 1;
+        lo->inputs.weights[i] = w[i];
     }
     lo->inputs.n = n;
     lo->inputs.p = p;

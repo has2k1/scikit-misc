@@ -72,11 +72,10 @@ cdef class loess_inputs:
     """
     cdef c_loess.c_loess_inputs *_base
     cdef ndarray w_ndr
-    cdef readonly ndarray x, y, masked, x_eff, y_eff
-    cdef readonly int nobs, npar
-    #.........
-    def __init__(self, x_data, y_data):
-        cdef ndarray unmasked
+    cdef readonly ndarray x, y, weights, x_eff, y_eff
+    cdef readonly long nobs, npar
+
+    def __init__(self, x_data, y_data, weights=None):
         self.x = np.array(x_data, copy=False, subok=True,
                           dtype=np.float_, order='C')
         self.y = np.array(y_data, copy=False, subok=True,
@@ -87,37 +86,24 @@ cdef class loess_inputs:
         elif self.x.ndim == 2:
             self.npar = self.x.shape[1]
         else:
-            raise ValueError("The array of indepedent varibales should be 2D at most!")
-        self.nobs = len(self.x)         
-        # Get the effective data ......
+            raise ValueError("The array of indepedent varibales "
+                             "should be 2D at most!")
+        self.nobs = len(self.x)
+
+        if weights is None:
+            weights = np.ones((self.nobs,), dtype=np.float_)
+
+        if weights.ndim > 1 or weights.size != self.nobs:
+            raise ValueError("Invalid size of the 'weights' vector!")
+
+        self.weights = np.array(weights, copy=False, subok=True,
+                                dtype=np.float_, order='C')
+
+        # Get the effective data
         self.x_eff = self.x.ravel()
         self.y_eff = self.y
-        self.w_ndr = np.ones((self.nobs,), dtype=np.float_)
 
-    #.........    
-    property weights:
-        """A (n,) ndarray of weights to be given to individual observations in the 
-        sum of squared residuals that forms the local fitting criterion. If not
-        None, the weights should be non negative. If the different observations
-        have non-equal variances, the weights should be inversely proportional 
-        to the variances.
-        By default, an unweighted fit is carried out (all the weights are one).
-        """
-        def __get__(self):
-            return self.w_ndr
-        
-        def __set__(self, w):
-            cdef npy_intp *dims
-            cdef ndarray w_ndr
-            w_ndr = np.array(w, copy=False, subok=False)
-            if w_ndr.ndim > 1 or w_ndr.size != self.nobs:
-                raise ValueError, "Invalid size of the 'weights' vector!"
-            self.w_ndr = w_ndr
-            self._base.weights = <double *>w_ndr.data
-#       
-######---------------------------------------------------------------------------
-##---- ---- loess control ---
-######---------------------------------------------------------------------------
+
 cdef class loess_control:
     """Loess control parameters.
     
@@ -324,11 +310,9 @@ cdef class loess_model:
         
     cdef c_loess.c_loess_model *_base
     cdef long npar
-    #.........
-    cdef setup(self, c_loess.c_loess_model *base, long npar):
-        self._base = base
+
+    def __init__(self, npar):
         self.npar = npar
-        return self    
     #.........
     property normalize:
         def __get__(self):
@@ -460,14 +444,11 @@ loess.fit() method is called.
     cdef char *family
     cdef long nobs, npar
     cdef readonly int activated
-    cdef setup(self,
-               c_loess.c_loess_outputs *base,
-               c_loess.c_loess_inputs *inputs,
-               c_loess.c_loess_model *model):
-        self._base = base
-        self.nobs = inputs.n
-        self.npar = inputs.p
-        self.family = model.family
+
+    def __init__(self, n, p, family):
+        self.nobs = n
+        self.npar = p
+        self.family = family
         self.activated = False
     #........
     property fitted_values:    
@@ -777,25 +758,32 @@ cdef class loess:
         cdef ndarray x_ndr, y_ndr
         cdef double *x_dat
         cdef double *y_dat
+        cdef double *w
         cdef int i
+
         # Initialize the inputs .......
-        self.inputs = loess_inputs(x, y)
+        self.inputs = loess_inputs(x, y, weights)
         x_dat = <double *>self.inputs.x_eff.data
         y_dat = <double *>self.inputs.y_eff.data
+        w = <double *>self.inputs.weights.data
         n = self.inputs.nobs
         p = self.inputs.npar
-        c_loess.loess_setup(x_dat, y_dat, n, p, &self._base)
+        c_loess.loess_setup(x_dat, y_dat, w, n, p, &self._base)
         # Sets the _base input .........
         self.inputs._base = &self._base.inputs
+
         # Initialize the model parameters
-        self.model = loess_model()
-        self.model.setup(&self._base.model, p)
+        self.model = loess_model(p)
+        self.model._base = &self._base.model
+
         # Initialize the control parameters
         self.control = loess_control()
         self.control._base = &self._base.control
+
         # Initialize the kd tree ......
         self.kd_tree = loess_kd_tree()
         self.kd_tree._base = &self._base.kd_tree
+
         # Process options .............
         modelopt = {}
         controlopt = {}
@@ -810,9 +798,9 @@ cdef class loess:
         self.model.update(**modelopt)
 
         # Initialize the outputs ......
-        self.outputs = loess_outputs()
-        self.outputs.setup(&self._base.outputs, &self._base.inputs,
-                           &self._base.model)
+        self.outputs = loess_outputs(n, p, self.model.family)
+        self.outputs._base = &self._base.outputs
+
     #......................................................
     def fit(self):
         """Computes the loess parameters on the current inputs and sets of parameters."""
@@ -954,3 +942,4 @@ cdef class anova:
         self.F_value = F_value
 
         
+

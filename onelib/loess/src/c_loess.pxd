@@ -61,7 +61,7 @@ cdef extern from "loess.h":
         double  *lower
     
 cdef extern from "cloess.h":    
-    void loess_setup(double *x, double *y, long n, long p, c_loess *lo)
+    void loess_setup(double *x, double *y, double *w, long n, long p, c_loess *lo)
     void loess_fit(c_loess *lo)
     void loess_free_mem(c_loess *lo)
     void loess_summary(c_loess *lo)

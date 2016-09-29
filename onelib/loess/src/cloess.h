@@ -15,15 +15,14 @@ void loess_outputs_free(loess_outputs *outputs);
 void loess_kd_tree_free(loess_kd_tree *kd_tree);
 void loess_free_mem(loess *lo);
 void loess_summary(loess *lo);
-               
+
 // from misc.c
-void pointwise(prediction *pre, double coverage, confidence_intervals *ci); 
+void pointwise(prediction *pre, double coverage, confidence_intervals *ci);
 void pw_free_mem(confidence_intervals *ci);
 double pf(double q, double df1, double df2);
 double ibeta(double x, double a, double b);
-////
+
 // from predict.c
 void predict(double *eval, loess *lo, prediction *pre);
 void pred_free_mem(prediction *pre);
-//
 

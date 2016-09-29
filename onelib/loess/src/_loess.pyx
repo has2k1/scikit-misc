@@ -1,4 +1,4 @@
-# -*- Mode: Python -*-  
+# -*- Mode: Python -*-
 import numpy as np
 cimport numpy as np
 from numpy cimport (ndarray, npy_intp,
@@ -18,6 +18,7 @@ cdef floatarray_from_data(int rows, int cols, double *data):
     a_ndr = <object>PyArray_SimpleNewFromData(nd, dims, NPY_DOUBLE, data)
     return a_ndr
 
+
 cdef boolarray_from_data(int rows, int cols, int *data):
     cdef ndarray a_ndr
     cdef npy_intp dims[2]
@@ -28,31 +29,6 @@ cdef boolarray_from_data(int rows, int cols, int *data):
     return a_ndr.astype(np.bool)
 
 
-"""
-        
-
-    newdata : ndarray
-        The (m,p) array of independent variables where the surface must be estimated.
-    values : ndarray
-        The (m,) ndarray of loess values evaluated at newdata
-    stderr : ndarray
-        The (m,) ndarray of the estimates of the standard error on the estimated
-        values.
-    residual_scale : float
-        Estimate of the scale of the residuals
-    df : integer
-        Degrees of freedom of the t-distribution used to compute pointwise 
-        confidence intervals for the evaluated surface.
-    nest : integer
-        Number of new observations.
-       
-        
-"""
-
-
-#####---------------------------------------------------------------------------
-#---- ---- loess model ---
-#####---------------------------------------------------------------------------
 cdef class loess_inputs:
     """
     Loess inputs
@@ -148,41 +124,46 @@ cdef class loess_inputs:
 
 
 cdef class loess_control:
-    """Loess control parameters.
-    
-:IVariables:
-    surface : string ["interpolate"]
-        Determines whether the fitted surface is computed directly at all points
-        ("direct") or whether an interpolation method is used ("interpolate").
-        The default ("interpolate") is what most users should use unless special 
-        circumstances warrant.
-    statistics : string ["approximate"]
-        Determines whether the statistical quantities are computed exactly 
-        ("exact") or approximately ("approximate"). "exact" should only be used 
-        for testing the approximation in statistical development and is not meant 
-        for routine usage because computation time can be horrendous.
-    trace_hat : string ["wait.to.decide"]
-        Determines how the trace of the hat matrix should be computed. The hat
-        matrix is used in the computation of the statistical quantities. 
-        If "exact", an exact computation is done; this could be slow when the
-        number of observations n becomes large. If "wait.to.decide" is selected, 
-        then a default is "exact" for n < 500 and "approximate" otherwise. 
-        This option is only useful when the fitted surface is interpolated. If  
-        surface is "exact", an exact computation is always done for the trace. 
-        Setting trace_hat to "approximate" for large dataset will substantially 
-        reduce the computation time.
-    iterations : integer
-        Number of iterations of the robust fitting method. If the family is 
-        "gaussian", the number of iterations is set to 0.
-    cell : integer
-        Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
-        where n is the number of observations, and span the smoothing parameter.
-        Then, a cell is further divided if the number of observations within it 
-        is greater than or equal to k. This option is only used if the surface 
-        is interpolated.
-    
     """
+    Loess control parameters.
 
+    Parameters
+    ----------
+    surface : str, optional
+        One of ['interpolate', 'direct']
+        Determines whether the fitted surface is computed directly
+        at all points ('direct') or whether an interpolation method
+        is used ('interpolate'). The default 'interpolate') is what
+        most users should use unless special circumstances warrant.
+    statistics : str, optional
+        One of ['approximate', 'exact']
+        Determines whether the statistical quantities are computed
+        exactly ('exact') or approximately ('approximate'). 'exact'
+        should only be used for testing the approximation in
+        statistical development and is not meant for routine usage
+        because computation time can be horrendous.
+    trace_hat : str, optional
+        One of ['wait.to.decide', 'exact', 'approximate']
+        Determines how the trace of the hat matrix should be computed.
+        The hat matrix is used in the computation of the statistical
+        quantities. If 'exact', an exact computation is done; this
+        could be slow when the number of observations n becomes large.
+        If 'wait.to.decide' is selected, then a default is 'exact'
+        for n < 500 and 'approximate' otherwise.
+        This option is only useful when the fitted surface is
+        interpolated. If surface is 'exact', an exact computation is
+        always done for the trace. Setting trace_hat to 'approximate'
+        for large dataset will substantially reduce the computation time.
+    iterations : int, optional
+        Number of iterations of the robust fitting method. If the family
+        is 'gaussian', the number of iterations is set to 0.
+    cell : float, optional
+        Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
+        where n is the number of observations, and span the smoothing
+        parameter. Then, a cell is further divided if the number of
+        observations within it is greater than or equal to k. This
+        option is only used if the surface is interpolated.
+    """
     cdef c_loess.c_loess_control _base
 
     def __cinit__(self, *args, **kwargs):
@@ -198,15 +179,9 @@ cdef class loess_control:
         self.cell = cell
 
     property surface:
-        """
-    surface : string ["interpolate"]
-        Determines whether the fitted surface is computed directly at all points
-        ("direct") or whether an interpolation method is used ("interpolate").
-        The default ("interpolate") is what most users should use unless special 
-        circumstances warrant.
-        """
         def __get__(self):
             return self._base.surface
+
         def __set__(self, surface):
             if surface not in ('interpolate', 'direct'):
                 raise ValueError(
@@ -215,15 +190,9 @@ cdef class loess_control:
             self._base.surface = surface
 
     property statistics:
-        """
-    statistics : string ["approximate"]
-        Determines whether the statistical quantities are computed exactly 
-        ("exact") or approximately ("approximate"). "exact" should only be used 
-        for testing the approximation in statistical development and is not meant 
-        for routine usage because computation time can be horrendous.
-        """
         def __get__(self):
             return self._base.statistics
+
         def __set__(self, statistics):
             if statistics not in ('approximate', 'exact'):
                 raise ValueError(
@@ -232,20 +201,9 @@ cdef class loess_control:
             self._base.statistics = statistics
 
     property trace_hat:
-        """
-    trace_hat : string ["wait.to.decide"]
-        Determines how the trace of the hat matrix should be computed. The hat
-        matrix is used in the computation of the statistical quantities. 
-        If "exact", an exact computation is done; this could be slow when the
-        number of observations n becomes large. If "wait.to.decide" is selected, 
-        then a default is "exact" for n < 500 and "approximate" otherwise. 
-        This option is only useful when the fitted surface is interpolated. If  
-        surface is "exact", an exact computation is always done for the trace. 
-        Setting trace_hat to "approximate" for large dataset will substantially 
-        reduce the computation time.
-        """
         def __get__(self):
             return self._base.trace_hat
+
         def __set__(self, trace_hat):
             if trace_hat not in ('wait.to.decide', 'approximate', 'exact'):
                 raise ValueError(
@@ -254,32 +212,25 @@ cdef class loess_control:
             self._base.trace_hat = trace_hat
 
     property iterations:
-        """
-    iterations : integer
-        Number of iterations of the robust fitting method. If the family is 
-        "gaussian", the number of iterations is set to 0.
-        """
         def __get__(self):
             return self._base.iterations
+
         def __set__(self, iterations):
             if iterations < 0:
-                raise ValueError("Invalid number of iterations: should be positive")
+                raise ValueError(
+                    "Invalid number of iterations: "
+                    "should be positive")
             self._base.iterations = iterations
-    #.........
+
     property cell:
-        """
-    cell : integer
-        Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
-        where n is the number of observations, and span the smoothing parameter.
-        Then, a cell is further divided if the number of observations within it 
-        is greater than or equal to k. This option is only used if the surface 
-        is interpolated.
-        """     
         def __get__(self):
             return self._base.cell
+
         def __set__(self, cell):
             if cell <= 0:
-                raise ValueError("Invalid value for the cell argument: should be positive")
+                raise ValueError(
+                    "Invalid value for the cell argument: "
+                    " should be positive")
             self._base.cell = cell
 
     def __str__(self):
@@ -291,11 +242,8 @@ cdef class loess_control:
                 "Cell size        : %s" % self.cell,
                 "Nb iterations    : %s" % self.iterations,]
         return '\n'.join(strg)
-        
-#    
-######---------------------------------------------------------------------------
-##---- ---- loess kd_tree ---
-######---------------------------------------------------------------------------
+
+
 cdef class loess_kd_tree:
     cdef c_loess.c_loess_kd_tree _base
 
@@ -307,42 +255,41 @@ cdef class loess_kd_tree:
 
 
 cdef class loess_model:
-    """loess_model contains parameters required for a loess fit.
-    
-:IVariables:
-    normalize : boolean [True]
-        Determines whether the independent variables should be normalized.  
-        If True, the normalization is performed by setting the 10% trimmed 
-        standard deviation to one. If False, no normalization is carried out. 
-        This option is only useful for more than one variable. For spatial
-        coordinates predictors or variables with a common scale, it should be 
-        set to False.
-    span : float [0.75]
-        Smoothing factor, as a fraction of the number of points to take into
-        account. 
-    degree : integer [2]
-        Overall degree of locally-fitted polynomial. 1 is locally-linear 
-        fitting and 2 is locally-quadratic fitting.  Degree should be 2 at most.
-    family : string ["gaussian"]
-        Determines the assumed distribution of the errors. The values are 
-        "gaussian" or "symmetric". If "gaussian" is selected, the fit is 
-        performed with least-squares. If "symmetric" is selected, the fit
-        is performed robustly by redescending M-estimators.
-    parametric_flags : sequence [ [False]*p ]
-        Indicates which independent variables should be conditionally-parametric
-        (if there are two or more independent variables). The argument should be
-        a sequence of booleans, with the same size as the number of independent 
-        variables, specified in the order of the predictor group ordered in x. 
-        Note: elements of the sequence cannot be modified individually: the whole
-        sequence must be given.
-    drop_square : sequence [ [False]* p]
-        When there are two or more independent variables and when a 2nd order
-        polynomial is used, "drop_square_flags" specifies those numeric predictors 
-        whose squares should be dropped from the set of fitting variables. 
-        The method of specification is the same as for parametric.  
-        Note: elements of the sequence cannot be modified individually: the whole
-        sequence must be given.
+    """
+    Parameters required for a loess fit.
 
+    normalize : bool
+        Determines whether the independent variables should be normalized.
+        If True, the normalization is performed by setting the 10% trimmed
+        standard deviation to one. If False, no normalization is carried
+        out. This option is only useful for more than one variable. For
+        spatial coordinates predictors or variables with a common scale,
+        it should be set to False. Default is True.
+    span : float
+        Smoothing factor, as a fraction of the number of points to take
+        into account. Should be in the range (0, 1]. Default is 0.75
+    degree : int
+        Overall degree of locally-fitted polynomial. 1 is locally-linear
+        fitting and 2 is locally-quadratic fitting. Degree should be 2 at
+        most. Default is 2.
+    family : str
+        One of ('gaussian', 'symmetric')
+        Determines the assumed distribution of the errors. If 'gaussian'
+        the fit is performed with least-squares. If 'symmetric' is
+        selected, the fit is performed robustly by redescending
+        M-estimators.
+    parametric : bool | list-of-bools of length p
+        Indicates which independent variables should be
+        conditionally-parametric (if there are two or more independent
+        variables). If a sequence is given, the values should be ordered
+        according to the predictor group in x.
+    drop_square : bool | list-of-bools of length p
+        Which squares to drop. When there are two or more independent
+        variables and when a 2nd order polynomial(degree) is used,
+        'drop_square' specifies those numeric predictors
+        whose squares should be dropped from the set of fitting variables.
+        If a sequence is given, the values should be ordered according to
+        the predictor group in x.
     """
 
     cdef c_loess.c_loess_model _base
@@ -364,41 +311,46 @@ cdef class loess_model:
         self.parametric = parametric
         self.drop_square = drop_square
 
-    #.........
     property normalize:
         def __get__(self):
+
             return bool(self._base.normalize)
         def __set__(self, normalize):
             self._base.normalize = normalize
-    #.........
+
     property span:
         def __get__(self):
             return self._base.span
+
         def __set__(self, span):
             if span <= 0. or span > 1.:
                 raise ValueError("Span should be between 0 and 1!")
             self._base.span = span
-    #.........
+
     property degree:
         def __get__(self):
             return self._base.degree
+
         def __set__(self, degree):
             if degree < 0 or degree > 2:
-                raise ValueError("Degree should be between 0 and 2!")
+                raise ValueError("Degree should be be 0, 1 or 2!")
             self._base.degree = degree
-    #.........
+
     property family:
         def __get__(self):
             return self._base.family
+
         def __set__(self, family):
-            if family.lower() not in ('symmetric', 'gaussian'):
-                raise ValueError("Invalid value for the 'family' argument: "\
-                                 "should be in ('symmetric', 'gaussian').")
+            if family.lower()  not in ('symmetric', 'gaussian'):
+                raise ValueError(
+                    "Invalid value for the 'family' argument: "
+                    "should be in ('symmetric', 'gaussian').")
             self._base.family = family
-    #.........
+
     property parametric:
         def __get__(self):
             return boolarray_from_data(self.p, 1, self._base.parametric)
+
         def __set__(self, paramf):
             cdef ndarray p_ndr
             cdef int i
@@ -415,10 +367,11 @@ cdef class loess_model:
                                            dtype=np.bool))
             for i from 0 <= i < self.p:
                 self._base.parametric[i] = p_ndr[i]
-    #.........
+
     property drop_square:
         def __get__(self):
             return boolarray_from_data(self.p, 1, self._base.drop_square)
+
         def __set__(self, drop_sq):
             cdef ndarray d_ndr
             cdef int i
@@ -436,10 +389,9 @@ cdef class loess_model:
             for i from 0 <= i < self.p:
                 self._base.drop_square[i] = d_ndr[i]
 
-    #.........
     def __repr__(self):
         return "<loess object: model parameters>"
-    #.........
+
     def __str__(self):
         strg = ["Model parameters",
                 "----------------",
@@ -451,20 +403,22 @@ cdef class loess_model:
                 "Drop_square     : %s" % self.drop_square_flags[:self.p]
                 ]
         return '\n'.join(strg)
-        
-#####---------------------------------------------------------------------------
-#---- ---- loess outputs ---
-#####---------------------------------------------------------------------------
+
+
 cdef class loess_outputs:
-    """Outputs of a loess fit. This object is automatically created with empty
-values when a new loess object is instantiated. The object gets filled when the 
-loess.fit() method is called.
-    
-:IVariables:
-    fitted_values : ndarray
-        The (n,) ndarray of fitted values.
-    fitted_residuals : ndarray
-        The (n,) ndarray of fitted residuals (observations - fitted values).
+    """
+    Outputs of a loess fit
+
+    This object is automatically created with empty values when a
+    new loess object is instantiated. The object gets filled when the
+    loess.fit() method is called.
+
+    Attributes
+    ----------
+    fitted_values : ndarray of shape (n,)
+        Fitted values.
+    fitted_residuals : ndarray of shape (n,)
+        Fitted residuals (observations - fitted values).
     enp : float
         Equivalent number of parameters.
     residual_scale : float
@@ -473,17 +427,16 @@ loess.fit() method is called.
         Statistical parameter used in the computation of standard errors.
     two_delta : float
         Statistical parameter used in the computation of standard errors.
-    pseudovalues : ndarray
-        The (n,) ndarray of adjusted values of the response when robust estimation 
-        is used.
-    trace_hat : float    
+    pseudovalues : ndarray of shape (n,)
+        Adjusted values of the response when robust estimation is used.
+    trace_hat : float
         Trace of the operator hat matrix.
-    diagonal : ndarray
+    diagonal : ndarray of shape (n,)
         Diagonal of the operator hat matrix.
-    robust : ndarray
-        The (n,) ndarray of robustness weights for robust fitting.
-    divisor : ndarray
-        The (p,) array of normalization divisors for numeric predictors.
+    robust : ndarray of shape (n,)
+        Robustness weights for robust fitting.
+    divisor : ndarray of shape (p,)
+        Normalization divisors for numeric predictors.
     """
     cdef c_loess.c_loess_outputs _base
     cdef readonly char *family
@@ -505,11 +458,12 @@ loess.fit() method is called.
     property fitted_values:
         def __get__(self):
             return floatarray_from_data(self.n, 1, self._base.fitted_values)
-    #.........
+
     property fitted_residuals:
         def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.fitted_residuals)
-    #.........
+            return floatarray_from_data(self.n, 1,
+                                        self._base.fitted_residuals)
+
     property pseudovalues:
         def __get__(self):
             if self.family not in ('symmetric'):
@@ -518,39 +472,39 @@ loess.fit() method is called.
                     "robust fitting. Use family='symmetric' "
                     "for robust fitting")
             return floatarray_from_data(self.n, 1, self._base.pseudovalues)
-    #.........
+
     property diagonal:
         def __get__(self):
             return floatarray_from_data(self.n, 1, self._base.diagonal)
-    #.........
+
     property robust:
         def __get__(self):
             return floatarray_from_data(self.n, 1, self._base.robust)
-    #.........
+
     property divisor:
         def __get__(self):
             return floatarray_from_data(self.n, 1, self._base.divisor)
-    #.........
+
     property enp:
         def __get__(self):
             return self._base.enp
-    #.........
+
     property residual_scale:
         def __get__(self):
             return self._base.residual_scale
-    #.........
+
     property one_delta:
         def __get__(self):
-            return self._base.one_delta 
-    #.........
+            return self._base.one_delta
+
     property two_delta:
         def __get__(self):
             return self._base.two_delta
-    #.........
+
     property trace_hat:
         def __get__(self):
             return self._base.trace_hat
-    #.........
+
     def __str__(self):
         strg = ["Outputs",
                 "-------",
@@ -558,19 +512,23 @@ loess.fit() method is called.
                 "Fitted residuals      : %s\n" % self.fitted_residuals,
                 "Eqv. nb of parameters : %s" % self.enp,
                 "Residual error        : %s" % self.s,
-                "Deltas                : %s - %s" % (self.one_delta, self.two_delta),
+                "Deltas                : %s - %s" % (self.one_delta,
+                                                     self.two_delta),
                 "Normalization factors : %s" % self.divisor,]
         return '\n'.join(strg)
 
 
-        
-#####---------------------------------------------------------------------------
-#---- ---- loess confidence ---
-#####---------------------------------------------------------------------------
 cdef class confidence_intervals:
-    """Pointwise confidence intervals of a loess-predicted object:
-    
-:IVariables:
+    """
+    Pointwise confidence intervals of a loess-predicted object:
+
+    Parameters
+    ----------
+    pred : loess_prediction
+    alpha : float
+
+    Attributes
+    ----------
     fit : ndarray
         Predicted values.
     lower : ndarray
@@ -612,29 +570,39 @@ cdef class confidence_intervals:
         def __get__(self):
             return  floatarray_from_data(self.m, 1, self._base.lower)
 
-#####---------------------------------------------------------------------------
-#---- ---- loess predictions ---
-#####---------------------------------------------------------------------------
-cdef class loess_predicted:
-    """Predicted values and standard errors of a loess object
 
-:IVariables:
-    values : ndarray
-        The (m,) ndarray of loess values evaluated at newdata
-    stderr : ndarray
-        The (m,) ndarray of the estimates of the standard error on the estimated
-        values.
+cdef class loess_prediction:
+    """
+    Predicted values and standard errors of a loess object
+
+    Parameters
+    ----------
+    newdata : ndarray of shape (m, p)
+        Independent variables where the surface must be estimated,
+        with m the number of new data points, and p the number of
+        independent variables.
+    loess : loess
+        Loess object that has been successfully fitted,
+        i.e `loess.fit` has been called and it returned without
+        any errors.
+    stderror : boolean
+        Whether the standard error should be computed
+
+    Attributes
+    ----------
+    values : ndarray of shape (m,)
+        loess values evaluated at newdata
+    stderr : ndarray of shape (m,)
+        Estimates of the standard error on the estimated values.
+        `ValueError` is raise when the standard error was not computed.
     residual_scale : float
         Estimate of the scale of the residuals
     df : integer
-        Degrees of freedom of the t-distribution used to compute pointwise 
+        Degrees of freedom of the t-distribution used to compute pointwise
         confidence intervals for the evaluated surface.
-    nest : integer
-        Number of new observations.
     """
-        
+
     cdef c_loess.c_prediction _base
-    cdef readonly conf_intervals confidence_intervals
     cdef readonly int allocated
 
     def __cinit__(self, newdata, loess loess, stderror=False):
@@ -690,10 +658,10 @@ cdef class loess_predicted:
     property residual_scale:
         def __get__(self):
             return self._base.residual_scale
-    #.........
+
     property df:
         def __get__(self):
-            return self._base.df        
+            return self._base.df
 
     property m:
         def __get__(self):
@@ -732,90 +700,24 @@ cdef class loess_predicted:
                 "Degrees of freedom    : %s" % self.df,
                 ]
         return '\n'.join(strg)
-    
 
-#####---------------------------------------------------------------------------
-#---- ---- loess base class ---
-#####---------------------------------------------------------------------------
+
 cdef class loess:
     """
-    
-:Keywords:
-    x : ndarray
-        A (n,p) ndarray of independent variables, with n the number of observations
-        and p the number of variables.
-    y : ndarray
-        A (n,) ndarray of observations
-    weights : ndarray
-        A (n,) ndarray of weights to be given to individual observations in the 
-        sum of squared residuals that forms the local fitting criterion. If not
-        None, the weights should be non negative. If the different observations
-        have non-equal variances, the weights should be inversely proportional 
-        to the variances.
-        By default, an unweighted fit is carried out (all the weights are one).
-    surface : string ["interpolate"]
-        Determines whether the fitted surface is computed directly at all points
-        ("direct") or whether an interpolation method is used ("interpolate").
-        The default ("interpolate") is what most users should use unless special 
-        circumstances warrant.
-    statistics : string ["approximate"]
-        Determines whether the statistical quantities are computed exactly 
-        ("exact") or approximately ("approximate"). "exact" should only be used 
-        for testing the approximation in statistical development and is not meant 
-        for routine usage because computation time can be horrendous.
-    trace_hat : string ["wait.to.decide"]
-        Determines how the trace of the hat matrix should be computed. The hat
-        matrix is used in the computation of the statistical quantities. 
-        If "exact", an exact computation is done; this could be slow when the
-        number of observations n becomes large. If "wait.to.decide" is selected, 
-        then a default is "exact" for n < 500 and "approximate" otherwise. 
-        This option is only useful when the fitted surface is interpolated. If  
-        surface is "exact", an exact computation is always done for the trace. 
-        Setting trace_hat to "approximate" for large dataset will substantially 
-        reduce the computation time.
-    iterations : integer
-        Number of iterations of the robust fitting method. If the family is 
-        "gaussian", the number of iterations is set to 0.
-    cell : integer
-        Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
-        where n is the number of observations, and span the smoothing parameter.
-        Then, a cell is further divided if the number of observations within it 
-        is greater than or equal to k. This option is only used if the surface 
-        is interpolated.
-    span : float [0.75]
-        Smoothing factor, as a fraction of the number of points to take into
-        account. 
-    degree : integer [2]
-        Overall degree of locally-fitted polynomial. 1 is locally-linear 
-        fitting and 2 is locally-quadratic fitting.  Degree should be 2 at most.
-    normalize : boolean [True]
-        Determines whether the independent variables should be normalized.  
-        If True, the normalization is performed by setting the 10% trimmed 
-        standard deviation to one. If False, no normalization is carried out. 
-        This option is only useful for more than one variable. For spatial
-        coordinates predictors or variables with a common scale, it should be 
-        set to False.
-    family : string ["gaussian"]
-        Determines the assumed distribution of the errors. The values are 
-        "gaussian" or "symmetric". If "gaussian" is selected, the fit is 
-        performed with least-squares. If "symmetric" is selected, the fit
-        is performed robustly by redescending M-estimators.
-    parametric_flags : sequence [ [False]*p ]
-        Indicates which independent variables should be conditionally-parametric
-       (if there are two or more independent variables). The argument should 
-       be a sequence of booleans, with the same size as the number of independent 
-       variables, specified in the order of the predictor group ordered in x. 
-    drop_square : sequence [ [False]* p]
-        When there are two or more independent variables and when a 2nd order
-        polynomial is used, "drop_square_flags" specifies those numeric predictors 
-        whose squares should be dropped from the set of fitting variables. 
-        The method of specification is the same as for parametric.  
-        
-:Outputs:
-    fitted_values : ndarray
-        The (n,) ndarray of fitted values.
-    fitted_residuals : ndarray
-        The (n,) ndarray of fitted residuals (observations - fitted values).
+    Loess
+
+    Parameters
+    ----------
+    The combined parameters of `loess_inputs`, `loess_model` and
+    `loess_control`. The parameters of `loess_inputs` i.e `x`, `y`
+    and `weights` can be positional in that order.
+
+    Attributes
+    ----------
+    fitted_values : ndarray of shape (n,)
+        Fitted values.
+    fitted_residuals : ndarray of shape (n,)
+        Fitted residuals (observations - fitted values).
     enp : float
         Equivalent number of parameters.
     s : float
@@ -824,18 +726,21 @@ cdef class loess:
         Statistical parameter used in the computation of standard errors.
     two_delta : float
         Statistical parameter used in the computation of standard errors.
-    pseudovalues : ndarray
-        The (n,) ndarray of adjusted values of the response when robust estimation 
-        is used.
-    trace_hat : float    
+    pseudovalues : ndarray of shape (n,)
+        Adjusted values of the response when robust estimation is used.
+    trace_hat : float
         Trace of the operator hat matrix.
     diagonal :
         Diagonal of the operator hat matrix.
-    robust : ndarray
-        The (n,) ndarray of robustness weights for robust fitting.
-    divisor : ndarray
-        The (p,) array of normalization divisors for numeric predictors.
+    robust : ndarray of shape (n,)
+        Robustness weights for robust fitting.
+    divisor : ndarray of shape(p,)
+        Normalization divisors for numeric predictors.
 
+    Note
+    ----
+    n is the number of observations
+    p is the number of predictor variables
     """
     cdef c_loess.c_loess _base
     cdef readonly loess_inputs inputs
@@ -879,21 +784,25 @@ cdef class loess:
         # Initialize the kd tree
         self.kd_tree = loess_kd_tree(n, p)
         self._base.kd_tree = &self.kd_tree._base
-    #......................................................
+
     def fit(self):
-        """Computes the loess parameters on the current inputs and sets of parameters."""
+        """
+        Computes the loess parameters on the current inputs and
+        sets of parameters.
+        """
         c_loess.loess_fit(&self._base)
         self.outputs.activated = True
         if self._base.status.err_status:
             raise ValueError(self._base.status.err_msg)
         return
-    #......................................................
+
     def input_summary(self):
-        """Returns some generic information about the loess parameters.
+        """
+        Returns some generic information about the loess parameters.
         """
         toprint = [str(self.model), str(self.control)]
         return "\n\n".join(toprint)
-        
+
     def output_summary(self):
         """Returns some generic information about the loess fit."""
         fit_flag = bool(self.outputs.activated)
@@ -913,7 +822,7 @@ cdef class loess:
                 rse
                 ]
         return '\n'.join(strg)
-    #......................................................
+
     def predict(self, newdata, stderror=False):
         """
         Compute loess estimates at the given new data points newdata.
@@ -938,37 +847,37 @@ cdef class loess:
             if self._base.status.err_status:
                 raise ValueError(self._base.status.err_msg)
 
-        self.predicted = loess_prediction(newdata, self, stderror)
-        return self.predicted
+        return loess_prediction(newdata, self, stderror)
 
 
 cdef class anova:
     cdef readonly double dfn, dfd, F_value, Pr_F
-    #
+
     def __init__(self, loess_one, loess_two):
-        cdef double one_d1, one_d2, one_s, two_d1, two_d2, two_s, rssdiff,\
-                    d1diff, tmp, df1, df2
-        #
-        if not isinstance(loess_one, loess) or not isinstance(loess_two, loess):
-            raise ValueError("Arguments should be valid loess objects!"\
+        cdef double one_d1, one_d2, one_s, two_d1, two_d2, two_s
+        cdef double rssdiff, d1diff, tmp, df1, df2
+
+        if (not isinstance(loess_one, loess) or
+                not isinstance(loess_two, loess)):
+            raise ValueError("Arguments should be valid loess objects!"
                              "got '%s' instead" % type(loess_one))
-        #
+
         out_one = loess_one.outputs
         out_two = loess_two.outputs
-        #
+
         one_d1 = out_one.one_delta
         one_d2 = out_one.two_delta
         one_s = out_one.residual_scale
-        #
+
         two_d1 = out_two.one_delta
         two_d2 = out_two.two_delta
         two_s = out_two.residual_scale
-        #
+
         rssdiff = abs(one_s * one_s * one_d1 - two_s * two_s * two_d1)
         d1diff = abs(one_d1 - two_d1)
         self.dfn = d1diff * d1diff / abs(one_d2 - two_d2)
         df1 = self.dfn
-        #
+
         if out_one.enp > out_two.enp:
             self.dfd = one_d1 * one_d1 / one_d2
             tmp = one_s
@@ -977,8 +886,7 @@ cdef class anova:
             tmp = two_s
         df2 = self.dfd
         F_value = (rssdiff / d1diff) / (tmp * tmp)
-        
-        self.Pr_F = 1. - c_loess.ibeta(F_value*df1/(df2+F_value*df1), df1/2, df2/2)
-        self.F_value = F_value
 
-        
+        self.Pr_F = 1. - c_loess.ibeta(F_value*df1/(df2+F_value*df1),
+                                       df1/2, df2/2)
+        self.F_value = F_value

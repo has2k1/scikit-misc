@@ -98,7 +98,7 @@ loess_fit(loess *lo)
 
     size_info[0] = lo->inputs->p;
     size_info[1] = lo->inputs->n;
-    
+
     //Reset the default error status...
     error_status = 0;
     lo->status.err_status = 0;
@@ -111,7 +111,7 @@ loess_fit(loess *lo)
             lo->control->trace_hat = (lo->inputs->n < 500) ? "exact" : "approximate";
         else
             lo->control->trace_hat = "exact";
-        }
+    }
     loess_(lo->inputs->y, lo->inputs->x, size_info, lo->inputs->weights,
            &lo->model->span,
            &lo->model->degree,
@@ -216,7 +216,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     }
     else
         for(i = 0; i < D; i++) divisor[i] = 1;
-    
+
     j = D - 1;
     for(i = 0; i < D; i++) {
         sum_drop_sqr = sum_drop_sqr + drop_square[i];
@@ -234,28 +234,28 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
         for(j = 0; j < N; j++)
             x[k + j] = x_tmp[p + j];
     }
-    
+
     // Misc. checks .............................
     if((*degree) == 1 && sum_drop_sqr) {
     	error_status = 1;
     	error_message = "Specified the square of a factor predictor to be "\
-               			"dropped when degree = 1";
+                        "dropped when degree = 1";
         return;
     }
-    
+
     if(D == 1 && sum_drop_sqr) {
     	error_status = 1;
         error_message = "Specified the square of a predictor to be dropped "\
-                        "with only one numeric predictor";
+                         "with only one numeric predictor";
         return;
     }
-    
+
     if(sum_parametric == D) {
     	error_status = 1;
         error_message = "Specified parametric for all predictors";
         return;
-        }
-        
+    }
+
     // Start the iterations .....................
     for(j = 0; j <= (*iterations); j++) {
         new_stat = j ? "none" : *statistics;
@@ -298,9 +298,10 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
         for(i = 0; i < N; i++)
             sum_squares = sum_squares + weights[i] *
                     pseudo_resid[i] * pseudo_resid[i];
+
     *enp = (*one_delta) + 2 * (*trace_hat_out) - N;
     *residual_scale = sqrt(sum_squares / (*one_delta));
-    
+
     //Clean the mess and leave ..................
     free(x);
     free(x_tmp);
@@ -313,8 +314,9 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     free(param_tmp);
     free(order_parametric);
     free(order_drop_sqr);
-        if((*iterations) > 0)
-                free(pseudo_resid);
+    if((*iterations) > 0) {
+        free(pseudo_resid);
+    }
 }
 
 void loess_inputs_free(loess_inputs *inputs) {

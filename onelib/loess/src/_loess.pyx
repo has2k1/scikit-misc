@@ -264,7 +264,8 @@ cdef class loess_control:
         #
     #.........
     def __str__(self):
-        strg = ["Control          :",
+        strg = ["Control",
+                "-------",
                 "Surface type     : %s" % self.surface,
                 "Statistics       : %s" % self.statistics,
                 "Trace estimation : %s" % self.trace_hat,
@@ -411,7 +412,8 @@ cdef class loess_model:
         return "<loess object: model parameters>"
     #.........
     def __str__(self):
-        strg = ["Model parameters.....",
+        strg = ["Model parameters",
+                "----------------",
                 "Family          : %s" % self.family,
                 "Span            : %s" % self.span,
                 "Degree          : %s" % self.degree,
@@ -518,7 +520,8 @@ loess.fit() method is called.
             return self._base.trace_hat
     #.........
     def __str__(self):
-        strg = ["Outputs................",
+        strg = ["Outputs",
+                "-------",
                 "Fitted values         : %s\n" % self.fitted_values,
                 "Fitted residuals      : %s\n" % self.fitted_residuals,
                 "Eqv. nb of parameters : %s" % self.enp,
@@ -634,18 +637,26 @@ at the given confidence interval coverage.
             coverage = 1. - coverage 
         if coverage > 1. :
             raise ValueError("The coverage precentage should be between 0 and 1!")
+        if not self._base.se:
+            raise ValueError("Cannot compute confidence intervals "
+                             "without standard errors.")
         c_loess.c_pointwise(&self._base, self.nest, coverage, &_confintv)
         self.confidence_intervals = conf_intervals()
         self.confidence_intervals.setup(_confintv, self.nest)
         return self.confidence_intervals
     #.........
     def __str__(self):
-        strg = ["Outputs................",
+        try:
+            stderr = "Predicted std error   : %s\n" % self.stderr
+        except ValueError:
+            stderr = ""
+
+        strg = ["Outputs",
+                "-------",
                 "Predicted values      : %s\n" % self.values,
-                "Predicted std error   : %s\n" % self.stderr,
+                stderr,
                 "Residual scale        : %s" % self.residual_scale,
                 "Degrees of freedom    : %s" % self.df,
-#                "Confidence intervals  : %s" % self.confidence,
                 ]
         return '\n'.join(strg)
     
@@ -814,18 +825,28 @@ cdef class loess:
     def input_summary(self):
         """Returns some generic information about the loess parameters.
         """
-        toprint = [str(self.inputs), str(self.model), str(self.control)]
-        return "\n".join(toprint)
+        toprint = [str(self.model), str(self.control)]
+        return "\n\n".join(toprint)
         
     def output_summary(self):
         """Returns some generic information about the loess fit."""
-        print "Number of Observations         : %d" % self.inputs.nobs
-        print "Fit flag                       : %d" % bool(self.outputs.activated)
-        print "Equivalent Number of Parameters: %.1f" % self.outputs.enp
+        fit_flag = bool(self.outputs.activated)
+
         if self.model.family == "gaussian":
-            print "Residual Standard Error        : %.4f" % self.outputs.residual_scale
+            rse = ("Residual Standard Error        : %.4f" %
+                   self.outputs.residual_scale)
         else:
-            print "Residual Scale Estimate        : %.4f" % self.outputs.residual_scale
+            rse = ("Residual Scale Estimate        : %.4f" %
+                   self.outputs.residual_scale)
+
+        strg = ["Output Summary",
+                "--------------",
+                "Number of Observations         : %d" % self.inputs.nobs,
+                "Fit flag                       : %d" % fit_flag,
+                "Equivalent Number of Parameters: %.1f" % self.outputs.enp,
+                rse
+                ]
+        return '\n'.join(strg)
     #......................................................
     def predict(self, newdata, stderror=False):
         """Computes loess estimates at the given new data points newdata. Returns

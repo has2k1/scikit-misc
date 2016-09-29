@@ -10,6 +10,9 @@ void loess_control_setup(loess_control *control);
 void loess_kd_tree_setup(long n, long p, loess_kd_tree *kd_tree);
 void loess_setup(double *x, double *y, double *w, int n, int p, loess *lo);
 char loess_fit(loess *lo);
+void loess_inputs_free(loess_inputs *inputs);
+void loess_outputs_free(loess_outputs *outputs);
+void loess_kd_tree_free(loess_kd_tree *kd_tree);
 void loess_free_mem(loess *lo);
 void loess_summary(loess *lo);
                
@@ -20,7 +23,7 @@ double pf(double q, double df1, double df2);
 double ibeta(double x, double a, double b);
 ////
 // from predict.c
-void predict(double *eval, int m, loess *lo, prediction *pre);
+void predict(double *eval, loess *lo, prediction *pre);
 void pred_free_mem(prediction *pre);
 //
 

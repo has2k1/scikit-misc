@@ -317,25 +317,35 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
                 free(pseudo_resid);
 }
 
+void loess_inputs_free(loess_inputs *inputs) {
+   free(inputs->x);
+   free(inputs->y);
+   free(inputs->weights);
+}
+
+void loess_outputs_free(loess_outputs *outputs) {
+   free(outputs->fitted_values);
+   free(outputs->fitted_residuals);
+   free(outputs->diagonal);
+   free(outputs->robust);
+   free(outputs->divisor);
+   free(outputs->pseudovalues);
+}
+
+void loess_kd_tree_free(loess_kd_tree *kd_tree) {
+   free(kd_tree->parameter);
+   free(kd_tree->a);
+   free(kd_tree->xi);
+   free(kd_tree->vert);
+   free(kd_tree->vval);
+}
+
 void
 loess_free_mem(loess *lo)
 {
-    free(lo->inputs->x);
-    free(lo->inputs->y);
-    free(lo->inputs->weights);
-
-    free(lo->outputs->fitted_values);
-    free(lo->outputs->fitted_residuals);
-    free(lo->outputs->diagonal);
-    free(lo->outputs->robust);
-    free(lo->outputs->divisor);
-    free(lo->outputs->pseudovalues);
-
-    free(lo->kd_tree->parameter);
-    free(lo->kd_tree->a);
-    free(lo->kd_tree->xi);
-    free(lo->kd_tree->vert);
-    free(lo->kd_tree->vval);
+   loess_inputs_free(lo->inputs);
+   loess_outputs_free(lo->outputs);
+   loess_kd_tree_free(lo->kd_tree);
 }
 
 void

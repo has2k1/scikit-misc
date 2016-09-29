@@ -8,14 +8,14 @@ extern char *error_message;
 extern int error_status;
 
 void
-predict(double *eval, int m, loess *lo, prediction *pre)
+predict(double *eval, loess *lo, prediction *pre)
 {
     int  size_info[3];
     void pred_();
 
-    pre->fit = (double *) malloc(m * sizeof(double));
+    pre->fit = (double *) malloc(pre->m * sizeof(double));
     if (pre->se) {
-       pre->se_fit = (double *) malloc(m * sizeof(double));
+       pre->se_fit = (double *) malloc(pre->m * sizeof(double));
     }
     pre->residual_scale = lo->outputs->residual_scale;
     pre->df = (lo->outputs->one_delta * lo->outputs->one_delta) /
@@ -23,7 +23,7 @@ predict(double *eval, int m, loess *lo, prediction *pre)
 
     size_info[0] = lo->inputs->p;
     size_info[1] = lo->inputs->n;
-    size_info[2] = m;
+    size_info[2] = pre->m;
     
     error_status = 0;
     lo->status.err_status = 0;

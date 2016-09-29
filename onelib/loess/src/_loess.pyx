@@ -12,15 +12,19 @@ np.import_array()
 cdef floatarray_from_data(int rows, int cols, double *data):
     cdef ndarray a_ndr
     cdef npy_intp dims[2]
+    cdef int nd
     dims = (rows, cols)
-    a_ndr = <object>PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data)
+    nd = 2 if cols > 1 else 1
+    a_ndr = <object>PyArray_SimpleNewFromData(nd, dims, NPY_DOUBLE, data)
     return a_ndr
 
 cdef boolarray_from_data(int rows, int cols, int *data):
     cdef ndarray a_ndr
     cdef npy_intp dims[2]
+    cdef int nd
     dims = (rows, cols)
-    a_ndr = <object>PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, data)
+    nd = 2 if cols > 1 else 1
+    a_ndr = <object>PyArray_SimpleNewFromData(nd, dims, NPY_DOUBLE, data)
     return a_ndr.astype(np.bool)
 
 
@@ -69,14 +73,20 @@ cdef class loess_inputs:
     """
     cdef c_loess.c_loess_inputs _base
     cdef ndarray w_ndr
+    cdef readonly int allocated
 
-    def __init__(self, x, y, weights=None):
+    def __cinit__(self, x, y, weights=None):
         cdef ndarray _x, _y, _w
+        # When errors are raised the object gets destroyed and
+        # __dealloc__ is called. It should not free up memory
+        # if none was allocated prior to the error.
+        self.allocated = False
 
         x = np.array(x, copy=False, subok=True,
                       dtype=np.float_, order='C')
         y = np.array(y, copy=False, subok=True,
                       dtype=np.float_, order='C')
+        n = len(x)
 
         # Check the dimensions
         if x.ndim == 1:
@@ -86,7 +96,14 @@ cdef class loess_inputs:
         else:
             raise ValueError("The array of indepedent varibales "
                              "should be 2D at most!")
-        n = len(x)
+
+        if y.ndim != 1:
+            raise ValueError("The array of dependent variables "
+                             "should be 1D.")
+        elif n != len(y):
+            raise ValueError("The independent and depedent varibales "
+                             "should have the same number of "
+                             "observations.")
 
         if weights is None:
             weights = np.ones((n,), dtype=np.float_)
@@ -107,6 +124,11 @@ cdef class loess_inputs:
         w_dat = <double *>_w.data
 
         c_loess.loess_inputs_setup(x_dat, y_dat, w_dat, n, p, &self._base)
+        self.allocated = True
+
+    def __dealloc__(self):
+        if self.allocated:
+            c_loess.loess_inputs_free(&self._base)
 
     property n:
         def __get__(self):
@@ -119,6 +141,10 @@ cdef class loess_inputs:
     property x:
         def __get__(self):
             return floatarray_from_data(self.n, self.p, self._base.x)
+
+    property y:
+        def __get__(self):
+            return floatarray_from_data(self.n, 1, self._base.y)
 
 
 cdef class loess_control:
@@ -159,11 +185,12 @@ cdef class loess_control:
 
     cdef c_loess.c_loess_control _base
 
-    def __init__(self, surface='interpolate', statistics='approximate',
-                 trace_hat='wait.to.decide', iterations=4, cell=0.2):
-
+    def __cinit__(self, *args, **kwargs):
+        # Does not allocate memory
         c_loess.loess_control_setup(&self._base)
 
+    def __init__(self, surface='interpolate', statistics='approximate',
+                 trace_hat='wait.to.decide', iterations=4, cell=0.2):
         self.surface = surface
         self.statistics = statistics
         self.trace_hat = trace_hat
@@ -272,13 +299,13 @@ cdef class loess_control:
 cdef class loess_kd_tree:
     cdef c_loess.c_loess_kd_tree _base
 
-    def __init__(self, n, p):
+    def __cinit__(self, n, p):
         c_loess.loess_kd_tree_setup(n, p, &self._base)
-    cdef c_loess.c_loess_kd_tree *_base
 
-######---------------------------------------------------------------------------
-##---- ---- loess model ---
-######---------------------------------------------------------------------------
+    def __dealloc__(self):
+        c_loess.loess_kd_tree_free(&self._base)
+
+
 cdef class loess_model:
     """loess_model contains parameters required for a loess fit.
     
@@ -321,12 +348,13 @@ cdef class loess_model:
     cdef c_loess.c_loess_model _base
     cdef long p
 
+    def __cinit__(self, *args, **kwargs):
+        # Does not allocate memory
+        c_loess.loess_model_setup(&self._base)
+
     def __init__(self, p, family="gaussian", span=0.75,
                  degree=2, normalize=True, parametric=False,
                  drop_square=False):
-
-        c_loess.loess_model_setup(&self._base)
-
         self.p = p
 
         self.family = family
@@ -462,15 +490,19 @@ loess.fit() method is called.
     cdef readonly long n, p
     cdef readonly int activated
 
-    def __init__(self, n, p, family):
+    def __cinit__(self, n, p, family):
         c_loess.loess_outputs_setup(n, p, &self._base)
 
+    def __init__(self, n, p, family):
         self.n = n
         self.p = p
         self.family = family
         self.activated = False
-    #........
-    property fitted_values:    
+
+    def __dealloc__(self):
+        c_loess.loess_outputs_free(&self._base)
+
+    property fitted_values:
         def __get__(self):
             return floatarray_from_data(self.n, 1, self._base.fitted_values)
     #.........
@@ -586,27 +618,56 @@ cdef class loess_predicted:
     """
         
     cdef c_loess.c_prediction _base
-    cdef readonly long nest
     cdef readonly conf_intervals confidence_intervals
-    #.........
+    cdef readonly int allocated
+
+    def __cinit__(self, newdata, loess loess, stderror=False):
+        cdef ndarray p_ndr
+        cdef double *p_dat
+
+        self.allocated = False
+
+        # Note : we need a copy as we may have to normalize
+        p_ndr = np.array(newdata, copy=True, subok=True, order='C')
+
+        # Note : we need a copy as we may have to normalize
+        p_ndr = np.array(newdata, copy=True,
+                         subok=True, order='C').ravel()
+        p_dat = <double *>p_ndr.data
+
+        # Test the compatibility of sizes
+        if p_ndr.size == 0:
+            raise ValueError("Can't predict without input data !")
+
+        (m, notOK) = divmod(len(p_ndr), loess.inputs.p)
+
+        if notOK:
+            raise ValueError("Incompatible data size: there should "
+                             "be as many rows as parameters")
+
+        self._base.se = 1 if stderror else 0
+        self._base.m = m
+        c_loess.c_predict(p_dat, &loess._base, &self._base)
+        self.allocated = True
+
+        if loess._base.status.err_status:
+            raise ValueError(loess._base.status.err_msg)
+
     def __dealloc__(self):
-        c_loess.pred_free_mem(&self._base)      
-    #.........
-    cdef setup(self, c_loess.c_prediction base, long nest):
-        self._base = base
-        self.nest = nest
-    #.........
+        if self.allocated:
+            c_loess.pred_free_mem(&self._base)
+
     property values:
         def __get__(self):
-            return floatarray_from_data(self.nest, 1, self._base.fit)
-    #.........
+            return floatarray_from_data(self.m, 1, self._base.fit)
+
     property stderr:
         def __get__(self):
             if not self._base.se:
                 raise ValueError("Standard error was not computed."
                                  "Use 'stderror=True' when predicting.")
-            return floatarray_from_data(self.nest, 1, self._base.se_fit)
-    #.........
+            return floatarray_from_data(self.m, 1, self._base.se_fit)
+
     property residual_scale:
         def __get__(self):
             return self._base.residual_scale
@@ -614,6 +675,10 @@ cdef class loess_predicted:
     property df:
         def __get__(self):
             return self._base.df        
+
+    property m:
+        def __get__(self):
+            return self._base.m
     #.........
     def confidence(self, coverage=0.95):
         """Returns the pointwise confidence intervals for each predicted values,
@@ -843,71 +908,33 @@ cdef class loess:
         return '\n'.join(strg)
     #......................................................
     def predict(self, newdata, stderror=False):
-        """Computes loess estimates at the given new data points newdata. Returns
-a loess_predicted object, whose attributes are described below.
-        
-:Parameters:
-    newdata : ndarray
-        The (m,p) array of independent variables where the surface must be estimated,
-        with m the number of new data points, and p the number of independent
-        variables.
-    stderror : boolean
-        Whether the standard error should be computed
-        
-:Returns:
-    A new loess_predicted object, consisting of:
-    values : ndarray
-        The (m,) ndarray of loess values evaluated at newdata
-    stderr : ndarray
-        The (m,) ndarray of the estimates of the standard error on the estimated
-        values.
-    residual_scale : float
-        Estimate of the scale of the residuals
-    df : integer
-        Degrees of freedom of the t-distribution used to compute pointwise 
-        confidence intervals for the evaluated surface.
-    nest : integer
-        Number of new observations.
         """
-        cdef ndarray p_ndr
-        cdef double *p_dat
-        cdef c_loess.c_prediction _prediction
-        cdef int i, m
-        # Make sure there's been a fit earlier ...
+        Compute loess estimates at the given new data points newdata.
+
+        Parameters
+        ----------
+        newdata : ndarray of shape (m, p)
+            Independent variables where the surface must be estimated,
+            with m the number of new data points, and p the number of
+            independent variables.
+        stderror : boolean
+            Whether the standard error should be computed
+
+        Returns
+        -------
+        A `loess_prediction` object.
+        """
+        # Make sure there's been a fit earlier
         if self.outputs.activated == 0:
             c_loess.loess_fit(&self._base)
             self.outputs.activated = True
             if self._base.status.err_status:
                 raise ValueError(self._base.status.err_msg)
-        # Note : we need a copy as we may have to normalize
-        p_ndr = np.array(newdata, copy=True, subok=True, order='C').ravel()
-        p_dat = <double *>p_ndr.data
-        # Test the compatibility of sizes .......
-        if p_ndr.size == 0:
-            raise ValueError("Can't predict without input data !")
-        (m, notOK) = divmod(len(p_ndr), self.inputs.p)
-        if notOK:
-            raise ValueError(
-                  "Incompatible data size: there should be as many rows as parameters")
-        #.....
-        _prediction.se = 1 if stderror else 0
-        c_loess.c_predict(p_dat, m, &self._base, &_prediction)
-        if self._base.status.err_status:
-            raise ValueError(self._base.status.err_msg)
-        self.predicted = loess_predicted()
-        self.predicted._base = _prediction
-        self.predicted.nest = m
-#        self.predicted.setup(_prediction, m)
-        return self.predicted
-    #.........
-    def __dealloc__(self):
-        c_loess.loess_free_mem(&self._base)
-    #......................................................
-    
 
-#####---------------------------------------------------------------------------
-#---- ---- loess anova ---
-#####---------------------------------------------------------------------------
+        self.predicted = loess_prediction(newdata, self, stderror)
+        return self.predicted
+
+
 cdef class anova:
     cdef readonly double dfn, dfd, F_value, Pr_F
     #

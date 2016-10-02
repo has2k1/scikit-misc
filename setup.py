@@ -93,7 +93,7 @@ def setup_requires():
     Plus any version tests and warnings
     """
     from pkg_resources import parse_version
-    required = []
+    required = ['cython']
     numpy_requirement = 'numpy>=1.6.2'
 
     try:

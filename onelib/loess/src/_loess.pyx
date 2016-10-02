@@ -1,4 +1,5 @@
 # -*- Mode: Python -*-
+# cython: embedsignature=True
 import numpy as np
 cimport numpy as np
 from numpy cimport (ndarray, npy_intp,
@@ -31,7 +32,7 @@ cdef boolarray_from_data(int rows, int cols, int *data):
 
 cdef class loess_inputs:
     """
-    Loess inputs
+    Initialization class for loess data inputs
 
     Parameters
     ----------
@@ -102,6 +103,10 @@ cdef class loess_inputs:
         c_loess.loess_inputs_setup(x_dat, y_dat, w_dat, n, p, &self._base)
         self.allocated = True
 
+    def __init__(self, x, y, weights=None):
+        # For documentation
+        pass
+
     def __dealloc__(self):
         if self.allocated:
             c_loess.loess_inputs_free(&self._base)
@@ -125,7 +130,7 @@ cdef class loess_inputs:
 
 cdef class loess_control:
     """
-    Loess control parameters.
+    Initialization class for loess control parameters
 
     Parameters
     ----------
@@ -267,7 +272,7 @@ cdef class loess_kd_tree:
 
 cdef class loess_model:
     """
-    Parameters required for a loess fit.
+    Initialization class for loess fitting parameters
 
     normalize : bool
         Determines whether the independent variables should be normalized.
@@ -311,7 +316,7 @@ cdef class loess_model:
         # Does not allocate memory
         c_loess.loess_model_setup(&self._base)
 
-    def __init__(self, p, family="gaussian", span=0.75,
+    def __init__(self, p, family='gaussian', span=0.75,
                  degree=2, normalize=True, parametric=False,
                  drop_square=False):
         self.p = p
@@ -426,7 +431,7 @@ cdef class loess_model:
 
 cdef class loess_outputs:
     """
-    Outputs of a loess fit
+    Class of a loess fit outputs
 
     This object is automatically created with empty values when a
     new loess object is instantiated. The object gets filled when the
@@ -538,14 +543,17 @@ cdef class loess_outputs:
         return '\n'.join(strg)
 
 
-cdef class confidence_intervals:
+cdef class loess_confidence_intervals:
     """
-    Pointwise confidence intervals of a loess-predicted object:
+    Pointwise confidence intervals of a loess-predicted object
 
     Parameters
     ----------
     pred : loess_prediction
+        Prediction object
     alpha : float
+        The alpha level for the confidence interval.
+        It must be in the range (0, 1)
 
     Attributes
     ----------
@@ -559,7 +567,7 @@ cdef class confidence_intervals:
     cdef c_loess.c_confidence_intervals _base
     cdef readonly int m
 
-    def __cinit__(confidence_intervals self, loess_prediction pred,
+    def __cinit__(loess_confidence_intervals self, loess_prediction pred,
                   float alpha):
         coverage = 1 - alpha
         if coverage < .5:
@@ -574,6 +582,10 @@ cdef class confidence_intervals:
 
         c_loess.c_pointwise(&pred._base, coverage, &self._base)
         self.m = pred.m
+
+    def __init__(self, pred, alpha):
+        # For documentation
+        pass
 
     def __dealloc__(self):
         c_loess.pw_free_mem(&self._base)
@@ -593,7 +605,9 @@ cdef class confidence_intervals:
 
 cdef class loess_prediction:
     """
-    Predicted values and standard errors of a loess object
+    Class for loess prediction results
+
+    Holds the predicted values and standard errors of a loess object
 
     Parameters
     ----------
@@ -660,6 +674,10 @@ cdef class loess_prediction:
         if loess._base.status.err_status:
             raise ValueError(loess._base.status.err_msg)
 
+    def __init__(self, newdata, loess, stderror=False):
+        # For documentation
+        pass
+
     def __dealloc__(self):
         if self.allocated:
             c_loess.pred_free_mem(&self._base)
@@ -700,11 +718,11 @@ cdef class loess_prediction:
 
         Returns
         -------
-        out : confidence_intervals
+        out : loess_confidence_intervals
             Confidence intervals object. It has attributes `fit`,
             `lower` and `upper`
         """
-        return confidence_intervals(self, alpha)
+        return loess_confidence_intervals(self, alpha)
 
     def __str__(self):
         try:
@@ -724,13 +742,31 @@ cdef class loess_prediction:
 
 cdef class loess:
     """
-    Loess
+    Locally-weighted regression
+
+    A loess object is initialized with the combined parameters of
+    :class:`loess_inputs`, :class:`loess_model` and
+    :class:`loess_control`. The parameters of :class:`loess_inputs`
+    i.e ``x``, ``y`` and ``weights`` can be positional in that order.
+    In the descriptions below, `n` is the number of observations,
+    and `p` is the number of predictor variables.
 
     Parameters
     ----------
-    The combined parameters of `loess_inputs`, `loess_model` and
-    `loess_control`. The parameters of `loess_inputs` i.e `x`, `y`
-    and `weights` can be positional in that order.
+    x : ndarray of shape (n, p)
+        n independent observations for p no. of variables
+    y : ndarray of shape (n,)
+        A (n,) ndarray of response observations
+    weights : ndarray of shape (n,) or None
+        Weights to be given to individual observations
+        in the sum of squared residuals that forms the local fitting
+        criterion. If not None, the weights should be non negative. If
+        the different observations have non-equal variances, the weights
+        should be inversely proportional to the variances. By default,
+        an unweighted fit is carried out (all the weights are one).
+    **options : dict
+        The parameters of :class:`loess_model` and
+        :class: `loess_control`.
 
     Attributes
     ----------
@@ -756,11 +792,6 @@ cdef class loess:
         Robustness weights for robust fitting.
     divisor : ndarray of shape(p,)
         Normalization divisors for numeric predictors.
-
-    Note
-    ----
-    n is the number of observations
-    p is the number of predictor variables
     """
     cdef c_loess.c_loess _base
     cdef readonly loess_inputs inputs
@@ -870,7 +901,25 @@ cdef class loess:
         return loess_prediction(newdata, self, stderror)
 
 
-cdef class anova:
+cdef class loess_anova:
+    """
+    Analysis of variance for two loess objects
+
+    Parameters
+    ----------
+    loess_one : loess
+        First loess object
+    loess_two : loess
+        Second loess object
+
+    Attributes
+    ----------
+    F_value : float
+        Value of the F-statistic
+    Pr_F : float
+        Probability of getting a value as large as the
+        `F_value`. The is the p-value of the F-statistic.
+    """
     cdef readonly double dfn, dfd, F_value, Pr_F
 
     def __init__(self, loess_one, loess_two):

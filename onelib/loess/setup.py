@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-__author__ = "Pierre GF Gerard-Marchant ($Author$)"
-__version__ = '1.0'
-__revision__ = "$Revision$"
-__date__     = '$Date$'
-
 from os.path import join
 
 

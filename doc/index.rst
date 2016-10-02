@@ -1,63 +1,29 @@
 .. _index:
 
-Onelib documentation
-====================
+Onelib
+======
 
-
-Installation
-------------
-
-Onelib can be installed in a handful of ways.
-
-1. Official release *(Recommended)*
-
-   .. code-block:: console
-
-       $ pip install Onelib
-
-   If you don't have `pip`_ installed, this `Python installation guide`_
-   can guide you through the process.
-
-
-2. Development sources
-
-   .. code-block:: console
-
-       $ pip install git+https://github.com/has2k1/onelib.git
-
-   Or
-
-   .. code-block:: console
-
-       $ git clone https://github.com/has2k1/onelib.git
-       $ cd onelib
-       $ python setup.py install
-
-   Or
-
-   .. code-block:: console
-
-       $ curl -OL https://github.com/has2k1/onelib/archive/master.zip
-       $ unzip master
-       $ cd onelib-master
-       $ python setup.py install
-
-
-Contents
---------
+Onelib is collection of scientific algorithms missing from scipy.
+At some point some of the procedures were present in scipy in an
+unstable form, hence their removal. These procedures have been
+cleaned up some and the code made more stable. Please report issues
+and file corrections `at <https://github.com/has2k1/onelib>`_.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   installation
    changelog
 
 
-Indices and tables
-==================
+API Reference
+-------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+   :maxdepth: 1
+
+   loess
+
 
 .. _pip: https://pip.pypa.io
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/

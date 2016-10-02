@@ -1,16 +1,4 @@
-"""
-Wrapper to lowess and stl routines.
-
-:author: Pierre GF Gerard-Marchant
-:contact: pierregm_at_uga_edu
-:date: $Date$
-:version: $Id$
-"""
-__author__ = "Pierre GF Gerard-Marchant ($Author$)"
-__version__ = '1.0'
-__revision__ = "$Revision$"
-__date__     = '$Date$'
-
+from __future__ import print_function
 
 import os
 
@@ -20,11 +8,8 @@ from numpy import bool_, float_
 
 #import maskedarray as MA
 
-import loess
-from loess import loess
+from onelib.loess import loess
 
-com_example = [
-"""
 # Get some example data ...................................
 dfile = open(os.path.join('tests','madeup_data'), 'r')
 dfile.readline()
@@ -33,31 +18,17 @@ x = fromiter((float(v) for v in dfile.readline().rstrip().split()),
 dfile.readline()
 y = fromiter((float(v) for v in dfile.readline().rstrip().split()),
              float_)
-""",
-
-"""
 # Get some additional info for prediction .................
 newdata1 = numpy.array([[-2.5, 0.0, 2.5], [0., 0., 0.]])
 newdata2 = numpy.array([[-0.5, 0.5], [0., 0.]])
-""",
 
-"""
 # Create a new loess object ...............................
 madeup = loess(x,y)
 # ... and prints the parameters
-print madeup.model,'\\n', madeup.control
-""",
+print(madeup.model)
+print(madeup.control)
 
-"""
+madeup.fit()
 # Modify some of the model parameters .....................
-madeup.model.update(span=0.8, normalize=False)
-print madeup.model
-"""
-]
-
-
-
-if 1:
-    for com in com_example:
-        print com
-        exec(com)
+# madeup.model.update(span=0.8, normalize=False)
+# print(madeup.model)

@@ -106,21 +106,21 @@ cdef class loess_inputs:
         if self.allocated:
             c_loess.loess_inputs_free(&self._base)
 
-    property n:
-        def __get__(self):
-            return self._base.n
+    @property
+    def n(self):
+        return self._base.n
 
-    property p:
-        def __get__(self):
-            return self._base.p
+    @property
+    def p(self):
+        return self._base.p
 
-    property x:
-        def __get__(self):
-            return floatarray_from_data(self.n, self.p, self._base.x)
+    @property
+    def x(self):
+        return floatarray_from_data(self.n, self.p, self._base.x)
 
-    property y:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.y)
+    @property
+    def y(self):
+        return floatarray_from_data(self.n, 1, self._base.y)
 
 
 cdef class loess_control:
@@ -165,6 +165,9 @@ cdef class loess_control:
         option is only used if the surface is interpolated.
     """
     cdef c_loess.c_loess_control _base
+    cdef bytes _surface
+    cdef bytes _statistics
+    cdef bytes _trace_hat
 
     def __cinit__(self, *args, **kwargs):
         # Does not allocate memory
@@ -178,60 +181,68 @@ cdef class loess_control:
         self.iterations = iterations
         self.cell = cell
 
-    property surface:
-        def __get__(self):
-            return self._base.surface
+    @property
+    def surface(self):
+        return self._base.surface.decode('utf-8')
 
-        def __set__(self, surface):
-            if surface not in ('interpolate', 'direct'):
-                raise ValueError(
-                    "Invalid value for the 'surface' argument: "
-                    "should be in ('interpolate', 'direct').")
-            self._base.surface = surface
+    @surface.setter
+    def surface(self, value):
+        if value not in ('interpolate', 'direct'):
+            raise ValueError(
+                "Invalid value for the 'surface' argument: "
+                "should be in ('interpolate', 'direct').")
+        self._surface = value.encode('utf-8')
+        self._base.surface = self._surface
 
-    property statistics:
-        def __get__(self):
-            return self._base.statistics
+    @property
+    def statistics(self):
+        return self._base.statistics.decode('utf-8')
 
-        def __set__(self, statistics):
-            if statistics not in ('approximate', 'exact'):
-                raise ValueError(
-                    "Invalid value for the 'statistics' argument: "
-                    "should be in ('approximate', 'exact').")
-            self._base.statistics = statistics
+    @statistics.setter
+    def statistics(self, value):
+        if value not in ('approximate', 'exact'):
+            raise ValueError(
+                "Invalid value for the 'statistics' argument: "
+                "should be in ('approximate', 'exact').")
+        self._statistics = value.encode('utf-8')
+        self._base.statistics = self._statistics
 
-    property trace_hat:
-        def __get__(self):
-            return self._base.trace_hat
+    @property
+    def trace_hat(self):
+        return self._base.trace_hat.decode('utf-8')
 
-        def __set__(self, trace_hat):
-            if trace_hat not in ('wait.to.decide', 'approximate', 'exact'):
-                raise ValueError(
-                    "Invalid value for the 'trace_hat' argument: "
-                    "should be in ('approximate', 'exact').")
-            self._base.trace_hat = trace_hat
+    @trace_hat.setter
+    def trace_hat(self, value):
+        if value not in ('wait.to.decide', 'approximate', 'exact'):
+            raise ValueError(
+                "Invalid value for the 'trace_hat' argument: "
+                "should be in ('approximate', 'exact').")
+        self._trace_hat = value.encode('utf-8')
+        self._base.trace_hat = self._trace_hat
 
-    property iterations:
-        def __get__(self):
-            return self._base.iterations
+    @property
+    def iterations(self):
+        return self._base.iterations
 
-        def __set__(self, iterations):
-            if iterations < 0:
-                raise ValueError(
-                    "Invalid number of iterations: "
-                    "should be positive")
-            self._base.iterations = iterations
+    @iterations.setter
+    def iterations(self, value):
+        if value < 0:
+            raise ValueError(
+                "Invalid number of iterations: "
+                "should be positive")
+        self._base.iterations = value
 
-    property cell:
-        def __get__(self):
-            return self._base.cell
+    @property
+    def cell(self):
+        return self._base.cell
 
-        def __set__(self, cell):
-            if cell <= 0:
-                raise ValueError(
-                    "Invalid value for the cell argument: "
-                    " should be positive")
-            self._base.cell = cell
+    @cell.setter
+    def cell(self, value):
+        if value <= 0:
+            raise ValueError(
+                "Invalid value for the cell argument: "
+                " should be positive")
+        self._base.cell = value
 
     def __str__(self):
         strg = ["Control",
@@ -294,6 +305,7 @@ cdef class loess_model:
 
     cdef c_loess.c_loess_model _base
     cdef long p
+    cdef bytes _family
 
     def __cinit__(self, *args, **kwargs):
         # Does not allocate memory
@@ -311,83 +323,90 @@ cdef class loess_model:
         self.parametric = parametric
         self.drop_square = drop_square
 
-    property normalize:
-        def __get__(self):
+    @property
+    def normalize(self):
+        return bool(self._base.normalize)
 
-            return bool(self._base.normalize)
-        def __set__(self, normalize):
-            self._base.normalize = normalize
+    @normalize.setter
+    def normalize(self, value):
+        self._base.normalize = value
 
-    property span:
-        def __get__(self):
-            return self._base.span
+    @property
+    def span(self):
+        return self._base.span
 
-        def __set__(self, span):
-            if span <= 0. or span > 1.:
-                raise ValueError("Span should be between 0 and 1!")
-            self._base.span = span
+    @span.setter
+    def span(self, value):
+        if value <= 0. or value > 1.:
+            raise ValueError("Span should be between 0 and 1!")
+        self._base.span = value
 
-    property degree:
-        def __get__(self):
-            return self._base.degree
+    @property
+    def degree(self):
+        return self._base.degree
 
-        def __set__(self, degree):
-            if degree < 0 or degree > 2:
-                raise ValueError("Degree should be be 0, 1 or 2!")
-            self._base.degree = degree
+    @degree.setter
+    def degree(self, value):
+        if value < 0 or value > 2:
+            raise ValueError("Degree should be be 0, 1 or 2!")
+        self._base.degree = value
 
-    property family:
-        def __get__(self):
-            return self._base.family
+    @property
+    def family(self):
+        return self._base.family.decode('utf-8')
 
-        def __set__(self, family):
-            if family.lower()  not in ('symmetric', 'gaussian'):
-                raise ValueError(
-                    "Invalid value for the 'family' argument: "
-                    "should be in ('symmetric', 'gaussian').")
-            self._base.family = family
+    @family.setter
+    def family(self, value):
+        if value.lower()  not in ('symmetric', 'gaussian'):
+            raise ValueError(
+                "Invalid value for the 'family' argument: "
+                "should be in ('symmetric', 'gaussian').")
+        self._family = value.encode('utf-8')
+        self._base.family = self._family
 
-    property parametric:
-        def __get__(self):
-            return boolarray_from_data(self.p, 1, self._base.parametric)
+    @property
+    def parametric(self):
+        return boolarray_from_data(self.p, 1, self._base.parametric)
 
-        def __set__(self, paramf):
-            cdef ndarray p_ndr
-            cdef int i
+    @parametric.setter
+    def parametric(self, value):
+        cdef ndarray p_ndr
+        cdef int i
 
-            if paramf in (True, False):
-                paramf = [paramf] * self.p
-            elif len(paramf) != self.p:
-                raise ValueError(
-                    "'parametric' should be a boolean or a list "
-                    "of booleans with length equal to the number "
-                    "of independent variables")
+        if value in (True, False):
+            value = [value] * self.p
+        elif len(value) != self.p:
+            raise ValueError(
+                "'parametric' should be a boolean or a list "
+                "of booleans with length equal to the number "
+                "of independent variables")
 
-            p_ndr = np.atleast_1d(np.array(paramf, copy=False, subok=True,
-                                           dtype=np.bool))
-            for i from 0 <= i < self.p:
-                self._base.parametric[i] = p_ndr[i]
+        p_ndr = np.atleast_1d(np.array(value, copy=False, subok=True,
+                                       dtype=np.bool))
+        for i from 0 <= i < self.p:
+            self._base.parametric[i] = p_ndr[i]
 
-    property drop_square:
-        def __get__(self):
-            return boolarray_from_data(self.p, 1, self._base.drop_square)
+    @property
+    def drop_square(self):
+        return boolarray_from_data(self.p, 1, self._base.drop_square)
 
-        def __set__(self, drop_sq):
-            cdef ndarray d_ndr
-            cdef int i
+    @drop_square.setter
+    def drop_square(self, value):
+        cdef ndarray d_ndr
+        cdef int i
 
-            if drop_sq in (True, False):
-                drop_sq = [drop_sq] * self.p
-            elif len(drop_sq) != self.p:
-                raise ValueError(
-                    "'drop_square' should be a boolean or a list "
-                    "of booleans with length equal to the number "
-                    "of independent variables")
+        if value in (True, False):
+            value = [value] * self.p
+        elif len(value) != self.p:
+            raise ValueError(
+                "'drop_square' should be a boolean or a list "
+                "of booleans with length equal to the number "
+                "of independent variables")
 
-            d_ndr = np.atleast_1d(np.array(drop_sq, copy=False,
-                                           subok=True, dtype=np.bool))
-            for i from 0 <= i < self.p:
-                self._base.drop_square[i] = d_ndr[i]
+        d_ndr = np.atleast_1d(np.array(value, copy=False,
+                                       subok=True, dtype=np.bool))
+        for i from 0 <= i < self.p:
+            self._base.drop_square[i] = d_ndr[i]
 
     def __repr__(self):
         return "<loess object: model parameters>"
@@ -399,8 +418,8 @@ cdef class loess_model:
                 "Span            : %s" % self.span,
                 "Degree          : %s" % self.degree,
                 "Normalized      : %s" % self.normalize,
-                "Parametric      : %s" % self.parametric_flags[:self.p],
-                "Drop_square     : %s" % self.drop_square_flags[:self.p]
+                "Parametric      : %s" % self.parametric[:self.p],
+                "Drop_square     : %s" % self.drop_square[:self.p],
                 ]
         return '\n'.join(strg)
 
@@ -447,63 +466,64 @@ cdef class loess_outputs:
         c_loess.loess_outputs_setup(n, p, &self._base)
 
     def __init__(self, n, p, family):
+        _family = family.encode('utf-8')
         self.n = n
         self.p = p
-        self.family = family
+        self.family = _family
         self.activated = False
 
     def __dealloc__(self):
         c_loess.loess_outputs_free(&self._base)
 
-    property fitted_values:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.fitted_values)
+    @property
+    def fitted_values(self):
+        return floatarray_from_data(self.n, 1, self._base.fitted_values)
 
-    property fitted_residuals:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1,
+    @property
+    def fitted_residuals(self):
+        return floatarray_from_data(self.n, 1,
                                         self._base.fitted_residuals)
 
-    property pseudovalues:
-        def __get__(self):
-            if self.family not in ('symmetric'):
-                raise ValueError(
-                    "pseudovalues are available only when "
-                    "robust fitting. Use family='symmetric' "
-                    "for robust fitting")
-            return floatarray_from_data(self.n, 1, self._base.pseudovalues)
+    @property
+    def pseudovalues(self):
+        if self.family not in ('symmetric'):
+            raise ValueError(
+                "pseudovalues are available only when "
+                "robust fitting. Use family='symmetric' "
+                "for robust fitting")
+        return floatarray_from_data(self.n, 1, self._base.pseudovalues)
 
-    property diagonal:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.diagonal)
+    @property
+    def diagonal(self):
+        return floatarray_from_data(self.n, 1, self._base.diagonal)
 
-    property robust:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.robust)
+    @property
+    def robust(self):
+        return floatarray_from_data(self.n, 1, self._base.robust)
 
-    property divisor:
-        def __get__(self):
-            return floatarray_from_data(self.n, 1, self._base.divisor)
+    @property
+    def divisor(self):
+        return floatarray_from_data(self.n, 1, self._base.divisor)
 
-    property enp:
-        def __get__(self):
-            return self._base.enp
+    @property
+    def enp(self):
+        return self._base.enp
 
-    property residual_scale:
-        def __get__(self):
-            return self._base.residual_scale
+    @property
+    def residual_scale(self):
+        return self._base.residual_scale
 
-    property one_delta:
-        def __get__(self):
-            return self._base.one_delta
+    @property
+    def one_delta(self):
+        return self._base.one_delta
 
-    property two_delta:
-        def __get__(self):
-            return self._base.two_delta
+    @property
+    def two_delta(self):
+        return self._base.two_delta
 
-    property trace_hat:
-        def __get__(self):
-            return self._base.trace_hat
+    @property
+    def trace_hat(self):
+        return self._base.trace_hat
 
     def __str__(self):
         strg = ["Outputs",
@@ -558,17 +578,17 @@ cdef class confidence_intervals:
     def __dealloc__(self):
         c_loess.pw_free_mem(&self._base)
 
-    property fit:
-        def __get__(self):
-            return  floatarray_from_data(self.m, 1, self._base.fit)
+    @property
+    def fit(self):
+        return  floatarray_from_data(self.m, 1, self._base.fit)
 
-    property upper:
-        def __get__(self):
-            return  floatarray_from_data(self.m, 1, self._base.upper)
+    @property
+    def upper(self):
+        return  floatarray_from_data(self.m, 1, self._base.upper)
 
-    property lower:
-        def __get__(self):
-            return  floatarray_from_data(self.m, 1, self._base.lower)
+    @property
+    def lower(self):
+        return  floatarray_from_data(self.m, 1, self._base.lower)
 
 
 cdef class loess_prediction:
@@ -644,28 +664,28 @@ cdef class loess_prediction:
         if self.allocated:
             c_loess.pred_free_mem(&self._base)
 
-    property values:
-        def __get__(self):
-            return floatarray_from_data(self.m, 1, self._base.fit)
+    @property
+    def values(self):
+        return floatarray_from_data(self.m, 1, self._base.fit)
 
-    property stderr:
-        def __get__(self):
-            if not self._base.se:
-                raise ValueError("Standard error was not computed."
-                                 "Use 'stderror=True' when predicting.")
-            return floatarray_from_data(self.m, 1, self._base.se_fit)
+    @property
+    def stderr(self):
+        if not self._base.se:
+            raise ValueError("Standard error was not computed."
+                             "Use 'stderror=True' when predicting.")
+        return floatarray_from_data(self.m, 1, self._base.se_fit)
 
-    property residual_scale:
-        def __get__(self):
-            return self._base.residual_scale
+    @property
+    def residual_scale(self):
+        return self._base.residual_scale
 
-    property df:
-        def __get__(self):
-            return self._base.df
+    @property
+    def df(self):
+        return self._base.df
 
-    property m:
-        def __get__(self):
-            return self._base.m
+    @property
+    def m(self):
+        return self._base.m
 
     def confidence(self, alpha=0.05):
         """

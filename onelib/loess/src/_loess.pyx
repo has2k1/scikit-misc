@@ -49,8 +49,7 @@ cdef class loess_inputs:
         an unweighted fit is carried out (all the weights are one).
     """
     cdef c_loess.c_loess_inputs _base
-    cdef ndarray w_ndr
-    cdef readonly int allocated
+    cdef readonly allocated
 
     def __cinit__(self, x, y, weights=None):
         cdef ndarray _x, _y, _w
@@ -274,13 +273,16 @@ cdef class loess_model:
     """
     Initialization class for loess fitting parameters
 
-    normalize : bool
-        Determines whether the independent variables should be normalized.
-        If True, the normalization is performed by setting the 10% trimmed
-        standard deviation to one. If False, no normalization is carried
-        out. This option is only useful for more than one variable. For
-        spatial coordinates predictors or variables with a common scale,
-        it should be set to False. Default is True.
+    Parameters
+    ----------
+    p : int
+        Number of variables
+    family : str
+        One of ('gaussian', 'symmetric')
+        Determines the assumed distribution of the errors. If 'gaussian'
+        the fit is performed with least-squares. If 'symmetric' is
+        selected, the fit is performed robustly by redescending
+        M-estimators.
     span : float
         Smoothing factor, as a fraction of the number of points to take
         into account. Should be in the range (0, 1]. Default is 0.75
@@ -288,12 +290,13 @@ cdef class loess_model:
         Overall degree of locally-fitted polynomial. 1 is locally-linear
         fitting and 2 is locally-quadratic fitting. Degree should be 2 at
         most. Default is 2.
-    family : str
-        One of ('gaussian', 'symmetric')
-        Determines the assumed distribution of the errors. If 'gaussian'
-        the fit is performed with least-squares. If 'symmetric' is
-        selected, the fit is performed robustly by redescending
-        M-estimators.
+    normalize : bool
+        Determines whether the independent variables should be normalized.
+        If True, the normalization is performed by setting the 10% trimmed
+        standard deviation to one. If False, no normalization is carried
+        out. This option is only useful for more than one variable. For
+        spatial coordinates predictors or variables with a common scale,
+        it should be set to False. Default is True.
     parametric : bool | list-of-bools of length p
         Indicates which independent variables should be
         conditionally-parametric (if there are two or more independent
@@ -309,7 +312,7 @@ cdef class loess_model:
     """
 
     cdef c_loess.c_loess_model _base
-    cdef long p
+    cdef p
     cdef bytes _family
 
     def __cinit__(self, *args, **kwargs):
@@ -320,7 +323,6 @@ cdef class loess_model:
                  degree=2, normalize=True, parametric=False,
                  drop_square=False):
         self.p = p
-
         self.family = family
         self.span = span
         self.degree = degree
@@ -376,7 +378,6 @@ cdef class loess_model:
     @parametric.setter
     def parametric(self, value):
         cdef ndarray p_ndr
-        cdef int i
 
         if value in (True, False):
             value = [value] * self.p
@@ -388,7 +389,7 @@ cdef class loess_model:
 
         p_ndr = np.atleast_1d(np.array(value, copy=False, subok=True,
                                        dtype=np.bool))
-        for i from 0 <= i < self.p:
+        for i in range(self.p):
             self._base.parametric[i] = p_ndr[i]
 
     @property
@@ -398,7 +399,6 @@ cdef class loess_model:
     @drop_square.setter
     def drop_square(self, value):
         cdef ndarray d_ndr
-        cdef int i
 
         if value in (True, False):
             value = [value] * self.p
@@ -410,7 +410,7 @@ cdef class loess_model:
 
         d_ndr = np.atleast_1d(np.array(value, copy=False,
                                        subok=True, dtype=np.bool))
-        for i from 0 <= i < self.p:
+        for i in range(self.p):
             self._base.drop_square[i] = d_ndr[i]
 
     def __repr__(self):
@@ -436,6 +436,13 @@ cdef class loess_outputs:
     This object is automatically created with empty values when a
     new loess object is instantiated. The object gets filled when the
     loess.fit() method is called.
+
+    Parameters
+    ----------
+    n : int
+        Number of independent observation
+    p : int
+        Number of variables
 
     Attributes
     ----------
@@ -463,18 +470,18 @@ cdef class loess_outputs:
         Normalization divisors for numeric predictors.
     """
     cdef c_loess.c_loess_outputs _base
-    cdef readonly char *family
-    cdef readonly long n, p
-    cdef readonly int activated
+    # private
+    cdef readonly family
+    cdef readonly n, p
+    cdef readonly activated
 
     def __cinit__(self, n, p, family):
         c_loess.loess_outputs_setup(n, p, &self._base)
 
     def __init__(self, n, p, family):
-        _family = family.encode('utf-8')
         self.n = n
         self.p = p
-        self.family = _family
+        self.family = family
         self.activated = False
 
     def __dealloc__(self):
@@ -486,12 +493,11 @@ cdef class loess_outputs:
 
     @property
     def fitted_residuals(self):
-        return floatarray_from_data(self.n, 1,
-                                        self._base.fitted_residuals)
+        return floatarray_from_data(self.n, 1, self._base.fitted_residuals)
 
     @property
     def pseudovalues(self):
-        if self.family not in ('symmetric'):
+        if self.family != 'symmetric':
             raise ValueError(
                 "pseudovalues are available only when "
                 "robust fitting. Use family='symmetric' "
@@ -565,7 +571,7 @@ cdef class loess_confidence_intervals:
         Upper bounds of the confidence intervals.
     """
     cdef c_loess.c_confidence_intervals _base
-    cdef readonly int m
+    cdef readonly m
 
     def __cinit__(loess_confidence_intervals self, loess_prediction pred,
                   float alpha):
@@ -637,7 +643,7 @@ cdef class loess_prediction:
     """
 
     cdef c_loess.c_prediction _base
-    cdef readonly int allocated
+    cdef readonly allocated
 
     def __cinit__(self, newdata, loess loess, stderror=False):
         cdef ndarray p_ndr

@@ -653,6 +653,7 @@ cdef class loess_prediction:
 
         # Note : we need a copy as we may have to normalize
         p_ndr = np.array(newdata, copy=True, subok=True, order='C')
+        p_ndr = p_ndr.astype(float)
 
         # Dimensions should match those of the input
         if p_ndr.size == 0 or p_ndr.ndim == 0:

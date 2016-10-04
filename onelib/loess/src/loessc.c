@@ -1,19 +1,66 @@
+/*
+ * The authors of this software are Cleveland, Grosse, and Shyu.
+ * Copyright (c) 1989, 1992 by AT&T.
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose without fee is hereby granted, provided that this entire notice
+ * is included in all copies of any software which is or includes a copy
+ * or modification of this software and in all copies of the supporting
+ * documentation for such software.
+ * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+ * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR AT&T MAKE ANY
+ * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+ * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+ */
 #include "S.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* Declarations */
+
+static void
+loess_workspace(int *d, int *n, double *span, int *degree,
+                int *nonparametric, int *drop_square,
+                int *sum_drop_sqr, int *setLf);
+
+static void
+loess_prune(long *parameter, long *a, double *xi, double *vert,
+            double *vval);
+
+static void
+loess_grow(long *parameter, long *a, double *xi, double *vert,
+           double *vval);
+
+static void
+loess_free();
 
 #define  min(x,y)  ((x) < (y) ? (x) : (y))
 #define  max(x,y)  ((x) > (y) ? (x) : (y))
 #define  GAUSSIAN  1
 #define  SYMMETRIC 0
 
-static int *iv, liv, lv, tau;
-static double *v;
+static int *iv=NULL, liv, lv, tau;
+static double *v=NULL;
 
 extern char *error_message;
 extern int error_status;
 
+
+void F77_SUB(lowesa)(double*, int*, int*, int*, int*, double*, double*);
+void F77_SUB(lowesb)(double*, double*, double*, double*, int*, int*, int*,
+                     int*, double*);
+void F77_SUB(lowesc)(int*, double*, double*, double*, double*, double*);
+void F77_SUB(lowesd)(int*, int*, int*, int*, double*, int*, int*,
+                     double*, int*, int*, int*);
+void F77_SUB(lowese)(int*, int*, int*, double*, int*, double*, double*);
+void F77_SUB(lowesf)(double*, double*, double*, int*, int*, int*, double*,
+                     int*, double*, double*, int*, double*);
+void F77_SUB(lowesl)(int*, int*, int*, double*, int*, double*, double*);
+void F77_SUB(ehg169)(int*, int*, int*, int*, int*, int*,
+                     double*, int*, double*, int*, int*, int*);
+void F77_SUB(ehg196)(int*, int*, double*, double*);
+
+void
 loess_raw(double *y, double *x, double *weights, double *robust, int *d,
           int*n, double *span, int *degree, int *nonparametric,
           int *drop_square, int *sum_drop_sqr, double *cell, char **surf_stat,
@@ -22,20 +69,21 @@ loess_raw(double *y, double *x, double *weights, double *robust, int *d,
           double *two_delta, int *setLf)
 {
     int    zero = 0, one = 1, two = 2, nsing, i, k;
-    double    *hat_matrix, *LL;
+    double    *hat_matrix, *LL, dzero=0;
+
 
     *trL = 0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
         sum_drop_sqr, setLf);
     v[1] = *cell;
     if(!strcmp(*surf_stat, "interpolate/none")) {
-        F77_SUB(lowesb)(x, y, robust, &zero, &zero, iv, &liv, &lv, v);
+        F77_SUB(lowesb)(x, y, robust, &dzero, &zero, iv, &liv, &lv, v);
         F77_SUB(lowese)(iv, &liv, &lv, v, n, x, surface);
         loess_prune(parameter, a, xi, vert, vval);
     }
     else if (!strcmp(*surf_stat, "direct/none")) {
         F77_SUB(lowesf)(x, y, robust, iv, &liv, &lv, v, n, x,
-                        &zero, &zero, surface);
+                        &dzero, &zero, surface);
     }
     else if (!strcmp(*surf_stat, "interpolate/1.approx")) {
         F77_SUB(lowesb)(x, y, weights, diagonal, &one, iv, &liv, &lv, v);
@@ -46,7 +94,7 @@ loess_raw(double *y, double *x, double *weights, double *robust, int *d,
         loess_prune(parameter, a, xi, vert, vval);
     }
         else if (!strcmp(*surf_stat, "interpolate/2.approx")) {
-        F77_SUB(lowesb)(x, y, robust, &zero, &zero, iv, &liv, &lv, v);
+        F77_SUB(lowesb)(x, y, robust, &dzero, &zero, iv, &liv, &lv, v);
         F77_SUB(lowese)(iv, &liv, &lv, v, n, x, surface);
         nsing = iv[29];
         F77_SUB(ehg196)(&tau, d, span, trL);
@@ -74,10 +122,10 @@ loess_raw(double *y, double *x, double *weights, double *robust, int *d,
     else if (!strcmp(*surf_stat, "direct/exact")) {
         hat_matrix = Calloc((*n)*(*n), double);
         LL = Calloc((*n)*(*n), double);
-        F77_SUB(lowesf)(x, y, weights, iv, liv, lv, v, n, x,
-            hat_matrix, &two, surface);
+        F77_SUB(lowesf)(x, y, weights, iv, &liv, &lv, v, n, x,
+                        hat_matrix, &two, surface);
         F77_SUB(lowesc)(n, hat_matrix, LL, trL, one_delta, two_delta);
-                k = (*n) + 1;
+        k = (*n) + 1;
         for(i = 0; i < (*n); i++)
             diagonal[i] = hat_matrix[i * k];
         Free(hat_matrix);
@@ -86,25 +134,29 @@ loess_raw(double *y, double *x, double *weights, double *robust, int *d,
     loess_free();
 }
 
+void
 loess_dfit(double *y, double *x, double *x_evaluate, double *weights,
            double *span, int *degree, int *nonparametric,
            int *drop_square, int *sum_drop_sqr, int *d, int *n, int *m,
            double *fit)
 {
     int    zero = 0, one = 1;
+    double dzero = 0.0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
                     sum_drop_sqr, &zero);
     F77_SUB(lowesf)(x, y, weights, iv, &liv, &lv, v, m, x_evaluate,
-                    &zero, &zero, fit);
+                    &dzero, &zero, fit);
     loess_free();
 }
 
+void
 loess_dfitse(double *y, double *x, double *x_evaluate, double *weights,
              double *robust, int *family, double *span, int *degree,
              int *nonparametric, int *drop_square, int *sum_drop_sqr,
              int *d, int *n, int *m, double *fit, double *L)
 {
     int    zero = 0, one = 1, two = 2;
+    double dzero = 0.0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
                     sum_drop_sqr, &zero);
     if(*family == GAUSSIAN)
@@ -115,11 +167,12 @@ loess_dfitse(double *y, double *x, double *x_evaluate, double *weights,
         F77_SUB(lowesf)(x, y, weights, iv, &liv, &lv, v, m,
                         x_evaluate, L, &two, fit);
         F77_SUB(lowesf)(x, y, robust, iv, &liv, &lv, v, m,
-                        x_evaluate, &zero, &zero, fit);
+                        x_evaluate, &dzero, &zero, fit);
     }
     loess_free();
 }
 
+void
 loess_ifit(long *parameter, long *a, double *xi, double *vert, double *vval,
            int *m, double *x_evaluate, double *fit)
 {
@@ -128,20 +181,23 @@ loess_ifit(long *parameter, long *a, double *xi, double *vert, double *vval,
     loess_free();
 }
 
+void
 loess_ise(double *y, double *x, double *x_evaluate, double *weights,
           double *span, int *degree, int *nonparametric, int *drop_square,
           int *sum_drop_sqr, double *cell, int *d, int *n, int *m,
           double *fit, double *L)
 {
     int    zero = 0, one = 1;
+    double dzero = 0.0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
                    sum_drop_sqr, &one);
     v[1] = *cell;
-    F77_SUB(lowesb)(x, y, weights, &zero, &zero, iv, &liv, &lv, v);
+    F77_SUB(lowesb)(x, y, weights, &dzero, &zero, iv, &liv, &lv, v);
     F77_SUB(lowesl)(iv, &liv, &lv, v, m, x_evaluate, L);
     loess_free();
 }
 
+static void
 loess_workspace(int *d, int *n, double *span, int *degree,
                 int *nonparametric, int *drop_square, int *sum_drop_sqr,
                 int *setLf)
@@ -169,6 +225,7 @@ loess_workspace(int *d, int *n, double *span, int *degree,
         iv[i + 40] = drop_square[i];
 }
 
+static void
 loess_prune(long *parameter, long *a, double *xi, double *vert, double *vval)
 {
     int    d, vc, a1, v1, xi1, vv1, nc, nv, nvmax, i, j, k;
@@ -202,6 +259,7 @@ loess_prune(long *parameter, long *a, double *xi, double *vert, double *vval)
         vval[i] = v[vv1 + i];
 }
 
+static void
 loess_grow(long *parameter, long *a, double *xi, double *vert, double *vval)
 {
     int    d, vc, nc, nv, a1, v1, xi1, vv1, i, j, k;
@@ -251,6 +309,7 @@ loess_grow(long *parameter, long *a, double *xi, double *vert, double *vval)
                     v+xi1, iv+iv[7]-1, iv+iv[8]-1, iv+iv[9]-1);
 }
 
+static void
 loess_free()
 {
         Free(v);

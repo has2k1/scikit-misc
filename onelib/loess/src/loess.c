@@ -353,7 +353,7 @@ loess_free_mem(loess *lo)
 void
 loess_summary(loess *lo)
 {
-    printf("Number of Observations         : %d\n", lo->inputs->n);
+    printf("Number of Observations         : %ld\n", lo->inputs->n);
     printf("Equivalent Number of Parameters: %.1f\n", lo->outputs->enp);
     if(!strcmp(lo->model->family, "gaussian"))
         printf("Residual Standard Error        : ");

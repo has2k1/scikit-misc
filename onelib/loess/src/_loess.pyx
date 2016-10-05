@@ -621,7 +621,7 @@ cdef class loess_prediction:
         Independent variables where the surface must be estimated,
         with m the number of new data points, and p the number of
         independent variables.
-    loess : loess
+    loess : loess.loess
         Loess object that has been successfully fitted,
         i.e `loess.fit` has been called and it returned without
         any errors.
@@ -719,9 +719,9 @@ cdef class loess_prediction:
         Parameters
         ----------
         alpha : float
-            The alpha level for the confidence interval The default
-            `alpha`=.05 returns a 95% confidence interval. Therefore
-            it must be in the range (0, 1)
+            The alpha level for the confidence interval. The
+            default ``alpha=0.05`` returns a 95% confidence
+            interval. Therefore it must be in the range (0, 1).
 
         Returns
         -------
@@ -914,9 +914,9 @@ cdef class loess_anova:
 
     Parameters
     ----------
-    loess_one : loess
+    loess_one : loess.loess
         First loess object
-    loess_two : loess
+    loess_two : loess.loess
         Second loess object
 
     Attributes

@@ -35,3 +35,7 @@ Onelib can be installed in a handful of ways.
        $ unzip master
        $ cd onelib-master
        $ python setup.py install
+
+
+.. _pip: https://pip.pypa.io
+.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/

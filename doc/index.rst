@@ -24,6 +24,3 @@ API Reference
 
    loess
 
-
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/

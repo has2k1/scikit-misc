@@ -1,6 +1,0 @@
-loess: a numpy wrapper to loess
-
-The initial file is available at: 
-http://netlib.org/a/dloess
-Simple to double precision conversion by Pierre GERARD-MARCHANT, 2007/03.
-

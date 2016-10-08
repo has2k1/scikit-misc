@@ -6,6 +6,9 @@ source = onelib
 include = onelib/*
 omit =
     setup.py
+    */setup.py
+    */*/setup.py
+    */__config__.py
     onelib/_version.py
 
 [report]

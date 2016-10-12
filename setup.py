@@ -94,14 +94,14 @@ def setup_requires():
     """
     from pkg_resources import parse_version
     required = ['cython']
-    numpy_requirement = 'numpy>=1.6.2'
+    numpy_requirement = 'numpy>=1.7.1'
 
     try:
         import numpy
     except Exception:
         required.append(numpy_requirement)
     else:
-        if parse_version(numpy.__version__) < parse_version('1.6.2'):
+        if parse_version(numpy.__version__) < parse_version('1.7.1'):
             required.append(numpy_requirement)
 
     return required

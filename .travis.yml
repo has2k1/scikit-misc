@@ -4,23 +4,66 @@ language: python
 
 python: 3.5
 
-env:
-  - TOXENV=py35
-  - TOXENV=py27
-  - TOXENV=docs
-  - TOXENV=flake8
+matrix:
+  fast_finish: true
+  include:
+    - python: 2.7
+      env:
+        - JOB: 'PY27'
+        - FULL_DEPS=true
+    - python: 3.5
+      env:
+        - JOB: 'PY35'
+        - FULL_DEPS=true
+    - python: 3.5
+      env:
+        - JOB: 'DOCS'
+        - FULL_DEPS=true
+    - python: 3.5
+      env:
+        - JOB: 'FLAKE8'
+        - FULL_DEPS=false
 
-cache: pip
+addons:
+  apt:
+    packages:
+      - libatlas-dev
+      - libatlas-base-dev
+      - liblapack-dev
+      - gfortran
+      - libgmp-dev
+      - libmpfr-dev
+      - ccache
+
+cache:
+  pip : true
+  directories:
+    - $HOME/.ccache
 
 notifications:
   email: false
 
 install:
-   - pip install -U tox
-   - pip install coveralls
+  - if [[ "$JOB" == "PY27" ]] || [[ "$JOB" == "PY35" ]]; then
+      pip install numpy pytest-cov;
+    elif [[ "$JOB" == "DOCS" ]]; then
+      pip install sphinx sphinx_rtd_theme;
+    elif [[ "$JOB" == "FLAKE8" ]]; then
+      pip install flake8;
+    fi
+  - pip install coveralls cython
+  - python setup.py install
 
 script:
-   - tox -e $TOXENV
+  - if [[ "$JOB" == "PY27" ]] || [[ "$JOB" == "PY35" ]]; then
+      coverage erase;
+      py.test onelib/;
+    elif [[ "$JOB" == "DOCS" ]]; then
+      cd doc;
+      sphinx-build -W -b html -d _build/doctrees . _build/html;
+    elif [[ "$JOB" == "FLAKE8" ]]; then
+      flake8 onelib --exclude=onelib/__config__.py,tools/cythonize.py;
+    fi
 
 after_success:
-   - coveralls --rcfile=.coveragerc
+  - coveralls --rcfile=.coveragerc

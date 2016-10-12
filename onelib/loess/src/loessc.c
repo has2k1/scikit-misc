@@ -32,7 +32,7 @@ loess_grow(long *parameter, long *a, double *xi, double *vert,
            double *vval);
 
 static void
-loess_free();
+loess_free(void);
 
 #define  min(x,y)  ((x) < (y) ? (x) : (y))
 #define  max(x,y)  ((x) > (y) ? (x) : (y))
@@ -140,7 +140,7 @@ loess_dfit(double *y, double *x, double *x_evaluate, double *weights,
            int *drop_square, int *sum_drop_sqr, int *d, int *n, int *m,
            double *fit)
 {
-    int    zero = 0, one = 1;
+    int    zero = 0;
     double dzero = 0.0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
                     sum_drop_sqr, &zero);
@@ -155,7 +155,7 @@ loess_dfitse(double *y, double *x, double *x_evaluate, double *weights,
              int *nonparametric, int *drop_square, int *sum_drop_sqr,
              int *d, int *n, int *m, double *fit, double *L)
 {
-    int    zero = 0, one = 1, two = 2;
+    int    zero = 0, two = 2;
     double dzero = 0.0;
     loess_workspace(d, n, span, degree, nonparametric, drop_square,
                     sum_drop_sqr, &zero);
@@ -228,7 +228,7 @@ loess_workspace(int *d, int *n, double *span, int *degree,
 static void
 loess_prune(long *parameter, long *a, double *xi, double *vert, double *vval)
 {
-    int    d, vc, a1, v1, xi1, vv1, nc, nv, nvmax, i, j, k;
+    int    d, vc, a1, v1, xi1, vv1, nc, nv, nvmax, i, k;
 
     d = iv[1];
     vc = iv[3] - 1;
@@ -262,7 +262,7 @@ loess_prune(long *parameter, long *a, double *xi, double *vert, double *vval)
 static void
 loess_grow(long *parameter, long *a, double *xi, double *vert, double *vval)
 {
-    int    d, vc, nc, nv, a1, v1, xi1, vv1, i, j, k;
+    int    d, vc, nc, nv, a1, v1, xi1, vv1, i, k;
 
     d = parameter[0];
     vc = parameter[2];
@@ -310,7 +310,7 @@ loess_grow(long *parameter, long *a, double *xi, double *vert, double *vval)
 }
 
 static void
-loess_free()
+loess_free(void)
 {
         Free(v);
         Free(iv);
@@ -441,7 +441,7 @@ default:
 }
 
 void
-F77_SUB(ehg183)(char *s,int *i, int *n, int *inc)
+F77_SUB(ehg183a)(char *s,int *i, int *n, int *inc)
 {
     char mess[4000], num[20];
     int j;
@@ -457,7 +457,7 @@ F77_SUB(ehg183)(char *s,int *i, int *n, int *inc)
 }
 
 void
-F77_SUB(ehg184)(char *s, double *x, int *n, int *inc)
+F77_SUB(ehg184a)(char *s, double *x, int *n, int *inc)
 {
     char mess[4000], num[30];
     int j;

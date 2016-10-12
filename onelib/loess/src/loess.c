@@ -10,6 +10,62 @@ static char *surf_stat;
 int error_status = 0;
 char *error_message = NULL;
 
+/* Declarations */
+
+static void
+loess_(double *y, double *x_, int *size_info, double *weights, double *span,
+       int *degree, int *parametric, int *drop_square, int *normalize,
+       char **statistics, char **surface, double *cell, char **trace_hat_in,
+       int *iterations, double *fitted_values, double *fitted_residuals,
+       double *enp, double *residual_scale, double *one_delta, double *two_delta,
+       double *pseudovalues, double *trace_hat_out, double *diagonal,
+       double *robust, double *divisor, long *parameter, long *a, double *xi,
+       double *vert, double *vval);
+
+void F77_SUB(lowesw)(double*, int*, double*, double*);
+void F77_SUB(lowesp)(int*, double*, double*, double*,
+                     double*, double*, double*);
+
+static void
+condition(char **surface, char *new_stat, char **trace_hat_in)
+{
+    if(!strcmp(*surface, "interpolate")) {
+        if(!strcmp(new_stat, "none"))
+            surf_stat = "interpolate/none";
+        else if(!strcmp(new_stat, "exact"))
+            surf_stat = "interpolate/exact";
+        else if(!strcmp(new_stat, "approximate"))
+        {
+            if(!strcmp(*trace_hat_in, "approximate"))
+                surf_stat = "interpolate/2.approx";
+            else if(!strcmp(*trace_hat_in, "exact"))
+                surf_stat = "interpolate/1.approx";
+        }
+    }
+    else if(!strcmp(*surface, "direct")) {
+        if(!strcmp(new_stat, "none"))
+            surf_stat = "direct/none";
+        else if(!strcmp(new_stat, "exact"))
+            surf_stat = "direct/exact";
+        else if(!strcmp(new_stat, "approximate"))
+            surf_stat = "direct/approximate";
+    }
+}
+
+int
+comp(const void *d1, const void *d2)
+{
+   double *_d1 = (double *)d1;
+   double *_d2 = (double *)d2;
+
+    if(*_d1 < *_d2)
+        return(-1);
+    else if(*_d1 == *_d2)
+        return(0);
+    else
+        return(1);
+}
+
 
 void
 loess_model_setup(loess_model *model) {
@@ -90,82 +146,25 @@ loess_setup(double *x, double *y, double *w, long n, long p, loess *lo)
    loess_kd_tree_setup(n, p, lo->kd_tree);
 }
 
-void
-loess_fit(loess *lo)
-{
-    int    size_info[2], iterations;
-    void    loess_();
-
-    size_info[0] = lo->inputs->p;
-    size_info[1] = lo->inputs->n;
-
-    //Reset the default error status...
-    error_status = 0;
-    lo->status.err_status = 0;
-    lo->status.err_msg = NULL;
-
-    iterations = (!strcmp(lo->model->family, "gaussian")) ? 0 :
-    lo->control->iterations;
-    if(!strcmp(lo->control->trace_hat, "wait.to.decide")) {
-        if(!strcmp(lo->control->surface, "interpolate"))
-            lo->control->trace_hat = (lo->inputs->n < 500) ? "exact" : "approximate";
-        else
-            lo->control->trace_hat = "exact";
-    }
-    loess_(lo->inputs->y, lo->inputs->x, size_info, lo->inputs->weights,
-           &lo->model->span,
-           &lo->model->degree,
-           lo->model->parametric,
-           lo->model->drop_square,
-           &lo->model->normalize,
-           &lo->control->statistics,
-           &lo->control->surface,
-           &lo->control->cell,
-           &lo->control->trace_hat,
-           &iterations,
-           lo->outputs->fitted_values,
-           lo->outputs->fitted_residuals,
-           &lo->outputs->enp,
-           &lo->outputs->residual_scale,
-           &lo->outputs->one_delta,
-           &lo->outputs->two_delta,
-           lo->outputs->pseudovalues,
-           &lo->outputs->trace_hat,
-           lo->outputs->diagonal,
-           lo->outputs->robust,
-           lo->outputs->divisor,
-           lo->kd_tree->parameter,
-           lo->kd_tree->a,
-           lo->kd_tree->xi,
-           lo->kd_tree->vert,
-           lo->kd_tree->vval);
-
-    if(error_status){
-        lo->status.err_status = error_status;
-        lo->status.err_msg = error_message;
-    }
-}
-
-void
+static void
 loess_(double *y, double *x_, int *size_info, double *weights, double *span,
        int *degree, int *parametric, int *drop_square, int *normalize,
        char **statistics, char **surface, double *cell, char **trace_hat_in,
        int *iterations, double *fitted_values, double *fitted_residuals,
        double *enp, double *residual_scale, double *one_delta, double *two_delta,
        double *pseudovalues, double *trace_hat_out, double *diagonal,
-       double *robust, double *divisor, long *parameter, int *a, double *xi,
+       double *robust, double *divisor, long *parameter, long *a, double *xi,
        double *vert, double *vval)
 {
     double  *x, *x_tmp, new_cell, trL, delta1, delta2, sum_squares = 0,
-            *pseudo_resid, *temp, *xi_tmp, *vert_tmp, *vval_tmp,
+            pseudo_resid, *temp, *xi_tmp, *vert_tmp, *vval_tmp,
             *diag_tmp, trL_tmp = 0, d1_tmp = 0, d2_tmp = 0, sum, mean;
     int    i, j, k, p, N, D, sum_drop_sqr = 0, sum_parametric = 0,
             setLf, nonparametric = 0, *order_parametric,
-            *order_drop_sqr, zero = 0, max_kd, *a_tmp;
-    long *param_tmp;
-    int     cut, comp();
-    char    *new_stat, *mess;
-    void    condition();
+            *order_drop_sqr, zero = 0, max_kd;
+    long *param_tmp, *a_tmp;
+    int     cut;
+    char    *new_stat;
 
     D = size_info[0];
     N = size_info[1];
@@ -175,7 +174,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     x = (double *) malloc(D * N * sizeof(double));
     x_tmp = (double *) malloc(D * N * sizeof(double));
     temp = (double *) malloc(N * sizeof(double));
-    a_tmp = (int *) malloc(max_kd * sizeof(int));
+    a_tmp = (long *) malloc(max_kd * sizeof(int));
     xi_tmp = (double *) malloc(max_kd * sizeof(double));
     vert_tmp = (double *) malloc(D * 2 * sizeof(double));
     vval_tmp = (double *) malloc((D + 1) * max_kd * sizeof(double));
@@ -183,8 +182,6 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     param_tmp = (long *) malloc(N * sizeof(long));
     order_parametric = (int *) malloc(D * sizeof(int));
     order_drop_sqr = (int *) malloc(D * sizeof(int));
-    if((*iterations) > 0)
-        pseudo_resid = (double *) malloc(N * sizeof(double));
 
     new_cell = (*span) * (*cell);
     for(i = 0; i < N; i++)
@@ -279,6 +276,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
         if(j < (*iterations))
             F77_SUB(lowesw)(fitted_residuals, &N, robust, temp);
     }
+
     if((*iterations) > 0) {
         F77_SUB(lowesp)(&N, y, fitted_values, weights, robust, temp,
 						pseudovalues);
@@ -287,17 +285,15 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
                   &new_cell, &surf_stat, temp, param_tmp, a_tmp, xi_tmp,
                   vert_tmp, vval_tmp, diag_tmp, &trL_tmp, &d1_tmp, &d2_tmp,
                   &zero);
-        for(i = 0; i < N; i++)
-            pseudo_resid[i] = pseudovalues[i] - temp[i];
-    }
-    if((*iterations) == 0)
+        for(i = 0; i < N; i++) {
+            pseudo_resid = pseudovalues[i] - temp[i];
+            sum_squares = sum_squares + weights[i] * pseudo_resid * pseudo_resid;
+        }
+    } else {
         for(i = 0; i < N; i++)
             sum_squares = sum_squares + weights[i] *
                     fitted_residuals[i] * fitted_residuals[i];
-    else
-        for(i = 0; i < N; i++)
-            sum_squares = sum_squares + weights[i] *
-                    pseudo_resid[i] * pseudo_resid[i];
+    }
 
     *enp = (*one_delta) + 2 * (*trace_hat_out) - N;
     *residual_scale = sqrt(sum_squares / (*one_delta));
@@ -314,10 +310,63 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     free(param_tmp);
     free(order_parametric);
     free(order_drop_sqr);
-    if((*iterations) > 0) {
-        free(pseudo_resid);
+}
+
+void
+loess_fit(loess *lo)
+{
+    int    size_info[2], iterations;
+
+    size_info[0] = lo->inputs->p;
+    size_info[1] = lo->inputs->n;
+
+    //Reset the default error status...
+    error_status = 0;
+    lo->status.err_status = 0;
+    lo->status.err_msg = NULL;
+
+    iterations = (!strcmp(lo->model->family, "gaussian")) ? 0 :
+    lo->control->iterations;
+    if(!strcmp(lo->control->trace_hat, "wait.to.decide")) {
+        if(!strcmp(lo->control->surface, "interpolate"))
+            lo->control->trace_hat = (lo->inputs->n < 500) ? "exact" : "approximate";
+        else
+            lo->control->trace_hat = "exact";
+    }
+    loess_(lo->inputs->y, lo->inputs->x, size_info, lo->inputs->weights,
+           &lo->model->span,
+           &lo->model->degree,
+           lo->model->parametric,
+           lo->model->drop_square,
+           &lo->model->normalize,
+           &lo->control->statistics,
+           &lo->control->surface,
+           &lo->control->cell,
+           &lo->control->trace_hat,
+           &iterations,
+           lo->outputs->fitted_values,
+           lo->outputs->fitted_residuals,
+           &lo->outputs->enp,
+           &lo->outputs->residual_scale,
+           &lo->outputs->one_delta,
+           &lo->outputs->two_delta,
+           lo->outputs->pseudovalues,
+           &lo->outputs->trace_hat,
+           lo->outputs->diagonal,
+           lo->outputs->robust,
+           lo->outputs->divisor,
+           lo->kd_tree->parameter,
+           lo->kd_tree->a,
+           lo->kd_tree->xi,
+           lo->kd_tree->vert,
+           lo->kd_tree->vval);
+
+    if(error_status){
+        lo->status.err_status = error_status;
+        lo->status.err_msg = error_message;
     }
 }
+
 
 void loess_inputs_free(loess_inputs *inputs) {
    free(inputs->x);
@@ -362,39 +411,3 @@ loess_summary(loess *lo)
     printf("%.4f\n", lo->outputs->residual_scale);
 }
 
-void
-condition(char **surface, char *new_stat, char **trace_hat_in)
-{
-    if(!strcmp(*surface, "interpolate")) {
-        if(!strcmp(new_stat, "none"))
-            surf_stat = "interpolate/none";
-        else if(!strcmp(new_stat, "exact"))
-            surf_stat = "interpolate/exact";
-        else if(!strcmp(new_stat, "approximate"))
-        {
-            if(!strcmp(*trace_hat_in, "approximate"))
-                surf_stat = "interpolate/2.approx";
-            else if(!strcmp(*trace_hat_in, "exact"))
-                surf_stat = "interpolate/1.approx";
-        }
-    }
-    else if(!strcmp(*surface, "direct")) {
-        if(!strcmp(new_stat, "none"))
-            surf_stat = "direct/none";
-        else if(!strcmp(new_stat, "exact"))
-            surf_stat = "direct/exact";
-        else if(!strcmp(new_stat, "approximate"))
-            surf_stat = "direct/approximate";
-    }
-}
-
-int
-comp(double *d1, double *d2)
-{
-    if(*d1 < *d2)
-        return(-1);
-    else if(*d1 == *d2)
-        return(0);
-    else
-        return(1);
-}

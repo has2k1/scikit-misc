@@ -3,80 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static double _fmin(double a, double b)
-{
-    return(a < b ? a : b);
-}
-
-static double _fmax(double a, double b)
-{
-    return(a > b ? a : b);
-}
-
-
-void anova(loess *one, loess *two, anova_struct *out)
-{
-    double  one_d1, one_d2, one_s, two_d1, two_d2, two_s,
-            rssdiff, d1diff, tmp, pf();
-    int     max_enp;
-
-    one_d1 = one->outputs->one_delta;
-    one_d2 = one->outputs->two_delta;
-    one_s = one->outputs->residual_scale;
-    two_d1 = two->outputs->one_delta;
-    two_d2 = two->outputs->two_delta;
-    two_s = two->outputs->residual_scale;
-
-    rssdiff = fabs(one_s * one_s * one_d1 - two_s * two_s * two_d1);
-    d1diff = fabs(one_d1 - two_d1);
-    out->dfn = d1diff * d1diff / fabs(one_d2 - two_d2);
-    max_enp = (one->outputs->enp > two->outputs->enp);
-    tmp = max_enp ? one_d1 : two_d1;
-    out->dfd = tmp * tmp / (max_enp ? one_d2 : two_d2);
-    tmp = max_enp ? one_s : two_s;
-    out->F_value = (rssdiff / d1diff) / (tmp * tmp);
-    out->Pr_F = 1 - pf(out->F_value, out->dfn, out->dfd);
-}
-
-void pointwise(prediction *pre, double coverage,
-      confidence_intervals *ci)
-{
-    double    t_dist, limit, fit, qt();
-    int    i;
-
-    ci->fit = (double *) malloc(pre->m * sizeof(double));
-    ci->upper = (double *) malloc(pre->m * sizeof(double));
-    ci->lower = (double *) malloc(pre->m * sizeof(double));
-
-    t_dist = qt(1 - (1 - coverage)/2, pre->df);
-    for(i = 0; i < pre->m; i++) {
-        limit = pre->se_fit[i] * t_dist;
-        ci->fit[i] = fit = pre->fit[i];
-        ci->upper[i] = fit + limit;
-        ci->lower[i] = fit - limit;
-    }
-}
-
-void pw_free_mem(confidence_intervals *ci)
-{
-    free(ci->fit);
-    free(ci->upper);
-    free(ci->lower);
-}
-
-double pf(double q, double df1, double df2)
-{
-    double ibeta();
-    return(ibeta(q*df1/(df2+q*df1), df1/2, df2/2));
-}
-
-double qt(double p, double df)
-{
-    double    t, invibeta();
-    t = invibeta(fabs(2*p-1), 0.5, df/2);
-    return((p>0.5?1:-1) * sqrt(t*df/(1-t)));
-}
-
 /**********************************************************************/
  /*
  * Incomplete beta function.
@@ -87,55 +13,16 @@ double qt(double p, double df)
 #define IBETA_LARGE     1.0e30
 #define IBETA_SMALL     1.0e-30
 
-double ibeta(double x, double a, double b)
+
+/* static functions */
+static double _fmin(double a, double b)
 {
-    int flipped = 0, i, k, count;
-    double I, temp, pn[6], ak, bk, next, prev, factor, val;
+    return(a < b ? a : b);
+}
 
-    if (x <= 0)
-        return(0);
-    if (x >= 1)
-        return(1);
-
-    /* use ibeta(x,a,b) = 1-ibeta(1-x,b,a) */
-    if ((a+b+1)*x > (a+1)) {
-        flipped = 1;
-        temp = a;
-        a = b;
-        b = temp;
-        x = 1 - x;
-        }
-
-    pn[0] = 0.0;
-    pn[2] = pn[3] = pn[1] = 1.0;
-    count = 1;
-    val = x/(1.0-x);
-    bk = 1.0;
-    next = 1.0;
-    do {
-        count++;
-        k = count/2;
-        prev = next;
-        if (count%2 == 0)
-            ak = -((a+k-1.0)*(b-k)*val)/((a+2.0*k-2.0)*(a+2.0*k-1.0));
-        else
-            ak = ((a+b+k-1.0)*k*val)/((a+2.0*k)*(a+2.0*k-1.0));
-            pn[4] = bk*pn[2] + ak*pn[0];
-            pn[5] = bk*pn[3] + ak*pn[1];
-            next = pn[4] / pn[5];
-            for (i=0; i<=3; i++)
-                pn[i] = pn[i+2];
-            if (fabs(pn[4]) >= IBETA_LARGE)
-                for (i=0; i<=3; i++)
-                    pn[i] /= IBETA_LARGE;
-            if (fabs(pn[4]) <= IBETA_SMALL)
-                for (i=0; i<=3; i++)
-                    pn[i] /= IBETA_SMALL;
-        } while (fabs(next-prev) > DOUBLE_EPS*prev);
-        factor = a*log(x) + (b-1)*log(1-x);
-        factor -= gamma(a+1) + gamma(b) - gamma(a+b);
-        I = exp(factor) * next;
-        return(flipped ? 1-I : I);
+static double _fmax(double a, double b)
+{
+    return(a > b ? a : b);
 }
 
 /*
@@ -144,7 +31,6 @@ double ibeta(double x, double a, double b)
  * Reference: Abramowitz and Stegun, page 933.
  * Assumption: 0 < p < 1.
  */
-
 static double num[] = {
         2.515517,
         0.802853,
@@ -175,16 +61,31 @@ double invigauss_quick(double p)
 }
 
 /*
+ * Quick approximation to inverse incomplete beta function,
+ * by matching first two moments with the Gaussian distribution.
+ * Assumption: 0 < p < 1, a,b > 0.
+ */
+
+static double invibeta_quick(double p, double a, double b)
+{
+    double x, m, s;
+
+    x = a + b;
+    m = a / x;
+    s = sqrt((a*b) / (x*x*(x+1)));
+    return(_fmax(0.0, _fmin(1.0, invigauss_quick(p)*s + m)));
+}
+
+
+/*
  * Inverse incomplete beta function.
  * Assumption: 0 <= p <= 1, a,b > 0.
  */
-
-double invibeta(double p, double a, double b)
+static double invibeta(double p, double a, double b)
 {
     int i;
     double ql, qr, qm, qdiff;
     double pl, pr, pm, pdiff;
-    double invibeta_quick(), ibeta();
 
 /*        MEANINGFUL(qm);*/
     qm = 0;
@@ -261,26 +162,126 @@ double invibeta(double p, double a, double b)
     return(qm);
 }
 
-/*
- * Quick approximation to inverse incomplete beta function,
- * by matching first two moments with the Gaussian distribution.
- * Assumption: 0 < p < 1, a,b > 0.
- */
 
-double invibeta_quick(double p, double a, double b)
+static double qt(double p, double df)
 {
-    double x, m, s, _fmax(), _fmin(), invigauss_quick();
-
-    x = a + b;
-    m = a / x;
-    s = sqrt((a*b) / (x*x*(x+1)));
-    return(_fmax(0.0, _fmin(1.0, invigauss_quick(p)*s + m)));
+    double    t;
+    t = invibeta(fabs(2*p-1), 0.5, df/2);
+    return((p>0.5?1:-1) * sqrt(t*df/(1-t)));
 }
 
-int max(int a, int b)
+
+double pf(double q, double df1, double df2)
 {
-    return(a > b ? a : b);
+    return(ibeta(q*df1/(df2+q*df1), df1/2, df2/2));
 }
+
+
+double ibeta(double x, double a, double b)
+{
+    int flipped = 0, i, k, count;
+    double I, temp, pn[6], ak, bk, next, prev, factor, val;
+
+    if (x <= 0)
+        return(0);
+    if (x >= 1)
+        return(1);
+
+    /* use ibeta(x,a,b) = 1-ibeta(1-x,b,a) */
+    if ((a+b+1)*x > (a+1)) {
+        flipped = 1;
+        temp = a;
+        a = b;
+        b = temp;
+        x = 1 - x;
+        }
+
+    pn[0] = 0.0;
+    pn[2] = pn[3] = pn[1] = 1.0;
+    count = 1;
+    val = x/(1.0-x);
+    bk = 1.0;
+    next = 1.0;
+    do {
+        count++;
+        k = count/2;
+        prev = next;
+        if (count%2 == 0)
+            ak = -((a+k-1.0)*(b-k)*val)/((a+2.0*k-2.0)*(a+2.0*k-1.0));
+        else
+            ak = ((a+b+k-1.0)*k*val)/((a+2.0*k)*(a+2.0*k-1.0));
+            pn[4] = bk*pn[2] + ak*pn[0];
+            pn[5] = bk*pn[3] + ak*pn[1];
+            next = pn[4] / pn[5];
+            for (i=0; i<=3; i++)
+                pn[i] = pn[i+2];
+            if (fabs(pn[4]) >= IBETA_LARGE)
+                for (i=0; i<=3; i++)
+                    pn[i] /= IBETA_LARGE;
+            if (fabs(pn[4]) <= IBETA_SMALL)
+                for (i=0; i<=3; i++)
+                    pn[i] /= IBETA_SMALL;
+        } while (fabs(next-prev) > DOUBLE_EPS*prev);
+        factor = a*log(x) + (b-1)*log(1-x);
+        factor -= gamma(a+1) + gamma(b) - gamma(a+b);
+        I = exp(factor) * next;
+        return(flipped ? 1-I : I);
+}
+
+
+void anova(loess *one, loess *two, anova_struct *out)
+{
+    double  one_d1, one_d2, one_s, two_d1, two_d2, two_s,
+            rssdiff, d1diff, tmp;
+    int     max_enp;
+
+    one_d1 = one->outputs->one_delta;
+    one_d2 = one->outputs->two_delta;
+    one_s = one->outputs->residual_scale;
+    two_d1 = two->outputs->one_delta;
+    two_d2 = two->outputs->two_delta;
+    two_s = two->outputs->residual_scale;
+
+    rssdiff = fabs(one_s * one_s * one_d1 - two_s * two_s * two_d1);
+    d1diff = fabs(one_d1 - two_d1);
+    out->dfn = d1diff * d1diff / fabs(one_d2 - two_d2);
+    max_enp = (one->outputs->enp > two->outputs->enp);
+    tmp = max_enp ? one_d1 : two_d1;
+    out->dfd = tmp * tmp / (max_enp ? one_d2 : two_d2);
+    tmp = max_enp ? one_s : two_s;
+    out->F_value = (rssdiff / d1diff) / (tmp * tmp);
+    out->Pr_F = 1 - pf(out->F_value, out->dfn, out->dfd);
+}
+
+
+void pointwise(prediction *pre, double coverage,
+      confidence_intervals *ci)
+{
+    double    t_dist, limit, fit;
+    int    i;
+
+    ci->fit = (double *) malloc(pre->m * sizeof(double));
+    ci->upper = (double *) malloc(pre->m * sizeof(double));
+    ci->lower = (double *) malloc(pre->m * sizeof(double));
+
+    t_dist = qt(1 - (1 - coverage)/2, pre->df);
+    for(i = 0; i < pre->m; i++) {
+        limit = pre->se_fit[i] * t_dist;
+        ci->fit[i] = fit = pre->fit[i];
+        ci->upper[i] = fit + limit;
+        ci->lower[i] = fit - limit;
+    }
+}
+
+
+void pw_free_mem(confidence_intervals *ci)
+{
+    free(ci->fit);
+    free(ci->upper);
+    free(ci->lower);
+}
+
+
 
 typedef double doublereal;
 typedef int integer;
@@ -289,11 +290,6 @@ void Recover(char *a, int *b)
 {
     printf("%s", a);
     exit(1);
-}
-
-void Warning(char *a, int *b)
-{
-    printf("%s", a);
 }
 
 /*  d1mach may be replaced by Fortran code:
@@ -314,4 +310,3 @@ switch(*i){
     default: Recover("Invalid argument to d1mach()", 0L);
     }
 }
-

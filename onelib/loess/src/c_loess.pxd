@@ -61,7 +61,6 @@ cdef extern from "loess.h":
         double  *upper
         double  *lower
 
-cdef extern from "cloess.h":
     void loess_setup(double *x, double *y, double *w, long n, long p, c_loess *lo)
     void loess_model_setup(c_loess_model *model)
     void loess_inputs_setup(double *x, double *y, double *w, long n, long p, c_loess_inputs *inputs)

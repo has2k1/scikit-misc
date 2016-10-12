@@ -15,7 +15,7 @@ def configuration(parent_package='', top_path=None):
     dict_append(build_info, **blas_info)
     dict_append(build_info, libraries=['floess'])
     sources = ['_loess.c', 'loess.c', 'loessc.c', 'misc.c', 'predict.c']
-    depends = ['S.h', 'cloess.h', 'loess.h',
+    depends = ['S.h', 'loess.h',
                '_loess.pyx',
                'c_loess.pxd']
     config.add_extension('_loess',

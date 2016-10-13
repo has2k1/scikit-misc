@@ -59,6 +59,9 @@ void F77_SUB(lowesl)(int*, int*, int*, double*, int*, double*, double*);
 void F77_SUB(ehg169)(int*, int*, int*, int*, int*, int*,
                      double*, int*, double*, int*, int*, int*);
 void F77_SUB(ehg196)(int*, int*, double*, double*);
+void F77_SUB(ehg182)(int *i);
+void F77_SUB(ehg183a)(char *s, int *nc,int *i,int *n,int *inc);
+void F77_SUB(ehg184a)(char *s, int *nc, double *x, int *n, int *inc);
 
 void
 loess_raw(double *y, double *x, double *weights, double *robust, int *d,
@@ -318,7 +321,7 @@ loess_free(void)
 
 /* begin ehg's FORTRAN-callable C-codes */
 
-void*
+void
 F77_SUB(ehg182)(int *i)
 {
 char *mess, mess2[50];
@@ -440,34 +443,32 @@ default:
     error_message = mess;
 }
 
-void
-F77_SUB(ehg183a)(char *s,int *i, int *n, int *inc)
+void F77_SUB(ehg183a)(char *s, int *nc, int *i, int *n,int *inc)
 {
     char mess[4000], num[20];
     int j;
-    strcpy(mess,s);
+    strncpy(mess,s,*nc);
+    mess[*nc] = '\0';
     for (j=0; j<*n; j++) {
-        sprintf(num," %d",i[j * *inc]);
-        strcat(mess,num);
+	snprintf(num, 20, " %d",i[j * *inc]);
+	strcat(mess,num);
     }
     strcat(mess,"\n");
-//    printf(mess);
     error_status = 1;
     error_message = mess;
 }
 
-void
-F77_SUB(ehg184a)(char *s, double *x, int *n, int *inc)
+void F77_SUB(ehg184a)(char *s, int *nc, double *x, int *n, int *inc)
 {
     char mess[4000], num[30];
     int j;
-    strcpy(mess,s);
+    strncpy(mess,s,*nc);
+    mess[*nc] = '\0';
     for (j=0; j<*n; j++) {
-        sprintf(num," %.5g",x[j * *inc]);
-        strcat(mess,num);
+	snprintf(num,30," %.5g",x[j * *inc]);
+	strcat(mess,num);
     }
     strcat(mess,"\n");
-//    printf(mess);
     error_status = 1;
     error_message = mess;
 }

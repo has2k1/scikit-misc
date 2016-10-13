@@ -10,10 +10,11 @@ def configuration(parent_package='', top_path=None):
     f_sources = ('loessf.f', 'linpack_lite.f')
     config.add_library('floess',
                        sources=[join('src', x) for x in f_sources])
+
     blas_info = get_info('blas_opt')
     build_info = {}
-    dict_append(build_info, **blas_info)
     dict_append(build_info, libraries=['floess'])
+    dict_append(build_info, **blas_info)
     sources = ['_loess.c', 'loess.c', 'loessc.c', 'misc.c', 'predict.c']
     depends = ['S.h', 'loess.h',
                '_loess.pyx',
@@ -21,8 +22,6 @@ def configuration(parent_package='', top_path=None):
     config.add_extension('_loess',
                          sources=[join('src', x) for x in sources],
                          depends=[join('src', x) for x in depends],
-                         extra_compile_args=['-g'],
-                         extra_link_args=['-g'],
                          **build_info)
     config.add_data_dir('tests')
     return config

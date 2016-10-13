@@ -2,37 +2,40 @@ sudo: false
 
 language: python
 
-python: 3.5
+env:
+  global:
+    - FULL_DEPS=false
+    - INSTALL=false
+    - COVERAGE=false
 
 matrix:
   fast_finish: true
   include:
     - python: 2.7
       env:
-        - JOB: 'PY27'
+        - JOB=test_py27
         - FULL_DEPS=true
+        - INSTALL=true
+        - COVERAGE=true
     - python: 3.5
       env:
-        - JOB: 'PY35'
+        - JOB=test_py35
         - FULL_DEPS=true
+        - INSTALL=true
+        - COVERAGE=true
     - python: 3.5
       env:
-        - JOB: 'DOCS'
-        - FULL_DEPS=true
+        - JOB=docs
+        - INSTALL=true
     - python: 3.5
       env:
-        - JOB: 'FLAKE8'
-        - FULL_DEPS=false
+        - JOB=flake8
 
 addons:
   apt:
     packages:
-      - libatlas-dev
-      - libatlas-base-dev
-      - liblapack-dev
+      - libblas-dev
       - gfortran
-      - libgmp-dev
-      - libmpfr-dev
       - ccache
 
 cache:
@@ -44,26 +47,38 @@ notifications:
   email: false
 
 install:
-  - if [[ "$JOB" == "PY27" ]] || [[ "$JOB" == "PY35" ]]; then
-      pip install numpy pytest-cov;
-    elif [[ "$JOB" == "DOCS" ]]; then
-      pip install sphinx sphinx_rtd_theme;
-    elif [[ "$JOB" == "FLAKE8" ]]; then
-      pip install flake8;
+  - |
+    if [[ $FULL_DEPS == true ]]; then
+      pip install --upgrade numpy
     fi
-  - pip install coveralls cython
-  - python setup.py install
+    if [[ $COVERAGE == true ]]; then
+      pip install pytest-cov coveralls
+    fi
+    if [[ $JOB == 'docs' ]]; then
+      pip install sphinx sphinx_rtd_theme;
+    elif [[ $JOB == 'flake8' ]]; then
+      pip install flake8
+    fi
+  - |
+    if [[ $INSTALL == true ]]; then
+      pip install --install-option="--no-cython-compile" Cython==0.24
+      pip install -v -e .
+    fi
 
 script:
-  - if [[ "$JOB" == "PY27" ]] || [[ "$JOB" == "PY35" ]]; then
-      coverage erase;
-      py.test onelib/;
-    elif [[ "$JOB" == "DOCS" ]]; then
-      cd doc;
-      sphinx-build -W -b html -d _build/doctrees . _build/html;
-    elif [[ "$JOB" == "FLAKE8" ]]; then
-      flake8 onelib --exclude=onelib/__config__.py,tools/cythonize.py;
+  - |
+    if [[ $COVERAGE == true ]]; then
+      coverage erase
+      py.test onelib/
+    elif [[ $JOB == 'docs' ]]; then
+      cd doc
+      sphinx-build -W -b html -d _build/doctrees . _build/html
+    elif [[ $JOB == 'flake8' ]]; then
+      flake8 onelib --exclude=onelib/__config__.py,tools/cythonize.py
     fi
 
 after_success:
-  - coveralls --rcfile=.coveragerc
+  - |
+    if [[ $COVERAGE == true ]]; then
+      coveralls --rcfile=.coveragerc
+    fi

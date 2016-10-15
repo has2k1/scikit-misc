@@ -27,6 +27,7 @@ matrix:
       env:
         - JOB=docs
         - INSTALL=true
+        - ENCRYPTION_LABEL=4b42558754ed
     - python: 3.5
       env:
         - JOB=flake8
@@ -71,8 +72,9 @@ script:
       coverage erase
       py.test onelib/
     elif [[ $JOB == 'docs' ]]; then
-      cd doc
+      pushd doc
       sphinx-build -W -b html -d _build/doctrees . _build/html
+      popd
     elif [[ $JOB == 'flake8' ]]; then
       flake8 onelib --exclude=onelib/__config__.py,tools/cythonize.py
     fi
@@ -81,4 +83,8 @@ after_success:
   - |
     if [[ $COVERAGE == true ]]; then
       coveralls --rcfile=.coveragerc
+    fi
+  - |
+    if [[ $JOB == 'docs' ]]; then
+      ./tools/deploy_documentation.sh
     fi

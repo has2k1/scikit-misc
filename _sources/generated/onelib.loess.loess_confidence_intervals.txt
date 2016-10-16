@@ -1,0 +1,7 @@
+onelib.loess.loess_confidence_intervals
+=======================================
+
+.. currentmodule:: onelib.loess
+
+.. autoclass:: loess_confidence_intervals
+   :members:

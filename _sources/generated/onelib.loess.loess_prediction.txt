@@ -1,0 +1,7 @@
+onelib.loess.loess_prediction
+=============================
+
+.. currentmodule:: onelib.loess
+
+.. autoclass:: loess_prediction
+   :members:

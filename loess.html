@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Locally-weighted regression (onelib.loess) &mdash; Onelib 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Onelib 0.0.1 documentation" href="index.html"/>
+        <link rel="next" title="onelib.loess.loess" href="generated/onelib.loess.loess.html"/>
+        <link rel="prev" title="Changelog" href="changelog.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Onelib
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Locally-weighted regression (<code class="docutils literal"><span class="pre">onelib.loess</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess.html">onelib.loess.loess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_inputs.html">onelib.loess.loess_inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_model.html">onelib.loess.loess_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_control.html">onelib.loess.loess_control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_outputs.html">onelib.loess.loess_outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_prediction.html">onelib.loess.loess_prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_confidence_intervals.html">onelib.loess.loess_confidence_intervals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/onelib.loess.loess_anova.html">onelib.loess.loess_anova</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#source">Source</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Onelib</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Locally-weighted regression (<code class="docutils literal"><span class="pre">onelib.loess</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/loess.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-onelib.loess"></span><div class="section" id="locally-weighted-regression-onelib-loess">
+<h1>Locally-weighted regression (<a class="reference internal" href="#module-onelib.loess" title="onelib.loess"><code class="xref py py-mod docutils literal"><span class="pre">onelib.loess</span></code></a>)<a class="headerlink" href="#locally-weighted-regression-onelib-loess" title="Permalink to this headline">¶</a></h1>
+<p>Loess is a procedure for estimating a regression surface by a multivariate
+smoothing procedure. A linear or quadratic function of the independent
+variables is fit in a moving fashion that is analogous to how a moving
+average is computed for a time series.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/onelib.loess.loess.html#onelib.loess.loess" title="onelib.loess.loess"><code class="xref py py-obj docutils literal"><span class="pre">loess</span></code></a>(x,&nbsp;y[,&nbsp;weights])</td>
+<td>Locally-weighted regression</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/onelib.loess.loess_inputs.html#onelib.loess.loess_inputs" title="onelib.loess.loess_inputs"><code class="xref py py-obj docutils literal"><span class="pre">loess_inputs</span></code></a>(x,&nbsp;y[,&nbsp;weights])</td>
+<td>Initialization class for loess data inputs</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/onelib.loess.loess_model.html#onelib.loess.loess_model" title="onelib.loess.loess_model"><code class="xref py py-obj docutils literal"><span class="pre">loess_model</span></code></a>(p[,&nbsp;family,&nbsp;span,&nbsp;degree,&nbsp;...])</td>
+<td>Initialization class for loess fitting parameters</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/onelib.loess.loess_control.html#onelib.loess.loess_control" title="onelib.loess.loess_control"><code class="xref py py-obj docutils literal"><span class="pre">loess_control</span></code></a>([surface,&nbsp;statistics,&nbsp;...])</td>
+<td>Initialization class for loess control parameters</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/onelib.loess.loess_outputs.html#onelib.loess.loess_outputs" title="onelib.loess.loess_outputs"><code class="xref py py-obj docutils literal"><span class="pre">loess_outputs</span></code></a>(n,&nbsp;p,&nbsp;family)</td>
+<td>Class of a loess fit outputs</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/onelib.loess.loess_prediction.html#onelib.loess.loess_prediction" title="onelib.loess.loess_prediction"><code class="xref py py-obj docutils literal"><span class="pre">loess_prediction</span></code></a>(newdata,&nbsp;loess[,&nbsp;stderror])</td>
+<td>Class for loess prediction results</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/onelib.loess.loess_confidence_intervals.html#onelib.loess.loess_confidence_intervals" title="onelib.loess.loess_confidence_intervals"><code class="xref py py-obj docutils literal"><span class="pre">loess_confidence_intervals</span></code></a>(pred,&nbsp;alpha)</td>
+<td>Pointwise confidence intervals of a loess-predicted object</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/onelib.loess.loess_anova.html#onelib.loess.loess_anova" title="onelib.loess.loess_anova"><code class="xref py py-obj docutils literal"><span class="pre">loess_anova</span></code></a>(loess_one,&nbsp;loess_two)</td>
+<td>Analysis of variance for two loess objects</td>
+</tr>
+</tbody>
+</table>
+<p>Compared to approaches that fit global parametric functions, loess
+substantially increases the domain of surfaces that can be estimated without
+distortion. However, analogues of the statistical procedures used
+in parametric function fitting &#8211; for example, ANOVA and t intervals &#8211;
+involve statistics whose distributions are well approximated by familiar
+distributions.</p>
+<div class="section" id="source">
+<h2>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h2>
+<p>The original source code was written by William S. Cleveland, Eric Grosse
+and Ming-Jen Shyu. It is available at <a class="reference external" href="http://www.netlib.org/a/dloess">http://www.netlib.org/a/dloess</a>. It
+was initially adapted to for use in Scipy by Pierre GF Gerard-Marchant.</p>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="id1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td>W. S. Cleveland, E. Grosse, and M. J. Shyu. Local Regression Models.
+In J. M. Chambers and T. Hastie, editors, Statistical Models in S,
+pages 309&#8211;376. Chapman and Hall, New York, 1992.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>W. S. Cleveland, S. J. Devlin, and E. Grosse. Regression by Local
+Fitting: Methods, Properties, and Computing. Journal of Econometrics, 37:
+pp. 87&#8211;114. 1988.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td>W. S. Cleveland. Robust Locally Weighted Regression and Smoothing
+Scatterplots. Journal of the American Statistical Association, 74:
+pp. 829&#8211;836. 1979.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/onelib.loess.loess.html" class="btn btn-neutral float-right" title="onelib.loess.loess" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="changelog.html" class="btn btn-neutral" title="Changelog" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hassan Kibirige.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

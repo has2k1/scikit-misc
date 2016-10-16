@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>onelib.loess.loess_prediction &mdash; Onelib 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Onelib 0.0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Locally-weighted regression (onelib.loess)" href="../loess.html"/>
+        <link rel="next" title="onelib.loess.loess_confidence_intervals" href="onelib.loess.loess_confidence_intervals.html"/>
+        <link rel="prev" title="onelib.loess.loess_outputs" href="onelib.loess.loess_outputs.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Onelib
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">onelib.loess</span></code>)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess.html">onelib.loess.loess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_inputs.html">onelib.loess.loess_inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_model.html">onelib.loess.loess_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_control.html">onelib.loess.loess_control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_outputs.html">onelib.loess.loess_outputs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">onelib.loess.loess_prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_confidence_intervals.html">onelib.loess.loess_confidence_intervals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="onelib.loess.loess_anova.html">onelib.loess.loess_anova</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loess.html#source">Source</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Onelib</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">onelib.loess</span></code>)</a> &raquo;</li>
+      
+    <li>onelib.loess.loess_prediction</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/generated/onelib.loess.loess_prediction.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="onelib-loess-loess-prediction">
+<h1>onelib.loess.loess_prediction<a class="headerlink" href="#onelib-loess-loess-prediction" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="onelib.loess.loess_prediction">
+<em class="property">class </em><code class="descclassname">onelib.loess.</code><code class="descname">loess_prediction</code><span class="sig-paren">(</span><em>newdata</em>, <em>loess</em>, <em>stderror=False</em><span class="sig-paren">)</span><a class="headerlink" href="#onelib.loess.loess_prediction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for loess prediction results</p>
+<p>Holds the predicted values and standard errors of a loess object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>newdata</strong> (<em>ndarray of shape (m, p)</em>) &#8211; Independent variables where the surface must be estimated,
+with m the number of new data points, and p the number of
+independent variables.</li>
+<li><strong>loess</strong> (<a class="reference internal" href="onelib.loess.loess.html#onelib.loess.loess" title="onelib.loess.loess"><em>loess.loess</em></a>) &#8211; Loess object that has been successfully fitted,
+i.e <cite>loess.fit</cite> has been called and it returned without
+any errors.</li>
+<li><strong>stderror</strong> (<em>boolean</em>) &#8211; Whether the standard error should be computed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="onelib.loess.loess_prediction.values">
+<code class="descname">values</code><a class="headerlink" href="#onelib.loess.loess_prediction.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray of shape (m,)</em> &#8211; loess values evaluated at newdata</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="onelib.loess.loess_prediction.stderr">
+<code class="descname">stderr</code><a class="headerlink" href="#onelib.loess.loess_prediction.stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray of shape (m,)</em> &#8211; Estimates of the standard error on the estimated values.
+<cite>ValueError</cite> is raise when the standard error was not computed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="onelib.loess.loess_prediction.residual_scale">
+<code class="descname">residual_scale</code><a class="headerlink" href="#onelib.loess.loess_prediction.residual_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; Estimate of the scale of the residuals</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="onelib.loess.loess_prediction.df">
+<code class="descname">df</code><a class="headerlink" href="#onelib.loess.loess_prediction.df" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>integer</em> &#8211; Degrees of freedom of the t-distribution used to compute pointwise
+confidence intervals for the evaluated surface.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="onelib.loess.loess_prediction.confidence">
+<code class="descname">confidence</code><span class="sig-paren">(</span><em>self</em>, <em>alpha=0.05</em><span class="sig-paren">)</span><a class="headerlink" href="#onelib.loess.loess_prediction.confidence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pointwise confidence intervals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The alpha level for the confidence interval. The
+default <code class="docutils literal"><span class="pre">alpha=0.05</span></code> returns a 95% confidence
+interval. Therefore it must be in the range (0, 1).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>out</strong> &#8211; Confidence intervals object. It has attributes <cite>fit</cite>,
+<cite>lower</cite> and <cite>upper</cite></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="onelib.loess.loess_confidence_intervals.html#onelib.loess.loess_confidence_intervals" title="onelib.loess.loess_confidence_intervals">loess_confidence_intervals</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="onelib.loess.loess_confidence_intervals.html" class="btn btn-neutral float-right" title="onelib.loess.loess_confidence_intervals" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="onelib.loess.loess_outputs.html" class="btn btn-neutral" title="onelib.loess.loess_outputs" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hassan Kibirige.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

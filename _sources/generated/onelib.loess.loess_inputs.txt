@@ -1,0 +1,7 @@
+onelib.loess.loess_inputs
+=========================
+
+.. currentmodule:: onelib.loess
+
+.. autoclass:: loess_inputs
+   :members:

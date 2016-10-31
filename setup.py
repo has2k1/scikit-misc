@@ -1,8 +1,7 @@
 """
-Onelib
+scikit-misc
 
-A hodge-podge collection of scientific algorithms
-missing from scipy.
+Miscellaneous tools for data analysis and scientific computing.
 """
 import os
 import sys
@@ -14,9 +13,9 @@ import versioneer
 
 __author__ = 'Hassan Kibirige'
 __email__ = 'has2k1@gmail.com'
-__description__ = "A collection of scientific algorithms."
+__description__ = "Miscellaneous tools for scientific computing."
 __license__ = 'BSD (3-clause)'
-__url__ = 'https://github.com/has2k1/onelib'
+__url__ = 'https://github.com/has2k1/scikit-misc'
 
 
 def check_dependencies():
@@ -59,7 +58,7 @@ def generate_cython():
     print("Cythonizing sources")
     p = subprocess.call([sys.executable,
                          os.path.join(cwd, 'tools', 'cythonize.py'),
-                         'onelib'],
+                         'skmisc'],
                         cwd=cwd)
     if p != 0:
         raise RuntimeError("Running cythonize failed!")
@@ -74,7 +73,7 @@ def configuration(parent_package='', top_path=None):
                        delegate_options_to_subpackages=True,
                        quiet=True)
 
-    config.add_subpackage('onelib')
+    config.add_subpackage('skmisc')
     config.version = versioneer.get_version()
     return config
 
@@ -111,7 +110,7 @@ if __name__ == '__main__':
     check_dependencies()
     prepare_for_setup()
 
-    setup(name='onelib',
+    setup(name='scikit-misc',
           maintainer=__author__,
           maintainer_email=__email__,
           description=__description__,

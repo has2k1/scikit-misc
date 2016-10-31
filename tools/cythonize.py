@@ -5,7 +5,7 @@ Cythonize pyx files into C files as needed.
 
 Usage: cythonize [root_dir]
 
-Default [root_dir] is 'onelib'.
+Default [root_dir] is 'skmisc'.
 
 Checks pyx files to see if they have been changed relative to their
 corresponding C files.  If they have, then runs cython on these files to
@@ -39,7 +39,7 @@ import hashlib
 import subprocess
 
 HASH_FILE = 'cythonize.dat'
-DEFAULT_ROOT = 'onelib'
+DEFAULT_ROOT = 'skmisc'
 
 # WindowsError is not defined on unix systems
 try:

@@ -36,7 +36,7 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 onelib tests
+	flake8 skmisc tests
 
 test:
 	py.test

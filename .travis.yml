@@ -70,13 +70,13 @@ script:
   - |
     if [[ $COVERAGE == true ]]; then
       coverage erase
-      py.test onelib/
+      py.test skmisc/
     elif [[ $JOB == 'docs' ]]; then
       pushd doc
       sphinx-build -W -b html -d _build/doctrees . _build/html
       popd
     elif [[ $JOB == 'flake8' ]]; then
-      flake8 onelib --exclude=onelib/__config__.py,tools/cythonize.py
+      flake8 skmisc --exclude=skmisc/__config__.py,tools/cythonize.py
     fi
 
 after_success:

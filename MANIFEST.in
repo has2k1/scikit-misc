@@ -1,2 +1,2 @@
 include versioneer.py
-include onelib/_version.py
+include skmisc/_version.py

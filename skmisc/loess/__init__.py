@@ -1,6 +1,6 @@
 """
 =================================================
-Locally-weighted regression (:mod:`onelib.loess`)
+Locally-weighted regression (:mod:`skmisc.loess`)
 =================================================
 
 Loess is a procedure for estimating a regression surface by a multivariate

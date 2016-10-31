@@ -1,1 +1,1 @@
-.. automodule:: onelib.loess
+.. automodule:: skmisc.loess

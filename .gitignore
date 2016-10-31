@@ -63,5 +63,5 @@ doc/generated/
 target/
 
 # Specific to this project
-onelib/__config__.py
-onelib/loess/src/_loess.c
+skmisc/__config__.py
+skmisc/loess/src/_loess.c

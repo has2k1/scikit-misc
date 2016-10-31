@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# onelib documentation build configuration file,
+# scikit-misc documentation build configuration file,
 # created by sphinx-quickstart on Wed Dec 23 22:32:29 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -64,7 +64,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Onelib'
+project = u'scikit-misc'
 copyright = u'2016, Hassan Kibirige'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -74,8 +74,8 @@ copyright = u'2016, Hassan Kibirige'
 # The short X.Y version.
 
 try:
-    import onelib
-    version = onelib.__version__
+    import skmisc
+    version = skmisc.__version__
 except ImportError:
     version = 'unknown'
 
@@ -210,7 +210,7 @@ html_static_path = []
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'onelibdoc'
+htmlhelp_basename = 'scikit-misc-doc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -233,8 +233,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'onelib.tex',
-   u'Onelib Documentation',
+  (master_doc, 'scikit-misc.tex',
+   u'sc Documentation',
    u'Hassan Kibirige', 'manual'),
 ]
 
@@ -264,8 +264,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'onelib',
-     u'Onelib Documentation',
+    (master_doc, 'scikit-misc',
+     u'The scikit-misc Documentation',
      [u'Hassan Kibirige'], 1)
 ]
 
@@ -279,12 +279,11 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'onelib',
-   u'Onelib Documentation',
+  (master_doc, 'scikit-misc',
+   u'The scikit-misc Documentation',
    u'Hassan Kibirige',
-   'onelib',
-   'One line description of project.',
-   'Miscellaneous'),
+   'Miscellaneous tools for scientific computing',
+   ),
 ]
 
 # Documents to append as an appendix to all manuals.

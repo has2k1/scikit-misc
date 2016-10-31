@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import numpy.testing as npt
 
-from onelib.loess import loess, loess_anova
+from skmisc.loess import loess, loess_anova
 
 data_path = os.path.dirname(os.path.abspath(__file__))
 

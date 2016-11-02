@@ -7,15 +7,27 @@ import os
 import sys
 import subprocess
 from setuptools import find_packages
+
 from numpy.distutils.core import setup
 
 import versioneer
+
+if sys.version_info[0] < 3:
+    import __builtin__ as builtins
+else:
+    import builtins
 
 __author__ = 'Hassan Kibirige'
 __email__ = 'has2k1@gmail.com'
 __description__ = "Miscellaneous tools for scientific computing."
 __license__ = 'BSD (3-clause)'
 __url__ = 'https://github.com/has2k1/scikit-misc'
+
+# This is a bit hackish: we are setting a global variable so that
+# the main skmisc __init__ can detect if it is being loaded by the
+# setup routine, to avoid attempting to load components that aren't
+# built yet. Copied from numpy
+builtins.__SKMISC_SETUP__ = True
 
 
 def check_dependencies():
@@ -132,3 +144,4 @@ if __name__ == '__main__':
           ],
           configuration=configuration
           )
+    del builtins.__SKMISC_SETUP__

@@ -70,7 +70,7 @@ script:
   - |
     if [[ $COVERAGE == true ]]; then
       coverage erase
-      py.test skmisc/
+      py.test --cov=skmisc
     elif [[ $JOB == 'docs' ]]; then
       pushd doc
       sphinx-build -W -b html -d _build/doctrees . _build/html

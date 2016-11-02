@@ -39,7 +39,7 @@ lint:
 	flake8 skmisc tests
 
 test:
-	py.test
+	pytest --cov=skmisc
 
 test-all:
 	tox

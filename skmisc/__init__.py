@@ -31,5 +31,18 @@ else:
         """
         Run tests
         """
-        import pytest
+        # The doctests are not run when called from an installed
+        # package since the pytest.ini is not included in the
+        # package.
+        import os
+        try:
+            import pytest
+        except ImportError:
+            msg = "To run the tests, you must install pytest"
+            raise ImportError(msg)
+        path = os.path.realpath(__file__)
+        if args is None:
+            args = [path]
+        else:
+            args.append(path)
         return pytest.main(args=args, plugins=plugins)

@@ -54,6 +54,7 @@ install:
     fi
     if [[ $COVERAGE == true ]]; then
       pip install pytest-cov coveralls
+      pip install --upgrade pytest>=3.0.3
     fi
     if [[ $JOB == 'docs' ]]; then
       pip install sphinx sphinx_rtd_theme;
@@ -65,12 +66,13 @@ install:
       pip install --install-option="--no-cython-compile" Cython==0.24
       pip install -v -e .
     fi
+  - pip list
 
 script:
   - |
     if [[ $COVERAGE == true ]]; then
       coverage erase
-      py.test --cov=skmisc
+      py.test --cov=skmisc skmisc
     elif [[ $JOB == 'docs' ]]; then
       pushd doc
       sphinx-build -W -b html -d _build/doctrees . _build/html

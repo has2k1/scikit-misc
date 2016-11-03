@@ -6,9 +6,6 @@ Miscellaneous tools for data analysis and scientific computing.
 import os
 import sys
 import subprocess
-from setuptools import find_packages
-
-from numpy.distutils.core import setup
 
 import versioneer
 
@@ -22,6 +19,12 @@ __email__ = 'has2k1@gmail.com'
 __description__ = "Miscellaneous tools for scientific computing."
 __license__ = 'BSD (3-clause)'
 __url__ = 'https://github.com/has2k1/scikit-misc'
+
+# BEFORE importing setuptools, remove MANIFEST. Otherwise it may
+# not be properly updated when the contents of directories change
+# (true for distutils, not sure about setuptools).
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
 # This is a bit hackish: we are setting a global variable so that
 # the main skmisc __init__ can detect if it is being loaded by the
@@ -104,7 +107,7 @@ def setup_requires():
     Plus any version tests and warnings
     """
     from pkg_resources import parse_version
-    required = ['cython']
+    required = ['cython>=0.24.0']
     numpy_requirement = 'numpy>=1.7.1'
 
     try:
@@ -118,30 +121,41 @@ def setup_requires():
     return required
 
 
+def setup_package():
+    from numpy.distutils.core import setup
+    from setuptools import find_packages
+    # versioneer needs these as base classes
+    from numpy.distutils.command.build_py import build_py
+    from numpy.distutils.command.sdist import sdist
+    metadata = dict(
+        name='scikit-misc',
+        maintainer=__author__,
+        maintainer_email=__email__,
+        description=__description__,
+        long_description=__doc__,
+        license=__license__,
+        version=versioneer.get_version(),
+        cmdclass=versioneer.get_cmdclass(build_py, sdist),
+        url=__url__,
+        install_requires=get_required_packages(),
+        setup_requires=setup_requires(),
+        packages=find_packages(),
+        package_data=get_package_data(),
+        classifiers=[
+            'Intended Audience :: Science/Research',
+            'License :: OSI Approved :: BSD License',
+            'Programming Language :: Python :: 2',
+            'Programming Language :: Python :: 3',
+            'Topic :: Scientific/Engineering',
+        ],
+        configuration=configuration
+    )
+    setup(**metadata)
+
+
 if __name__ == '__main__':
     check_dependencies()
     prepare_for_setup()
+    setup_package()
 
-    setup(name='scikit-misc',
-          maintainer=__author__,
-          maintainer_email=__email__,
-          description=__description__,
-          long_description=__doc__,
-          license=__license__,
-          version=versioneer.get_version(),
-          cmdclass=versioneer.get_cmdclass(),
-          url=__url__,
-          install_requires=get_required_packages(),
-          setup_requires=setup_requires(),
-          packages=find_packages(),
-          package_data=get_package_data(),
-          classifiers=[
-              'Intended Audience :: Science/Research',
-              'License :: OSI Approved :: BSD License',
-              'Programming Language :: Python :: 2',
-              'Programming Language :: Python :: 3',
-              'Topic :: Scientific/Engineering',
-          ],
-          configuration=configuration
-          )
     del builtins.__SKMISC_SETUP__

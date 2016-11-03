@@ -17,13 +17,14 @@ if __SKMISC_SETUP__:
     _sys.stderr.write('Running from skmisc source directory.\n')
     del _sys
 else:
-    try:
-        from skmisc.__config__ import show as show_config  # noqa: F401
-    except ImportError:
-        msg = """Error importing skmisc: you cannot import skmisc while
-        being in skmisc source directory; please exit the skmisc source
-        tree first, and relaunch your python intepreter."""
-        raise ImportError(msg)
+    from skmisc.__config__ import show as show_config  # noqa: F401
+    # try:
+    #     from skmisc.__config__ import show as show_config  # noqa: F401
+    # except ImportError:
+    #     msg = """Error importing skmisc: you cannot import skmisc while
+    #     being in skmisc source directory; please exit the skmisc source
+    #     tree first, and relaunch your python intepreter."""
+    #     raise ImportError(msg)
 
     __all__.append('show_config')
 

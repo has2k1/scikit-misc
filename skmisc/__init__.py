@@ -17,14 +17,13 @@ if __SKMISC_SETUP__:
     _sys.stderr.write('Running from skmisc source directory.\n')
     del _sys
 else:
-    from skmisc.__config__ import show as show_config  # noqa: F401
-    # try:
-    #     from skmisc.__config__ import show as show_config  # noqa: F401
-    # except ImportError:
-    #     msg = """Error importing skmisc: you cannot import skmisc while
-    #     being in skmisc source directory; please exit the skmisc source
-    #     tree first, and relaunch your python intepreter."""
-    #     raise ImportError(msg)
+    try:
+        from skmisc.__config__ import show as show_config  # noqa: F401
+    except ImportError as err:
+        msg = """Error importing skmisc: you cannot import skmisc while
+        being in skmisc source directory; please exit the skmisc source
+        tree first, and relaunch your python intepreter."""
+        raise ImportError('\n\n'.join([err.message, msg]))
 
     __all__.append('show_config')
 
@@ -41,7 +40,7 @@ else:
         except ImportError:
             msg = "To run the tests, you must install pytest"
             raise ImportError(msg)
-        path = os.path.realpath(__file__)
+        path = os.path.dirname(os.path.realpath(__file__))
         if args is None:
             args = [path]
         else:

@@ -2,17 +2,7 @@
 #include "loess.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-/**********************************************************************/
- /*
- * Incomplete beta function.
- * Reference:  Abramowitz and Stegun, 26.5.8.
- * Assumptions: 0 <= x <= 1; a,b > 0.
- */
-#define DOUBLE_EPS      2.2204460492503131E-16
-#define IBETA_LARGE     1.0e30
-#define IBETA_SMALL     1.0e-30
-
+#include <float.h>
 
 /* static functions */
 static double _fmin(double a, double b)
@@ -130,7 +120,7 @@ static double invibeta(double p, double a, double b)
         pm = ibeta(qm, a, b);
         qdiff = qr - ql;
         pdiff = pm - p;
-        if(fabs(qdiff) < DOUBLE_EPS*qm || fabs(pdiff) < DOUBLE_EPS)
+        if(fabs(qdiff) < DBL_EPSILON*qm || fabs(pdiff) < DBL_EPSILON)
             return(qm);
         if(pdiff < 0) {
             ql = qm;
@@ -147,7 +137,7 @@ static double invibeta(double p, double a, double b)
         pm = ibeta(qm, a, b);
         qdiff = qr - ql;
         pdiff = pm - p;
-        if(fabs(qdiff) < 2*DOUBLE_EPS*qm || fabs(pdiff) < 2*DOUBLE_EPS)
+        if(fabs(qdiff) < 2*DBL_EPSILON*qm || fabs(pdiff) < 2*DBL_EPSILON)
             return(qm);
         if(pdiff < 0) {
             ql = qm;
@@ -176,6 +166,12 @@ double pf(double q, double df1, double df2)
     return(ibeta(q*df1/(df2+q*df1), df1/2, df2/2));
 }
 
+/**********************************************************************/
+ /*
+ * Incomplete beta function.
+ * Reference:  Abramowitz and Stegun, 26.5.8.
+ * Assumptions: 0 <= x <= 1; a,b > 0.
+ */
 
 double ibeta(double x, double a, double b)
 {
@@ -194,7 +190,7 @@ double ibeta(double x, double a, double b)
         a = b;
         b = temp;
         x = 1 - x;
-        }
+    }
 
     pn[0] = 0.0;
     pn[2] = pn[3] = pn[1] = 1.0;
@@ -210,22 +206,22 @@ double ibeta(double x, double a, double b)
             ak = -((a+k-1.0)*(b-k)*val)/((a+2.0*k-2.0)*(a+2.0*k-1.0));
         else
             ak = ((a+b+k-1.0)*k*val)/((a+2.0*k)*(a+2.0*k-1.0));
-            pn[4] = bk*pn[2] + ak*pn[0];
-            pn[5] = bk*pn[3] + ak*pn[1];
-            next = pn[4] / pn[5];
+        pn[4] = bk*pn[2] + ak*pn[0];
+        pn[5] = bk*pn[3] + ak*pn[1];
+        next = pn[4] / pn[5];
+        for (i=0; i<=3; i++)
+            pn[i] = pn[i+2];
+        if (fabs(pn[4]) >= DBL_MAX)
             for (i=0; i<=3; i++)
-                pn[i] = pn[i+2];
-            if (fabs(pn[4]) >= IBETA_LARGE)
-                for (i=0; i<=3; i++)
-                    pn[i] /= IBETA_LARGE;
-            if (fabs(pn[4]) <= IBETA_SMALL)
-                for (i=0; i<=3; i++)
-                    pn[i] /= IBETA_SMALL;
-        } while (fabs(next-prev) > DOUBLE_EPS*prev);
-        factor = a*log(x) + (b-1)*log(1-x);
-        factor -= gamma(a+1) + gamma(b) - gamma(a+b);
-        I = exp(factor) * next;
-        return(flipped ? 1-I : I);
+                pn[i] /= DBL_MAX;
+        if (fabs(pn[4]) <= DBL_MIN)
+            for (i=0; i<=3; i++)
+                pn[i] /= DBL_MIN;
+    } while (fabs(next-prev) > DBL_EPSILON*prev);
+    factor = a*log(x) + (b-1)*log(1-x);
+    factor -= lgamma(a+1) + lgamma(b) - lgamma(a+b);
+    I = exp(factor) * next;
+    return(flipped ? 1-I : I);
 }
 
 
@@ -296,8 +292,6 @@ void Recover(char *a, int *b)
     mail netlib@netlib.bell-labs.com
     send d1mach from core.
 */
-
-#include <float.h>
 
 doublereal F77_SUB(d1mach) (integer *i)
 {

@@ -961,8 +961,5 @@ cdef class loess_anova:
             self.dfd = two_d1 * two_d1 / two_d2
             tmp = two_s
         df2 = self.dfd
-        F_value = (rssdiff / d1diff) / (tmp * tmp)
-
-        self.Pr_F = 1. - c_loess.ibeta(F_value*df1/(df2+F_value*df1),
-                                       df1/2, df2/2)
-        self.F_value = F_value
+        self.F_value = (rssdiff / d1diff) / (tmp * tmp)
+        self.Pr_F = 1. - c_loess.pf(self.F_value, df1, df2)

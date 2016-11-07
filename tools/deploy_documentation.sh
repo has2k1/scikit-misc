@@ -28,7 +28,10 @@ ssh-add $DEPLOY_KEY_FILE
 # When HEAD is tagged and the tag indicates a releasable
 # version (eg v1.2.3), then VERSION is that tag. Otherwise,
 # it is an empty string.
-VERSION=$(git describe --always | grep '^v[0-9]\+\.[0-9]\+\.[0-9]\+$')
+release_re='[0-9]\+\.[0-9]\+\.[0-9]\+'
+pre_re='\(\(a\|b\|rc\|alpha\|beta\)[0-9]*\)\?'
+
+VERSION=$(git describe --always | grep "^v${release_re}${pre_re}$")
 
 # Pull requests and commits to other branches should not deploy
 # Deploy when master is tagged with a releasable version tag

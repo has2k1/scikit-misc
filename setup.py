@@ -122,8 +122,8 @@ def setup_requires():
 
 
 def setup_package():
-    from numpy.distutils.core import setup
     from setuptools import find_packages
+    from numpy.distutils.core import setup
     # versioneer needs these as base classes
     from numpy.distutils.command.build_py import build_py
     from numpy.distutils.command.sdist import sdist
@@ -144,6 +144,10 @@ def setup_package():
         classifiers=[
             'Intended Audience :: Science/Research',
             'License :: OSI Approved :: BSD License',
+            'Operating System :: Unix',
+            'Operating System :: MacOS',
+            'Programming Language :: C',
+            'Programming Language :: Fortran',
             'Programming Language :: Python :: 2',
             'Programming Language :: Python :: 3',
             'Topic :: Scientific/Engineering',

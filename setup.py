@@ -89,7 +89,6 @@ def configuration(parent_package='', top_path=None):
                        quiet=True)
 
     config.add_subpackage('skmisc')
-    config.version = versioneer.get_version()
     return config
 
 

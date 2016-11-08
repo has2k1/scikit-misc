@@ -1,13 +1,13 @@
 Installation
 ============
 
-Onelib can be installed in a handful of ways.
+scikit-misc can be installed in a handful of ways.
 
 1. Official release *(Recommended)*
 
    .. code-block:: console
 
-       $ pip install onelib
+       $ pip install scikit-misc
 
    If you don't have `pip`_ installed, this `Python installation guide`_
    can guide you through the process.
@@ -17,23 +17,23 @@ Onelib can be installed in a handful of ways.
 
    .. code-block:: console
 
-       $ pip install git+https://github.com/has2k1/onelib.git
+       $ pip install git+https://github.com/has2k1/scikit-misc.git
 
    Or
 
    .. code-block:: console
 
-       $ git clone https://github.com/has2k1/onelib.git
-       $ cd onelib
+       $ git clone https://github.com/has2k1/scikit-misc.git
+       $ cd scikit-misc
        $ python setup.py install
 
    Or
 
    .. code-block:: console
 
-       $ curl -OL https://github.com/has2k1/onelib/archive/master.zip
+       $ curl -OL https://github.com/has2k1/scikit-misc/archive/master.zip
        $ unzip master
-       $ cd onelib-master
+       $ cd scikit-misc-master
        $ python setup.py install
 
 

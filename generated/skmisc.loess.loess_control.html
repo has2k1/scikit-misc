@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>skmisc.loess.loess_control &mdash; scikit-misc 0.1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="scikit-misc 0.1.0 documentation" href="../index.html"/>
+        <link rel="up" title="Locally-weighted regression (skmisc.loess)" href="../loess.html"/>
+        <link rel="next" title="skmisc.loess.loess_outputs" href="skmisc.loess.loess_outputs.html"/>
+        <link rel="prev" title="skmisc.loess.loess_model" href="skmisc.loess.loess_model.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> scikit-misc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess.html">skmisc.loess.loess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_inputs.html">skmisc.loess.loess_inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_model.html">skmisc.loess.loess_model</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">skmisc.loess.loess_control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_outputs.html">skmisc.loess.loess_outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_prediction.html">skmisc.loess.loess_prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_confidence_intervals.html">skmisc.loess.loess_confidence_intervals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_anova.html">skmisc.loess.loess_anova</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loess.html#source">Source</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">scikit-misc</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a> &raquo;</li>
+      
+    <li>skmisc.loess.loess_control</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/generated/skmisc.loess.loess_control.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="skmisc-loess-loess-control">
+<h1>skmisc.loess.loess_control<a class="headerlink" href="#skmisc-loess-loess-control" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skmisc.loess.loess_control">
+<em class="property">class </em><code class="descclassname">skmisc.loess.</code><code class="descname">loess_control</code><span class="sig-paren">(</span><em>surface='interpolate'</em>, <em>statistics='approximate'</em>, <em>trace_hat='wait.to.decide'</em>, <em>iterations=4</em>, <em>cell=0.2</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialization class for loess control parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>surface</strong> (<em>str, optional</em>) &#8211; One of [&#8216;interpolate&#8217;, &#8216;direct&#8217;]
+Determines whether the fitted surface is computed directly
+at all points (&#8216;direct&#8217;) or whether an interpolation method
+is used (&#8216;interpolate&#8217;). The default &#8216;interpolate&#8217;) is what
+most users should use unless special circumstances warrant.</li>
+<li><strong>statistics</strong> (<em>str, optional</em>) &#8211; One of [&#8216;approximate&#8217;, &#8216;exact&#8217;]
+Determines whether the statistical quantities are computed
+exactly (&#8216;exact&#8217;) or approximately (&#8216;approximate&#8217;). &#8216;exact&#8217;
+should only be used for testing the approximation in
+statistical development and is not meant for routine usage
+because computation time can be horrendous.</li>
+<li><strong>trace_hat</strong> (<em>str, optional</em>) &#8211; One of [&#8216;wait.to.decide&#8217;, &#8216;exact&#8217;, &#8216;approximate&#8217;]
+Determines how the trace of the hat matrix should be computed.
+The hat matrix is used in the computation of the statistical
+quantities. If &#8216;exact&#8217;, an exact computation is done; this
+could be slow when the number of observations n becomes large.
+If &#8216;wait.to.decide&#8217; is selected, then a default is &#8216;exact&#8217;
+for n &lt; 500 and &#8216;approximate&#8217; otherwise.
+This option is only useful when the fitted surface is
+interpolated. If surface is &#8216;exact&#8217;, an exact computation is
+always done for the trace. Setting trace_hat to &#8216;approximate&#8217;
+for large dataset will substantially reduce the computation time.</li>
+<li><strong>iterations</strong> (<em>int, optional</em>) &#8211; Number of iterations of the robust fitting method. If the family
+is &#8216;gaussian&#8217;, the number of iterations is set to 0.</li>
+<li><strong>cell</strong> (<em>float, optional</em>) &#8211; Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
+where n is the number of observations, and span the smoothing
+parameter. Then, a cell is further divided if the number of
+observations within it is greater than or equal to k. This
+option is only used if the surface is interpolated.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="skmisc.loess.loess_outputs.html" class="btn btn-neutral float-right" title="skmisc.loess.loess_outputs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="skmisc.loess.loess_model.html" class="btn btn-neutral" title="skmisc.loess.loess_model" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Hassan Kibirige.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -3,6 +3,7 @@ Changelog
 
 v0.1.0
 ------
-*(unreleased)*
+*(2016-11-08)*
+
 
 First public release

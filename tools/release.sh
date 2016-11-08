@@ -27,7 +27,7 @@ if [[ $VERSION ]];  then
 
    rm -rf "$BUILD_DIR/dist"
    python setup.py sdist
-   source "$DIR/download_wheels.sh"
+   (source "$DIR/download_wheels.sh")
    twine upload dist/*
 
 elif [[ $PREVIOUS_VERSION ]]; then

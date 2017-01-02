@@ -1476,8 +1476,12 @@ def get_version():
     return get_versions()["version"]
 
 
-def get_cmdclass(build_py=None, sdist=None):
-    """Get the custom setuptools/distutils subclasses used by Versioneer."""
+def get_cmdclass(cmdclass=None):
+    """Get the custom setuptools/distutils subclasses used by Versioneer.
+
+    If the package uses a different cmdclass (e.g. one from numpy), it
+    should be provide as an argument.
+    """
     if "versioneer" in sys.modules:
         del sys.modules["versioneer"]
         # this fixes the "python setup.py develop" case (also 'install' and
@@ -1493,9 +1497,7 @@ def get_cmdclass(build_py=None, sdist=None):
         # happens, we protect the child from the parent's versioneer too.
         # Also see https://github.com/warner/python-versioneer/issues/52
 
-    cmds = {}
-    _build_py = build_py
-    _sdist = sdist
+    cmds = {} if cmdclass is None else dict(cmdclass)
 
     # we add "version" to both distutils and setuptools
     from distutils.core import Command
@@ -1537,11 +1539,12 @@ def get_cmdclass(build_py=None, sdist=None):
     #  setup.py egg_info -> ?
 
     # we override different "build_py" commands for both environments
-    if not _build_py:
-        if "setuptools" in sys.modules:
-            from setuptools.command.build_py import build_py as _build_py
-        else:
-            from distutils.command.build_py import build_py as _build_py
+    if 'build_py' in cmds:
+        _build_py = cmds['build_py']
+    elif "setuptools" in sys.modules:
+        from setuptools.command.build_py import build_py as _build_py
+    else:
+        from distutils.command.build_py import build_py as _build_py
 
     class cmd_build_py(_build_py):
         def run(self):
@@ -1619,11 +1622,12 @@ def get_cmdclass(build_py=None, sdist=None):
         cmds["py2exe"] = cmd_py2exe
 
     # we override different "sdist" commands for both environments
-    if not _sdist:
-        if "setuptools" in sys.modules:
-            from setuptools.command.sdist import sdist as _sdist
-        else:
-            from distutils.command.sdist import sdist as _sdist
+    if 'sdist' in cmds:
+        _sdist = cmds['sdist']
+    elif "setuptools" in sys.modules:
+        from setuptools.command.sdist import sdist as _sdist
+    else:
+        from distutils.command.sdist import sdist as _sdist
 
     class cmd_sdist(_sdist):
         def run(self):

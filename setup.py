@@ -122,10 +122,8 @@ def setup_requires():
 
 def setup_package():
     from setuptools import find_packages
-    from numpy.distutils.core import setup
-    # versioneer needs these as base classes
-    from numpy.distutils.command.build_py import build_py
-    from numpy.distutils.command.sdist import sdist
+    # versioneer needs numpy cmdclass
+    from numpy.distutils.core import setup, numpy_cmdclass
     metadata = dict(
         name='scikit-misc',
         maintainer=__author__,
@@ -134,7 +132,7 @@ def setup_package():
         long_description=__doc__,
         license=__license__,
         version=versioneer.get_version(),
-        cmdclass=versioneer.get_cmdclass(build_py, sdist),
+        cmdclass=versioneer.get_cmdclass(numpy_cmdclass),
         url=__url__,
         install_requires=get_required_packages(),
         setup_requires=setup_requires(),

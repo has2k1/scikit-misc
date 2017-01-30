@@ -774,31 +774,6 @@ cdef class loess:
     **options : dict
         The parameters of :class:`loess_model` and
         :class: `loess_control`.
-
-    Attributes
-    ----------
-    fitted_values : ndarray of shape (n,)
-        Fitted values.
-    fitted_residuals : ndarray of shape (n,)
-        Fitted residuals (observations - fitted values).
-    enp : float
-        Equivalent number of parameters.
-    s : float
-        Estimate of the scale of residuals.
-    one_delta: float
-        Statistical parameter used in the computation of standard errors.
-    two_delta : float
-        Statistical parameter used in the computation of standard errors.
-    pseudovalues : ndarray of shape (n,)
-        Adjusted values of the response when robust estimation is used.
-    trace_hat : float
-        Trace of the operator hat matrix.
-    diagonal :
-        Diagonal of the operator hat matrix.
-    robust : ndarray of shape (n,)
-        Robustness weights for robust fitting.
-    divisor : ndarray of shape(p,)
-        Normalization divisors for numeric predictors.
     """
     cdef c_loess.c_loess _base
     cdef readonly loess_inputs inputs

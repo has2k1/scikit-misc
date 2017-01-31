@@ -65,3 +65,5 @@ target/
 # Specific to this project
 skmisc/__config__.py
 skmisc/loess/src/_loess.c
+examples/.ipynb_checkpoints/
+

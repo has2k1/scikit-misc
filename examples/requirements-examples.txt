@@ -1,0 +1,3 @@
+scikit-misc
+matplotlib
+jupyter

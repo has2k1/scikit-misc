@@ -28,13 +28,13 @@ pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_sca
     N = size_info[1];
     M = size_info[2];
 
-    x = (double *) malloc(N * D * sizeof(double));
-    x_tmp = (double *) malloc(N * D * sizeof(double));
-    x_evaluate = (double *) malloc(M * D * sizeof(double));
-    L = (double *) malloc(N * M * sizeof(double));
-    order_parametric = (int *) malloc(D * sizeof(int));
-    order_drop_sqr = (int *) malloc(D * sizeof(int));
-    temp = (double *) malloc(N * D * sizeof(double));
+    x = MALLOC(N * D * sizeof(double));
+    x_tmp = MALLOC(N * D * sizeof(double));
+    x_evaluate = MALLOC(M * D * sizeof(double));
+    L = MALLOC(N * M * sizeof(double));
+    order_parametric = MALLOC(D * sizeof(int));
+    order_drop_sqr = MALLOC(D * sizeof(int));
+    temp = MALLOC(N * D * sizeof(double));
 
     for(i = 0; i < (N * D); i++)
         x_tmp[i] = x_[i];
@@ -94,7 +94,7 @@ pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_sca
         loess_ifit(parameter, a, xi, vert, vval, &M, x_evaluate, fit);
         if(*se) {
             new_cell = (*span) * (*cell);
-            fit_tmp = (double *) malloc(M * sizeof(double));
+            fit_tmp = MALLOC(M * sizeof(double));
             loess_ise(y, x, x_evaluate, weights, span, degree,
                       &nonparametric, order_drop_sqr, &sum_drop_sqr,
                       &new_cell, &D, &N, &M, fit_tmp, L);
@@ -131,9 +131,9 @@ predict(double *eval, loess *lo, prediction *pre)
 {
     int  size_info[3];
 
-    pre->fit = (double *) malloc(pre->m * sizeof(double));
+    pre->fit = MALLOC(pre->m * sizeof(double));
     if (pre->se) {
-        pre->se_fit = (double *) malloc(pre->m * sizeof(double));
+        pre->se_fit = MALLOC(pre->m * sizeof(double));
     }
     pre->residual_scale = lo->outputs->residual_scale;
     pre->df = (lo->outputs->one_delta * lo->outputs->one_delta) /

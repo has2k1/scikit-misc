@@ -3,6 +3,7 @@
 
 #define TRUE  1
 #define FALSE 0
+#define MALLOC(n) safe_malloc(n, __LINE__)
 
 /* Structures */
 
@@ -132,6 +133,7 @@ loess_dfit(double *y, double *x, double *x_evaluate, double *weights,
            double *fit);
 
 // from misc.c
+void *safe_malloc(size_t n, unsigned long line);
 void pointwise(prediction *pre, double coverage, confidence_intervals *ci);
 void pw_free_mem(confidence_intervals *ci);
 double pf(double q, double df1, double df2);

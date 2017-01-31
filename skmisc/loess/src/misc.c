@@ -4,6 +4,21 @@
 #include <stdlib.h>
 #include <float.h>
 
+
+void *safe_malloc(size_t n, unsigned long line)
+{
+    void *p = malloc(n);
+
+    if (!p) {
+        fprintf(stderr, "[%s:%lu] Out of memory (%lu bytes)\n",
+                __FILE__, line, (unsigned long)n);
+        exit(EXIT_FAILURE);
+    }
+
+    return p;
+}
+
+
 /* static functions */
 static double _fmin(double a, double b)
 {
@@ -256,9 +271,9 @@ void pointwise(prediction *pre, double coverage,
     double    t_dist, limit, fit;
     int    i;
 
-    ci->fit = (double *) malloc(pre->m * sizeof(double));
-    ci->upper = (double *) malloc(pre->m * sizeof(double));
-    ci->lower = (double *) malloc(pre->m * sizeof(double));
+    ci->fit = MALLOC(pre->m * sizeof(double));
+    ci->upper = MALLOC(pre->m * sizeof(double));
+    ci->lower = MALLOC(pre->m * sizeof(double));
 
     t_dist = qt(1 - (1 - coverage)/2, pre->df);
     for(i = 0; i < pre->m; i++) {

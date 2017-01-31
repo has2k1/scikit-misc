@@ -88,9 +88,9 @@ loess_inputs_setup(double *x, double *y, double *w, long n,
       long p, loess_inputs *inputs) {
     int i;
 
-    inputs->y = (double *) malloc(n * sizeof(double));
-    inputs->x = (double *) malloc(n * p * sizeof(double));
-    inputs->weights = (double *) malloc(n * sizeof(double));
+    inputs->y = MALLOC(n * sizeof(double));
+    inputs->x = MALLOC(n * p * sizeof(double));
+    inputs->weights = MALLOC(n * sizeof(double));
 
     for(i = 0; i < (n * p); i++) {
         inputs->x[i] = x[i];
@@ -106,12 +106,12 @@ loess_inputs_setup(double *x, double *y, double *w, long n,
 }
 
 void loess_outputs_setup(long n, long p, loess_outputs *outputs) {
-   outputs->fitted_values = (double *) malloc(n * sizeof(double));
-   outputs->fitted_residuals = (double *) malloc(n * sizeof(double));
-   outputs->diagonal = (double *) malloc(n * sizeof(double));
-   outputs->robust = (double *) malloc(n * sizeof(double));
-   outputs->divisor = (double *) malloc(p * sizeof(double));
-   outputs->pseudovalues = (double *) malloc(n * sizeof(double));
+   outputs->fitted_values = MALLOC(n * sizeof(double));
+   outputs->fitted_residuals = MALLOC(n * sizeof(double));
+   outputs->diagonal = MALLOC(n * sizeof(double));
+   outputs->robust = MALLOC(n * sizeof(double));
+   outputs->divisor = MALLOC(p * sizeof(double));
+   outputs->pseudovalues = MALLOC(n * sizeof(double));
 }
 
 void
@@ -120,11 +120,11 @@ loess_kd_tree_setup(long n, long p, loess_kd_tree *kd_tree) {
 
    max_kd = n > 200 ? n : 200;
 
-   kd_tree->parameter = (long *) malloc(7 * sizeof(long));
-   kd_tree->a = (long *) malloc(max_kd * sizeof(long));
-   kd_tree->xi = (double *) malloc(max_kd * sizeof(double));
-   kd_tree->vert = (double *) malloc(p * 2 * sizeof(double));
-   kd_tree->vval = (double *) malloc((p + 1) * max_kd * sizeof(double));
+   kd_tree->parameter = MALLOC(7 * sizeof(long));
+   kd_tree->a = MALLOC(max_kd * sizeof(long));
+   kd_tree->xi = MALLOC(max_kd * sizeof(double));
+   kd_tree->vert = MALLOC(p * 2 * sizeof(double));
+   kd_tree->vval = MALLOC((p + 1) * max_kd * sizeof(double));
 }
 
 void
@@ -171,17 +171,17 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     max_kd = (N > 200 ? N : 200);
     *one_delta = *two_delta = *trace_hat_out = 0;
 
-    x = (double *) malloc(D * N * sizeof(double));
-    x_tmp = (double *) malloc(D * N * sizeof(double));
-    temp = (double *) malloc(N * sizeof(double));
-    a_tmp = (long *) malloc(max_kd * sizeof(int));
-    xi_tmp = (double *) malloc(max_kd * sizeof(double));
-    vert_tmp = (double *) malloc(D * 2 * sizeof(double));
-    vval_tmp = (double *) malloc((D + 1) * max_kd * sizeof(double));
-    diag_tmp = (double *) malloc(N * sizeof(double));
-    param_tmp = (long *) malloc(N * sizeof(long));
-    order_parametric = (int *) malloc(D * sizeof(int));
-    order_drop_sqr = (int *) malloc(D * sizeof(int));
+    x = MALLOC(D * N * sizeof(double));
+    x_tmp = MALLOC(D * N * sizeof(double));
+    temp = MALLOC(N * sizeof(double));
+    a_tmp = MALLOC(max_kd * sizeof(int));
+    xi_tmp = MALLOC(max_kd * sizeof(double));
+    vert_tmp = MALLOC(D * 2 * sizeof(double));
+    vval_tmp = MALLOC((D + 1) * max_kd * sizeof(double));
+    diag_tmp = MALLOC(N * sizeof(double));
+    param_tmp = MALLOC(N * sizeof(long));
+    order_parametric = MALLOC(D * sizeof(int));
+    order_drop_sqr = MALLOC(D * sizeof(int));
 
     new_cell = (*span) * (*cell);
     for(i = 0; i < N; i++)

@@ -112,18 +112,30 @@ cdef class loess_inputs:
 
     @property
     def n(self):
+        """
+        :class:`int` - Number of independent observations
+        """
         return self._base.n
 
     @property
     def p(self):
+        """
+        :class:`int` - Number of variables
+        """
         return self._base.p
 
     @property
     def x(self):
+        """
+        :class:`~numpy.ndarray` - Independent observations, shape ``(n, p)``
+        """
         return floatarray_from_data(self.n, self.p, self._base.x)
 
     @property
     def y(self):
+        """
+        :class:`~numpy.ndarray` - Response observations, shape ``(n,)``
+        """
         return floatarray_from_data(self.n, 1, self._base.y)
 
 
@@ -443,31 +455,6 @@ cdef class loess_outputs:
         Number of independent observation
     p : int
         Number of variables
-
-    Attributes
-    ----------
-    fitted_values : ndarray of shape (n,)
-        Fitted values.
-    fitted_residuals : ndarray of shape (n,)
-        Fitted residuals (observations - fitted values).
-    enp : float
-        Equivalent number of parameters.
-    residual_scale : float
-        Estimate of the scale of residuals.
-    one_delta: float
-        Statistical parameter used in the computation of standard errors.
-    two_delta : float
-        Statistical parameter used in the computation of standard errors.
-    pseudovalues : ndarray of shape (n,)
-        Adjusted values of the response when robust estimation is used.
-    trace_hat : float
-        Trace of the operator hat matrix.
-    diagonal : ndarray of shape (n,)
-        Diagonal of the operator hat matrix.
-    robust : ndarray of shape (n,)
-        Robustness weights for robust fitting.
-    divisor : ndarray of shape (p,)
-        Normalization divisors for numeric predictors.
     """
     cdef c_loess.c_loess_outputs _base
     # private
@@ -489,14 +476,25 @@ cdef class loess_outputs:
 
     @property
     def fitted_values(self):
+        """
+        :class:`~numpy.ndarray` - Fitted values, shape ``(n,)``
+        """
         return floatarray_from_data(self.n, 1, self._base.fitted_values)
 
     @property
     def fitted_residuals(self):
+        """
+        :class:`~numpy.ndarray` - Fitted residuals, shape ``(n,)``,
+        (observations - fitted values)
+        """
         return floatarray_from_data(self.n, 1, self._base.fitted_residuals)
 
     @property
     def pseudovalues(self):
+        """
+        :class:`~numpy.ndarray` - Adjusted values of the response
+        when robust estimation is used, shape ``(n,)``
+        """
         if self.family != 'symmetric':
             raise ValueError(
                 "pseudovalues are available only when "
@@ -506,34 +504,63 @@ cdef class loess_outputs:
 
     @property
     def diagonal(self):
+        """
+        :class:`~numpy.ndarray` - Diagonal of the operator hat matrix,
+        shape ``(n,)``
+        """
         return floatarray_from_data(self.n, 1, self._base.diagonal)
 
     @property
     def robust(self):
+        """
+        :class:`~numpy.ndarray` - Robustness weights for robust fitting,
+        shape ``(n,)``
+        """
         return floatarray_from_data(self.n, 1, self._base.robust)
 
     @property
     def divisor(self):
+        """
+        :class:`~numpy.ndarray` - Normalization divisors for numeric
+        predictors, shape ``(p,)``
+        """
         return floatarray_from_data(self.n, 1, self._base.divisor)
 
     @property
     def enp(self):
+        """
+        :class:`float` - Equivalent number of parameters
+        """
         return self._base.enp
 
     @property
     def residual_scale(self):
+        """
+        :class:`float` - Estimate of the scale of residuals
+        """
         return self._base.residual_scale
 
     @property
     def one_delta(self):
+        """
+        :class:`float` - Statistical parameter used in the computation
+        of standard errors
+        """
         return self._base.one_delta
 
     @property
     def two_delta(self):
+        """
+        :class:`float` - Statistical parameter used in the computation
+        of standard errors
+        """
         return self._base.two_delta
 
     @property
     def trace_hat(self):
+        """
+        :class:`float` - Trace of the operator hat matrix
+        """
         return self._base.trace_hat
 
     def __str__(self):
@@ -560,15 +587,6 @@ cdef class loess_confidence_intervals:
     alpha : float
         The alpha level for the confidence interval.
         It must be in the range (0, 1)
-
-    Attributes
-    ----------
-    fit : ndarray
-        Predicted values.
-    lower : ndarray
-        Lower bounds of the confidence intervals.
-    upper : ndarray
-        Upper bounds of the confidence intervals.
     """
     cdef c_loess.c_confidence_intervals _base
     cdef readonly m
@@ -598,15 +616,24 @@ cdef class loess_confidence_intervals:
 
     @property
     def fit(self):
-        return  floatarray_from_data(self.m, 1, self._base.fit)
+        """
+        :class:`~numpy.ndarray` - Predicted values
+        """
+        return floatarray_from_data(self.m, 1, self._base.fit)
 
     @property
     def upper(self):
-        return  floatarray_from_data(self.m, 1, self._base.upper)
+        """
+        :class:`~numpy.ndarray` - Upper bounds of the confidence intervals
+        """
+        return floatarray_from_data(self.m, 1, self._base.upper)
 
     @property
     def lower(self):
-        return  floatarray_from_data(self.m, 1, self._base.lower)
+        """
+        :class:`~numpy.ndarray` - Lower bounds of the confidence intervals
+        """
+        return floatarray_from_data(self.m, 1, self._base.lower)
 
 
 cdef class loess_prediction:
@@ -627,19 +654,6 @@ cdef class loess_prediction:
         any errors.
     stderror : boolean
         Whether the standard error should be computed
-
-    Attributes
-    ----------
-    values : ndarray of shape (m,)
-        loess values evaluated at newdata
-    stderr : ndarray of shape (m,)
-        Estimates of the standard error on the estimated values.
-        `ValueError` is raise when the standard error was not computed.
-    residual_scale : float
-        Estimate of the scale of the residuals
-    df : integer
-        Degrees of freedom of the t-distribution used to compute pointwise
-        confidence intervals for the evaluated surface.
     """
 
     cdef c_loess.c_prediction _base
@@ -691,10 +705,20 @@ cdef class loess_prediction:
 
     @property
     def values(self):
+        """
+        :class:`~numpy.ndarray` - loess values evaluated at newdata,
+        shape ``(m,)``
+        """
         return floatarray_from_data(self.m, 1, self._base.fit)
 
     @property
     def stderr(self):
+        """
+        :class:`~numpy.ndarray` - Estimates of the standard error on
+        the estimated values, shape ``(m,)``
+
+        Raises `ValueError` if the standard error was not computed.
+        """
         if not self._base.se:
             raise ValueError("Standard error was not computed."
                              "Use 'stderror=True' when predicting.")
@@ -702,14 +726,25 @@ cdef class loess_prediction:
 
     @property
     def residual_scale(self):
+        """
+        :class:`float` - Estimate of the scale of the residuals
+        """
         return self._base.residual_scale
 
     @property
     def df(self):
+        """
+        :class:`int` - Degrees of freedom of the t-distribution used
+        to compute pointwise confidence intervals for the evaluated
+        surface
+        """
         return self._base.df
 
     @property
     def m(self):
+        """
+        :class:`int` - Number of observations in the new data points
+        """
         return self._base.m
 
     def confidence(self, alpha=0.05):
@@ -773,7 +808,23 @@ cdef class loess:
         an unweighted fit is carried out (all the weights are one).
     **options : dict
         The parameters of :class:`loess_model` and
-        :class: `loess_control`.
+        :class:`loess_control`.
+
+    Attributes
+    ----------
+    inputs : :class:`loess_inputs`
+        Object that handles the inputs
+    model : :class:`loess_model`
+        Object that handles the model
+    control : :class:`loess_control`
+        Object that holds the control parameters
+    kd_tree : :class:`loess_kdtree`
+        Object that holds the parameters and structures used
+        internally by the regression algorithm.
+    outputs : :class:`loess_outputs`
+        Object that holds the output values and parameters.
+        These should be read after :meth:`loess.fit` has been
+        called.
     """
     cdef c_loess.c_loess _base
     cdef readonly loess_inputs inputs
@@ -871,7 +922,7 @@ cdef class loess:
 
         Returns
         -------
-        A `loess_prediction` object.
+        A :class:`loess_prediction` object.
         """
         # Make sure there's been a fit earlier
         if self.outputs.activated == 0:

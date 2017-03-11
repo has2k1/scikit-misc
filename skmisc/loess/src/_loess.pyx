@@ -734,9 +734,11 @@ cdef class loess_prediction:
     @property
     def df(self):
         """
-        :class:`int` - Degrees of freedom of the t-distribution used
-        to compute pointwise confidence intervals for the evaluated
-        surface
+        :class:`float` - Degrees of freedom of the loess fit.
+
+        It is used with the t-distribution to compute pointwise
+        confidence intervals for the evaluated surface. It is
+        obtained using the formula ``(one_delta ** 2) / two_delta``.
         """
         return self._base.df
 

@@ -7,6 +7,13 @@ SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
 
+# For make theme
+BOOTSWATCHTHEME = cerulean
+PRIMARY = \#194f7f
+SUCCESS = \#0e6957
+TEXTCOLOR = \#333333
+HEADINGS-COLOR = \#333231
+
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
 $(error The '$(SPHINXBUILD)' command was not found. Make sure you have Sphinx installed, then set the SPHINXBUILD environment variable to point to the full path of the '$(SPHINXBUILD)' executable. Alternatively you can add the directory with the executable to your PATH. If you don't have Sphinx installed, grab it from http://sphinx-doc.org/)
@@ -19,7 +26,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext theme
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -175,3 +182,10 @@ pseudoxml:
 	$(SPHINXBUILD) -b pseudoxml $(ALLSPHINXOPTS) $(BUILDDIR)/pseudoxml
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
+
+theme:
+	../tools/build_theme.sh --theme $(BOOTSWATCHTHEME) \
+	   --brand-primary '$(PRIMARY)' \
+	   --brand-success '$(SUCCESS)' \
+	   --text-color '$(TEXTCOLOR)' \
+	   --headings-color '$(HEADINGS-COLOR)'

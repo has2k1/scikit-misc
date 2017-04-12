@@ -115,6 +115,7 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+highlight_language = 'python3'
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -131,16 +132,26 @@ suppress_warnings = ['image.nonlocal_uri']
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-# html_theme = 'default'
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-# html_theme_options = {}
+# https://github.com/ryan-roemer/sphinx-bootstrap-theme
+# Bootswatch (http://bootswatch.com/) theme.
+html_theme_options = {
+    'navbar_title': 'scikit-misc',
+    'globaltoc_depth': 2,
+    'globaltoc_includehidden': 'true',
+    'source_link_position': 'footer',
+    'navbar_sidebarrel': False,
+    'navbar_links': [
+        ('API', 'api'),
+    ],
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
-# html_theme_path = []
+html_theme_path = ['.']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -161,7 +172,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -301,11 +312,15 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy', None),
+    'python': ('https://docs.python.org/3/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
 }
 
 
 # -- Extension configuration ----------------------------------------------
 autodoc_member_order = 'bysource'
 autosummary_generate = True
+
+
+def setup(app):
+    app.add_javascript('copybutton.js')

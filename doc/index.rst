@@ -9,18 +9,12 @@ unstable form, hence their removal. These procedures have been
 cleaned up some and the code made more stable. Please report issues
 and file corrections `at <https://github.com/has2k1/scikit-misc>`_.
 
-.. toctree::
-   :maxdepth: 1
-
-   installation
-   changelog
-
-
-API Reference
+Documentation
 -------------
 
 .. toctree::
    :maxdepth: 1
 
-   loess
-
+   api
+   installation
+   changelog

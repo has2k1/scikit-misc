@@ -8,6 +8,13 @@ smoothing procedure. A linear or quadratic function of the independent
 variables is fit in a moving fashion that is analogous to how a moving
 average is computed for a time series.
 
+Compared to approaches that fit global parametric functions, loess
+substantially increases the domain of surfaces that can be estimated without
+distortion. However, analogues of the statistical procedures used
+in parametric function fitting -- for example, ANOVA and t intervals --
+involve statistics whose distributions are well approximated by familiar
+distributions.
+
 .. autosummary::
    :toctree: generated/
    :template: cython_class.rst
@@ -20,13 +27,6 @@ average is computed for a time series.
    loess_prediction
    loess_confidence_intervals
    loess_anova
-
-Compared to approaches that fit global parametric functions, loess
-substantially increases the domain of surfaces that can be estimated without
-distortion. However, analogues of the statistical procedures used
-in parametric function fitting -- for example, ANOVA and t intervals --
-involve statistics whose distributions are well approximated by familiar
-distributions.
 
 Source
 ------

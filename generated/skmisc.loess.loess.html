@@ -1,153 +1,133 @@
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>skmisc.loess.loess &mdash; scikit-misc 0.1.0 documentation</title>
-  
 
-  
-  
 
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../genindex.html"/>
-        <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="scikit-misc 0.1.0 documentation" href="../index.html"/>
-        <link rel="up" title="Locally-weighted regression (skmisc.loess)" href="../loess.html"/>
-        <link rel="next" title="skmisc.loess.loess_inputs" href="skmisc.loess.loess_inputs.html"/>
-        <link rel="prev" title="Locally-weighted regression (skmisc.loess)" href="../loess.html"/> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>skmisc.loess.loess &#8212; scikit-misc 0.1.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="skmisc.loess.loess_inputs" href="skmisc.loess.loess_inputs.html" />
+    <link rel="prev" title="Locally-weighted regression (skmisc.loess)" href="../loess.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
 
-          
-            <a href="../index.html" class="icon icon-home"> scikit-misc
-          
+  </head>
+  <body role="document">
 
-          
-          </a>
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          scikit-misc</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+      </div>
 
-          
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
             
             
-              <div class="version">
-                0.1.0
-              </div>
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a></li>
 </ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">skmisc.loess.loess</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_inputs.html">skmisc.loess.loess_inputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_model.html">skmisc.loess.loess_model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_control.html">skmisc.loess.loess_control</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_outputs.html">skmisc.loess.loess_outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_prediction.html">skmisc.loess.loess_prediction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_confidence_intervals.html">skmisc.loess.loess_confidence_intervals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="skmisc.loess.loess_anova.html">skmisc.loess.loess_anova</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../loess.html#source">Source</a></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-1">v0.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-0">v0.1.0</a></li>
 </ul>
 </li>
 </ul>
-
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">skmisc.loess.loess</a></li>
+</ul>
+</ul>
+</li>
+              
             
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
           
         </div>
-      </div>
-    </nav>
+    </div>
+  </div>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../index.html">scikit-misc</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          
-
- 
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a> &raquo;</li>
-      
-    <li>skmisc.loess.loess</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="../_sources/generated/skmisc.loess.loess.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
   <div class="section" id="skmisc-loess-loess">
 <h1>skmisc.loess.loess<a class="headerlink" href="#skmisc-loess-loess" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
@@ -165,85 +145,52 @@ and <cite>p</cite> is the number of predictor variables.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> (<em>ndarray of shape (n, p)</em>) &#8211; n independent observations for p no. of variables</li>
-<li><strong>y</strong> (<em>ndarray of shape (n,)</em>) &#8211; A (n,) ndarray of response observations</li>
-<li><strong>weights</strong> (<em>ndarray of shape (n,) or None</em>) &#8211; Weights to be given to individual observations
+<li><strong>x</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>, </em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; n independent observations for p no. of variables</li>
+<li><strong>y</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>)</em><em></em>) &#8211; A (n,) ndarray of response observations</li>
+<li><strong>weights</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>) or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><em>None</em></a>) &#8211; Weights to be given to individual observations
 in the sum of squared residuals that forms the local fitting
 criterion. If not None, the weights should be non negative. If
 the different observations have non-equal variances, the weights
 should be inversely proportional to the variances. By default,
 an unweighted fit is carried out (all the weights are one).</li>
-<li><strong>**options</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> and
-:class: <cite>loess_control</cite>.</li>
+<li><strong>**options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> and
+<a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal"><span class="pre">loess_control</span></code></a>.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="skmisc.loess.loess.fitted_values">
-<code class="descname">fitted_values</code><a class="headerlink" href="#skmisc.loess.loess.fitted_values" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray of shape (n,)</em> &#8211; Fitted values.</p>
+<dt id="skmisc.loess.loess.inputs">
+<code class="descname">inputs</code><a class="headerlink" href="#skmisc.loess.loess.inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal"><span class="pre">loess_inputs</span></code></a> &#8211; Object that handles the inputs</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="skmisc.loess.loess.fitted_residuals">
-<code class="descname">fitted_residuals</code><a class="headerlink" href="#skmisc.loess.loess.fitted_residuals" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray of shape (n,)</em> &#8211; Fitted residuals (observations - fitted values).</p>
+<dt id="skmisc.loess.loess.model">
+<code class="descname">model</code><a class="headerlink" href="#skmisc.loess.loess.model" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> &#8211; Object that handles the model</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="skmisc.loess.loess.enp">
-<code class="descname">enp</code><a class="headerlink" href="#skmisc.loess.loess.enp" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> &#8211; Equivalent number of parameters.</p>
+<dt id="skmisc.loess.loess.control">
+<code class="descname">control</code><a class="headerlink" href="#skmisc.loess.loess.control" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal"><span class="pre">loess_control</span></code></a> &#8211; Object that holds the control parameters</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="skmisc.loess.loess.s">
-<code class="descname">s</code><a class="headerlink" href="#skmisc.loess.loess.s" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> &#8211; Estimate of the scale of residuals.</p>
+<dt id="skmisc.loess.loess.kd_tree">
+<code class="descname">kd_tree</code><a class="headerlink" href="#skmisc.loess.loess.kd_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">loess_kdtree</span></code> &#8211; Object that holds the parameters and structures used
+internally by the regression algorithm.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="skmisc.loess.loess.one_delta">
-<code class="descname">one_delta</code><a class="headerlink" href="#skmisc.loess.loess.one_delta" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> &#8211; Statistical parameter used in the computation of standard errors.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.two_delta">
-<code class="descname">two_delta</code><a class="headerlink" href="#skmisc.loess.loess.two_delta" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> &#8211; Statistical parameter used in the computation of standard errors.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.pseudovalues">
-<code class="descname">pseudovalues</code><a class="headerlink" href="#skmisc.loess.loess.pseudovalues" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray of shape (n,)</em> &#8211; Adjusted values of the response when robust estimation is used.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.trace_hat">
-<code class="descname">trace_hat</code><a class="headerlink" href="#skmisc.loess.loess.trace_hat" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> &#8211; Trace of the operator hat matrix.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.diagonal">
-<code class="descname">diagonal</code><a class="headerlink" href="#skmisc.loess.loess.diagonal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Diagonal of the operator hat matrix.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.robust">
-<code class="descname">robust</code><a class="headerlink" href="#skmisc.loess.loess.robust" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray of shape (n,)</em> &#8211; Robustness weights for robust fitting.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.divisor">
-<code class="descname">divisor</code><a class="headerlink" href="#skmisc.loess.loess.divisor" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>ndarray of shape(p,)</em> &#8211; Normalization divisors for numeric predictors.</p>
+<dt id="skmisc.loess.loess.outputs">
+<code class="descname">outputs</code><a class="headerlink" href="#skmisc.loess.loess.outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="skmisc.loess.loess_outputs.html#skmisc.loess.loess_outputs" title="skmisc.loess.loess_outputs"><code class="xref py py-class docutils literal"><span class="pre">loess_outputs</span></code></a> &#8211; Object that holds the output values and parameters.
+These should be read after <a class="reference internal" href="#skmisc.loess.loess.fit" title="skmisc.loess.loess.fit"><code class="xref py py-meth docutils literal"><span class="pre">loess.fit()</span></code></a> has been
+called.</p>
 </dd></dl>
 
 <dl class="method">
@@ -274,7 +221,7 @@ sets of parameters.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>newdata</strong> (<em>ndarray of shape (m, p)</em>) &#8211; Independent variables where the surface must be estimated,
+<li><strong>newdata</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_prediction.html#skmisc.loess.loess_prediction.m" title="skmisc.loess.loess_prediction.m"><em>m</em></a><em>, </em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; Independent variables where the surface must be estimated,
 with m the number of new data points, and p the number of
 independent variables.</li>
 <li><strong>stderror</strong> (<em>boolean</em>) &#8211; Whether the standard error should be computed</li>
@@ -284,7 +231,7 @@ independent variables.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">A <cite>loess_prediction</cite> object.</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="skmisc.loess.loess_prediction.html#skmisc.loess.loess_prediction" title="skmisc.loess.loess_prediction"><code class="xref py py-class docutils literal"><span class="pre">loess_prediction</span></code></a> object.</p>
 </td>
 </tr>
 </tbody>
@@ -296,72 +243,28 @@ independent variables.</li>
 </div>
 
 
-           </div>
-          </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="skmisc.loess.loess_inputs.html" class="btn btn-neutral float-right" title="skmisc.loess.loess_inputs" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../loess.html" class="btn btn-neutral" title="Locally-weighted regression (skmisc.loess)" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
     </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/skmisc.loess.loess.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
     <p>
-        &copy; Copyright 2016, Hassan Kibirige.
-
+        &copy; Copyright 2016, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.<br/>
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
 </footer>
-
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.1.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+  </body>
 </html>

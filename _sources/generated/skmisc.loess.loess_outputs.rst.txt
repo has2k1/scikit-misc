@@ -1,0 +1,7 @@
+skmisc.loess.loess_outputs
+==========================
+
+.. currentmodule:: skmisc.loess
+
+.. autoclass:: loess_outputs
+   :members:

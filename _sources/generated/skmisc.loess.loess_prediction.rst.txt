@@ -1,0 +1,7 @@
+skmisc.loess.loess_prediction
+=============================
+
+.. currentmodule:: skmisc.loess
+
+.. autoclass:: loess_prediction
+   :members:

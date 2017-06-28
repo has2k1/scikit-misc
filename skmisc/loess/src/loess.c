@@ -19,7 +19,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
        int *iterations, double *fitted_values, double *fitted_residuals,
        double *enp, double *residual_scale, double *one_delta, double *two_delta,
        double *pseudovalues, double *trace_hat_out, double *diagonal,
-       double *robust, double *divisor, long *parameter, long *a, double *xi,
+       double *robust, double *divisor, int *parameter, int *a, double *xi,
        double *vert, double *vval);
 
 void F77_SUB(lowesw)(double*, int*, double*, double*);
@@ -120,8 +120,8 @@ loess_kd_tree_setup(long n, long p, loess_kd_tree *kd_tree) {
 
    max_kd = n > 200 ? n : 200;
 
-   kd_tree->parameter = MALLOC(7 * sizeof(long));
-   kd_tree->a = MALLOC(max_kd * sizeof(long));
+   kd_tree->parameter = MALLOC(7 * sizeof(int));
+   kd_tree->a = MALLOC(max_kd * sizeof(int));
    kd_tree->xi = MALLOC(max_kd * sizeof(double));
    kd_tree->vert = MALLOC(p * 2 * sizeof(double));
    kd_tree->vval = MALLOC((p + 1) * max_kd * sizeof(double));
@@ -153,7 +153,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
        int *iterations, double *fitted_values, double *fitted_residuals,
        double *enp, double *residual_scale, double *one_delta, double *two_delta,
        double *pseudovalues, double *trace_hat_out, double *diagonal,
-       double *robust, double *divisor, long *parameter, long *a, double *xi,
+       double *robust, double *divisor, int *parameter, int *a, double *xi,
        double *vert, double *vval)
 {
     double  *x, *x_tmp, new_cell, trL, delta1, delta2, sum_squares = 0,
@@ -162,7 +162,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     int    i, j, k, p, N, D, sum_drop_sqr = 0, sum_parametric = 0,
             setLf, nonparametric = 0, *order_parametric,
             *order_drop_sqr, zero = 0, max_kd;
-    long *param_tmp, *a_tmp;
+    int *param_tmp, *a_tmp;
     int     cut;
     char    *new_stat;
 
@@ -179,7 +179,7 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     vert_tmp = MALLOC(D * 2 * sizeof(double));
     vval_tmp = MALLOC((D + 1) * max_kd * sizeof(double));
     diag_tmp = MALLOC(N * sizeof(double));
-    param_tmp = MALLOC(N * sizeof(long));
+    param_tmp = MALLOC(N * sizeof(int));
     order_parametric = MALLOC(D * sizeof(int));
     order_drop_sqr = MALLOC(D * sizeof(int));
 

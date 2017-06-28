@@ -170,7 +170,7 @@ static double invibeta(double p, double a, double b)
 
 static double qt(double p, double df)
 {
-    double    t;
+    double t;
     t = invibeta(fabs(2*p-1), 0.5, df/2);
     return((p>0.5?1:-1) * sqrt(t*df/(1-t)));
 }
@@ -244,7 +244,7 @@ void anova(loess *one, loess *two, anova_struct *out)
 {
     double  one_d1, one_d2, one_s, two_d1, two_d2, two_s,
             rssdiff, d1diff, tmp;
-    int     max_enp;
+    int max_enp;
 
     one_d1 = one->outputs->one_delta;
     one_d2 = one->outputs->two_delta;
@@ -268,8 +268,8 @@ void anova(loess *one, loess *two, anova_struct *out)
 void pointwise(prediction *pre, double coverage,
       confidence_intervals *ci)
 {
-    double    t_dist, limit, fit;
-    int    i;
+    double t_dist, limit, fit;
+    int i;
 
     ci->fit = MALLOC(pre->m * sizeof(double));
     ci->upper = MALLOC(pre->m * sizeof(double));

@@ -12,15 +12,15 @@ static void
 pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_scale,
       double *weights, double *robust, double *span, int *degree,
       int *normalize, int *parametric, int *drop_square, char **surface,
-      double *cell, char **family, long *parameter, long *a, double *xi,
+      double *cell, char **family, int *parameter, int *a, double *xi,
       double *vert, double *vval, double *divisor, int *se, double *fit,
       double *se_fit)
 {
-    double  *x, *x_tmp, *x_evaluate, *L, new_cell, tmp, *fit_tmp,
-            *temp;
-    int    N, D, M, sum_drop_sqr = 0, sum_parametric = 0,
-            nonparametric = 0, *order_parametric, *order_drop_sqr;
-    int     i, j, k, p;
+    double *x, *x_tmp, *x_evaluate, *L, new_cell, tmp, *fit_tmp,
+           *temp;
+    int N, D, M, sum_drop_sqr = 0, sum_parametric = 0,
+        nonparametric = 0, *order_parametric, *order_drop_sqr;
+    int i, j, k, p;
     int gaussian_family = !strcmp(*family, "gaussian");
     int direct_surface = !strcmp(*surface, "direct");
 
@@ -129,7 +129,7 @@ pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_sca
 void
 predict(double *eval, loess *lo, prediction *pre)
 {
-    int  size_info[3];
+    int size_info[3];
 
     pre->fit = MALLOC(pre->m * sizeof(double));
     if (pre->se) {

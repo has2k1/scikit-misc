@@ -38,8 +38,8 @@ typedef struct {
     } loess_control;
 
 typedef struct {
-    long   *parameter;
-    long   *a;
+    int   *parameter;
+    int   *a;
     double *xi;
     double *vert;
     double *vval;
@@ -106,7 +106,7 @@ void loess_summary(loess *lo);
 void loess_raw(double *y, double *x, double *weights, double *robust, int *d,
                int*n, double *span, int *degree, int *nonparametric,
                int *drop_square, int *sum_drop_sqr, double *cell, char **surf_stat,
-               double *surface, long *parameter, long *a, double *xi, double *vert,
+               double *surface, int *parameter, int *a, double *xi, double *vert,
                double *vval, double *diagonal, double *trL, double *one_delta,
                double *two_delta, int *setLf);
 
@@ -118,7 +118,7 @@ loess_ise(double *y, double *x, double *x_evaluate, double *weights,
           double *fit, double *L);
 
 void
-loess_ifit(long *parameter, long *a, double *xi, double *vert, double *vval,
+loess_ifit(int *parameter, int *a, double *xi, double *vert, double *vval,
            int *m, double *x_evaluate, double *fit);
 
 void

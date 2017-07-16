@@ -2,42 +2,30 @@ sudo: false
 
 language: python
 
-env:
-  global:
-    - FULL_DEPS=false
-    - INSTALL=false
-    - COVERAGE=false
-
 matrix:
   fast_finish: true
   include:
     - python: 2.7
       env:
-        - JOB=test_py27
-        - FULL_DEPS=true
-        - INSTALL=true
-        - COVERAGE=true
+        - JOB: 'UNITTEST'
+        - FULL_DEPS: true
     - python: 3.5
       env:
-        - JOB=test_py35
-        - FULL_DEPS=true
-        - INSTALL=true
-        - COVERAGE=true
+        - JOB: 'UNITTEST'
+        - FULL_DEPS: true
     - python: 3.6
       env:
-        - JOB=test_py36
-        - FULL_DEPS=true
-        - INSTALL=true
-        - COVERAGE=true
-    - python: 3.5
+        - JOB: 'UNITTEST'
+        - FULL_DEPS: true
+    - python: 3.6
       env:
-        - JOB=docs
-        - INSTALL=true
-        - ENCRYPTION_LABEL=4b42558754ed
-    - python: 3.5
+        - JOB: 'DOCS'
+        - FULL_DEPS: true
+        - ENCRYPTION_LABEL: 4b42558754ed
+    - python: 3.6
       env:
-        - JOB=flake8
-
+        - JOB: 'LINT'
+        - FULL_DEPS: false
 addons:
   apt:
     packages:
@@ -55,44 +43,38 @@ notifications:
 
 install:
   - |
-    if [[ $FULL_DEPS == true ]]; then
+    if [[ "$FULL_DEPS" == 'true' ]]; then
       pip install --upgrade numpy
-    fi
-    if [[ $COVERAGE == true ]]; then
-      pip install pytest-cov coveralls
-      pip install --upgrade pytest>=3.0.3
-    fi
-    if [[ $JOB == 'docs' ]]; then
-      pip install sphinx sphinx_rtd_theme;
-    elif [[ $JOB == 'flake8' ]]; then
-      pip install flake8
-    fi
-  - |
-    if [[ $INSTALL == true ]]; then
       pip install --install-option="--no-cython-compile" "Cython>=0.24"
       pip install -v -e .
+    fi
+  - |
+    if [[ $JOB == 'UNITTEST' ]]; then
+      pip install pytest-cov coveralls
+      pip install --upgrade pytest>=3.0.3
+    elif [[ $JOB == 'DOCS' ]]; then
+      pip install sphinx sphinx_rtd_theme;
+    elif [[ $JOB == 'LINT' ]]; then
+      pip install flake8
     fi
   - pip list
 
 script:
   - |
-    if [[ $COVERAGE == true ]]; then
-      coverage erase
-      py.test --cov=skmisc skmisc
-    elif [[ $JOB == 'docs' ]]; then
+    if [[ $JOB == 'UNITTEST' ]]; then
+      make test
+    elif [[ $JOB == 'DOCS' ]]; then
       pushd doc
-      sphinx-build -W -b html -d _build/doctrees . _build/html
-      popd
-    elif [[ $JOB == 'flake8' ]]; then
-      flake8 skmisc --exclude=skmisc/__config__.py,tools/cythonize.py
+      SPHINXOPTS=-W
+      make html && popd
+    elif [[ $JOB == 'LINT' ]]; then
+      make lint
     fi
 
 after_success:
   - |
-    if [[ $COVERAGE == true ]]; then
+    if [[ $JOB == 'UNITTEST' ]]; then
       coveralls --rcfile=.coveragerc
-    fi
-  - |
-    if [[ $JOB == 'docs' ]]; then
+    elif [[ $JOB == 'DOCS' ]]; then
       ./tools/deploy_documentation.sh
     fi

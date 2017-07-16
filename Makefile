@@ -37,10 +37,10 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 skmisc tests
+	flake8 skmisc --exclude=skmisc/__config__.py
 
-test:
-	pytest --cov=skmisc
+test: clean-test
+	pytest
 
 test-all:
 	tox

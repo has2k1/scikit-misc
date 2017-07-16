@@ -24,6 +24,7 @@ openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV \
 chmod 600 $DEPLOY_KEY_FILE
 eval `ssh-agent -s`
 ssh-add $DEPLOY_KEY_FILE
+ssh-agent -k
 
 # When HEAD is tagged and the tag indicates a releasable
 # version (eg v1.2.3), then VERSION is that tag. Otherwise,

@@ -1,5 +1,7 @@
 # -*- Mode: Python -*-
 # cython: embedsignature=True
+# cython: language_level=3
+
 # TODO: When Cython3 is release
 # Change from the deprecated the numpy 1.7 API, see
 #    - https://github.com/cython/cython/issues/2498
@@ -51,11 +53,11 @@ cdef class loess_inputs:
 
     Parameters
     ----------
-    x : ndarray of shape (n, p)
+    x : ndarray[n, p]
         n independent observations for p no. of variables
-    y : ndarray of shape (n,)
+    y : ndarray[n]
         A (n,) ndarray of response observations
-    weights : ndarray of shape (n,) or None
+    weights : ndarray[n] or None
         Weights to be given to individual observations
         in the sum of squared residuals that forms the local fitting
         criterion. If not None, the weights should be non negative. If
@@ -659,7 +661,7 @@ cdef class loess_prediction:
 
     Parameters
     ----------
-    newdata : ndarray of shape (m, p)
+    newdata : ndarray[m, p]
         Independent variables where the surface must be estimated,
         with m the number of new data points, and p the number of
         independent variables.
@@ -813,11 +815,11 @@ cdef class loess:
 
     Parameters
     ----------
-    x : ndarray of shape (n, p)
+    x : ndarray[n, p]
         n independent observations for p no. of variables
-    y : ndarray of shape (n,)
+    y : ndarray[n,]
         A (n,) ndarray of response observations
-    weights : ndarray of shape (n,) or None
+    weights : ndarray[n] or None
         Weights to be given to individual observations
         in the sum of squared residuals that forms the local fitting
         criterion. If not None, the weights should be non negative. If
@@ -930,7 +932,7 @@ cdef class loess:
 
         Parameters
         ----------
-        newdata : ndarray of shape (m, p)
+        newdata : ndarray[m, p]
             Independent variables where the surface must be estimated,
             with m the number of new data points, and p the number of
             independent variables.

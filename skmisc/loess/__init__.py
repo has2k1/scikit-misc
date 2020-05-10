@@ -34,8 +34,8 @@ The original source code was written by William S. Cleveland, Eric Grosse
 and Ming-Jen Shyu. It is available at http://www.netlib.org/a/dloess. It
 was initially adapted to for use in Scipy by Pierre GF Gerard-Marchant.
 
-References
-----------
+For more see references [1]_ [2]_ and [3]_.
+
 .. [1] W. S. Cleveland, E. Grosse, and M. J. Shyu. Local Regression Models.
    In J. M. Chambers and T. Hastie, editors, Statistical Models in S,
    pages 309--376. Chapman and Hall, New York, 1992.

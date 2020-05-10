@@ -3,7 +3,7 @@ Changelog
 
 v0.1.2
 ------
-*not-yet-released*
+* 2020-05-10*
 
 - Fixed :meth:`~skmisc.loess.loess_output.summary` so that it
   does not result in an exception.

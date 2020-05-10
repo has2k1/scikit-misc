@@ -127,17 +127,24 @@ pred_(double *y, double *x_, double *new_x, int *size_info, double *residual_sca
 }
 
 void
-predict(double *eval, loess *lo, prediction *pre)
+predict_setup(prediction *pre, loess *lo, int se, int m)
 {
-    int size_info[3];
-
-    pre->fit = MALLOC(pre->m * sizeof(double));
-    if (pre->se) {
-        pre->se_fit = MALLOC(pre->m * sizeof(double));
+    pre->m = m;
+    pre->se = se;
+    pre->fit = MALLOC(m * sizeof(double));
+    if (se) {
+        pre->se_fit = MALLOC(m * sizeof(double));
     }
+
     pre->residual_scale = lo->outputs->residual_scale;
     pre->df = (lo->outputs->one_delta * lo->outputs->one_delta) /
               lo->outputs->two_delta;
+}
+
+void
+predict(double *eval, loess *lo, prediction *pre)
+{
+    int size_info[3];
 
     size_info[0] = lo->inputs->p;
     size_info[1] = lo->inputs->n;
@@ -179,7 +186,7 @@ predict(double *eval, loess *lo, prediction *pre)
 
 
 void
-pred_free_mem(prediction *pre)
+predict_free(prediction *pre)
 {
     free(pre->fit);
     if(pre->se) {

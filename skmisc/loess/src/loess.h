@@ -140,5 +140,6 @@ double pf(double q, double df1, double df2);
 double ibeta(double x, double a, double b);
 
 // from predict.c
+void predict_setup(prediction *pre, loess *lo, int se, int m);
 void predict(double *eval, loess *lo, prediction *pre);
-void pred_free_mem(prediction *pre);
+void predict_free(prediction *pre);

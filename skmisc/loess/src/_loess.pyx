@@ -662,6 +662,7 @@ cdef class loess_prediction:
     def __cinit__(self, newdata, loess loess, stderror=False):
         cdef ndarray p_ndr
         cdef double *p_dat
+        cdef int se
 
         self.allocated = False
 
@@ -683,14 +684,14 @@ cdef class loess_prediction:
                    "parameters" % (_p, loess.inputs.p))
             raise ValueError(msg)
 
+        se = 1 if stderror else 0
         m = len(p_ndr)
         p_ndr = p_ndr.ravel()
         p_dat = <double *>p_ndr.data
 
-        self._base.se = 1 if stderror else 0
-        self._base.m = m
-        c_loess.c_predict(p_dat, &loess._base, &self._base)
+        c_loess.predict_setup(&self._base, &loess._base, se, m)
         self.allocated = True
+        c_loess.c_predict(p_dat, &loess._base, &self._base)
 
         if loess._base.status.err_status:
             raise ValueError(loess._base.status.err_msg)
@@ -701,7 +702,7 @@ cdef class loess_prediction:
 
     def __dealloc__(self):
         if self.allocated:
-            c_loess.pred_free_mem(&self._base)
+            c_loess.predict_free(&self._base)
 
     @property
     def values(self):
@@ -847,7 +848,6 @@ cdef class loess:
                        'iterations', 'cell'):
                 control_options[k] = v
 
-
         # Initialize the inputs
         self.inputs = loess_inputs(x, y, weights)
         self._base.inputs = &self.inputs._base
@@ -928,10 +928,7 @@ cdef class loess:
         """
         # Make sure there's been a fit earlier
         if self.outputs.activated == 0:
-            c_loess.loess_fit(&self._base)
-            self.outputs.activated = True
-            if self._base.status.err_status:
-                raise ValueError(self._base.status.err_msg)
+            self.fit()
 
         return loess_prediction(newdata, self, stderror)
 

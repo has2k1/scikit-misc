@@ -77,8 +77,9 @@ cdef extern from "loess.h":
 
     void loess_summary(c_loess *lo)
 
+    void predict_setup(c_prediction *pre, c_loess *lo, int se, int m);
     void c_predict "predict" (double *eval, c_loess *lo, c_prediction *pre)
-    void pred_free_mem(c_prediction *pre)
+    void predict_free(c_prediction *pre)
 
     void c_pointwise "pointwise" (c_prediction *pre, double coverage, c_confidence_intervals *ci)
     double pf (double q, double df1, double df2)

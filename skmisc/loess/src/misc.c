@@ -310,12 +310,14 @@ void Recover(char *a, int *b)
 
 doublereal F77_SUB(d1mach) (integer *i)
 {
-switch(*i){
-    case 1: return DBL_MIN;
-    case 2: return DBL_MAX;
-    case 3: return DBL_EPSILON/FLT_RADIX;
-    case 4: return DBL_EPSILON;
-    case 5: return log10(FLT_RADIX);
-    default: Recover("Invalid argument to d1mach()", 0L);
+    switch(*i) {
+        case 1: return DBL_MIN;
+        case 2: return DBL_MAX;
+        case 3: return DBL_EPSILON/FLT_RADIX;
+        case 4: return DBL_EPSILON;
+        case 5: return log10(FLT_RADIX);
+        default:
+                Recover("Invalid argument to d1mach()", 0L);
+                return 0;
     }
 }

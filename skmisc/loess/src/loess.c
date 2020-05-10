@@ -85,7 +85,7 @@ loess_model_setup(loess_model *model) {
 
 void
 loess_inputs_setup(double *x, double *y, double *w, long n,
-      long p, loess_inputs *inputs) {
+                   long p, loess_inputs *inputs) {
     int i;
 
     inputs->y = MALLOC(n * sizeof(double));
@@ -186,8 +186,10 @@ loess_(double *y, double *x_, int *size_info, double *weights, double *span,
     new_cell = (*span) * (*cell);
     for(i = 0; i < N; i++)
         robust[i] = 1;
-        for(i = 0; i < (N * D); i++)
-            x_tmp[i] = x_[i];
+
+    for(i = 0; i < (N * D); i++)
+        x_tmp[i] = x_[i];
+
     if((*normalize) && (D > 1)) {
         cut = ceil(0.100000000000000000001 * N);
         for(i = 0; i < D; i++) {

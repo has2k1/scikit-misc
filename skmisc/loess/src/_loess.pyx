@@ -569,7 +569,7 @@ cdef class loess_outputs:
                 "Fitted values         : %s\n" % self.fitted_values,
                 "Fitted residuals      : %s\n" % self.fitted_residuals,
                 "Eqv. nb of parameters : %s" % self.enp,
-                "Residual error        : %s" % self.s,
+                "Residual Scale        : %s" % self.residual_scale,
                 "Deltas                : %s - %s" % (self.one_delta,
                                                      self.two_delta),
                 "Normalization factors : %s" % self.divisor,]

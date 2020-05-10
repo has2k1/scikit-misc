@@ -39,6 +39,7 @@ needs_sphinx = '3.0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
+    'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
@@ -353,4 +354,4 @@ numpydoc_xref_ignore = {'type', 'optional', 'default'}
 
 
 def setup(app):
-    app.add_javascript('copybutton.js')
+    app.add_js_file('copybutton.js')

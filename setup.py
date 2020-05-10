@@ -19,6 +19,16 @@ __email__ = 'has2k1@gmail.com'
 __description__ = "Miscellaneous tools for scientific computing."
 __license__ = 'BSD (3-clause)'
 __url__ = 'https://github.com/has2k1/scikit-misc'
+__classifiers__ = [
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+    'Programming Language :: C',
+    'Programming Language :: Fortran',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering',
+]
 
 # BEFORE importing setuptools, remove MANIFEST. Otherwise it may
 # not be properly updated when the contents of directories change
@@ -106,7 +116,7 @@ def setup_requires():
     Plus any version tests and warnings
     """
     from pkg_resources import parse_version
-    required = ['cython>=0.24.0']
+    required = ['cython>=0.29.0']
     numpy_requirement = 'numpy>=1.7.1'
 
     try:
@@ -138,17 +148,7 @@ def setup_package():
         setup_requires=setup_requires(),
         packages=find_packages(),
         package_data=get_package_data(),
-        classifiers=[
-            'Intended Audience :: Science/Research',
-            'License :: OSI Approved :: BSD License',
-            'Operating System :: Unix',
-            'Operating System :: MacOS',
-            'Programming Language :: C',
-            'Programming Language :: Fortran',
-            'Programming Language :: Python :: 2',
-            'Programming Language :: Python :: 3',
-            'Topic :: Scientific/Engineering',
-        ],
+        classifiers=__classifiers__,
         configuration=configuration
     )
     setup(**metadata)

@@ -1,28 +1,25 @@
-sudo: false
-
+os: linux
+dist: xenial
 language: python
 
-matrix:
+
+jobs:
   fast_finish: true
   include:
-    - python: 2.7
+    - python: 3.6  # Minimum
       env:
         - JOB: 'UNITTEST'
         - FULL_DEPS: true
-    - python: 3.5
+    - python: 3.8
       env:
         - JOB: 'UNITTEST'
         - FULL_DEPS: true
-    - python: 3.6
-      env:
-        - JOB: 'UNITTEST'
-        - FULL_DEPS: true
-    - python: 3.6
+    - python: 3.8
       env:
         - JOB: 'DOCS'
         - FULL_DEPS: true
         - ENCRYPTION_LABEL: 4b42558754ed
-    - python: 3.6
+    - python: 3.8
       env:
         - JOB: 'LINT'
         - FULL_DEPS: false
@@ -43,38 +40,38 @@ notifications:
 
 install:
   - |
-    if [[ "$FULL_DEPS" == 'true' ]]; then
+    if [[ "$FULL_DEPS" == "true" ]]; then
       pip install --upgrade numpy
-      pip install --install-option="--no-cython-compile" "Cython>=0.24"
+      pip install --install-option="--no-cython-compile" "Cython>=0.29"
       pip install -v -e .
     fi
   - |
-    if [[ $JOB == 'UNITTEST' ]]; then
+    if [[ "$JOB" == "UNITTEST" ]]; then
       pip install pytest-cov coveralls
       pip install --upgrade pytest>=3.0.3
-    elif [[ $JOB == 'DOCS' ]]; then
+    elif [[ "$JOB" == "DOCS" ]]; then
       pip install sphinx sphinx_rtd_theme;
-    elif [[ $JOB == 'LINT' ]]; then
+    elif [[ "$JOB" == "LINT" ]]; then
       pip install flake8
     fi
   - pip list
 
 script:
   - |
-    if [[ $JOB == 'UNITTEST' ]]; then
+    if [[ "$JOB" == "UNITTEST" ]]; then
       make test
-    elif [[ $JOB == 'DOCS' ]]; then
+    elif [[ "$JOB" == "DOCS" ]]; then
       pushd doc
       SPHINXOPTS=-W
       make html && popd
-    elif [[ $JOB == 'LINT' ]]; then
+    elif [[ "$JOB" == "LINT" ]]; then
       make lint
     fi
 
 after_success:
   - |
-    if [[ $JOB == 'UNITTEST' ]]; then
+    if [[ "$JOB" == "UNITTEST" ]]; then
       coveralls --rcfile=.coveragerc
-    elif [[ $JOB == 'DOCS' ]]; then
+    elif [[ "$JOB" == "DOCS" ]]; then
       ./tools/deploy_documentation.sh
     fi

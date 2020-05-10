@@ -1,9 +1,18 @@
 # -*- Mode: Python -*-
 # cython: embedsignature=True
+# TODO: When Cython3 is release
+# Change from the deprecated the numpy 1.7 API, see
+#    - https://github.com/cython/cython/issues/2498
+#    - https://github.com/scipy/scipy/pull/10840#issuecomment-549939230
+
 import numpy as np
 cimport numpy as np
-from numpy cimport (ndarray, npy_intp,
-                    NPY_DOUBLE, PyArray_SimpleNewFromData)
+from numpy cimport (
+    ndarray,
+    npy_intp,
+    NPY_DOUBLE,
+    PyArray_SimpleNewFromData,
+)
 cimport c_loess
 
 # NumPy must be initialized
@@ -17,7 +26,10 @@ cdef floatarray_from_data(int rows, int cols, double *data):
     dims = (rows, cols)
     nd = 2 if cols > 1 else 1
     a_ndr = <object>PyArray_SimpleNewFromData(nd, dims, NPY_DOUBLE, data)
-    return a_ndr
+    # Since the memory is owned by the containing object, we pass a copy
+    # of the data so that when the owner is destroyed the return data
+    # is not destroyed.
+    return a_ndr.copy()
 
 
 cdef boolarray_from_data(int rows, int cols, int *data):
@@ -27,7 +39,10 @@ cdef boolarray_from_data(int rows, int cols, int *data):
     dims = (rows, cols)
     nd = 2 if cols > 1 else 1
     a_ndr = <object>PyArray_SimpleNewFromData(nd, dims, NPY_DOUBLE, data)
-    return a_ndr.astype(np.bool)
+    # Since the memory is owned by the containing object, we pass a copy
+    # of the data so that when the owner is destroyed the return data
+    # is not destroyed.
+    return a_ndr.astype(np.bool).copy()
 
 
 cdef class loess_inputs:

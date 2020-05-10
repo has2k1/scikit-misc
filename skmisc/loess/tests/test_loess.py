@@ -201,8 +201,8 @@ class TestLoessGas(object):
         (E, NOx, gas_fit_E, _, _, results) = self.d
         gas = loess(E, NOx, span=2./3.)
         gas.fit()
-        prediction = gas.predict(gas_fit_E, stderror=False)
-        npt.assert_almost_equal(prediction.values, results[2], 6)
+        predicted = gas.predict(gas_fit_E, stderror=False).values
+        npt.assert_almost_equal(predicted, results[2], 6)
 
     def test_1dpredict_2(self):
         "Basic test 1d - new predictions"

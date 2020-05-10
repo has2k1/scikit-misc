@@ -50,7 +50,7 @@ install:
       pip install pytest-cov coveralls
       pip install --upgrade pytest>=3.0.3
     elif [[ "$JOB" == "DOCS" ]]; then
-      pip install sphinx sphinx_rtd_theme;
+      pip install numpydoc sphinx sphinx_rtd_theme;
     elif [[ "$JOB" == "LINT" ]]; then
       pip install flake8
     fi

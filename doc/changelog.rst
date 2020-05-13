@@ -1,9 +1,15 @@
 Changelog
 =========
 
+v0.1.3
+------
+*(2020-05-14)*
+
+- Requires numpy>=1.14.5
+
 v0.1.2
 ------
-* 2020-05-10*
+*(2020-05-10)*
 
 - Fixed :meth:`~skmisc.loess.loess_output.summary` so that it
   does not result in an exception.

@@ -19,16 +19,24 @@ __email__ = 'has2k1@gmail.com'
 __description__ = "Miscellaneous tools for scientific computing."
 __license__ = 'BSD (3-clause)'
 __url__ = 'https://github.com/has2k1/scikit-misc'
+__project_urls__ = {
+    'Bug Tracker': 'https://github.com/has2k1/scikit-misc/issues',
+    'Documentation': 'https://has2k1.github.io/scikit-misc',
+    'Source Code': 'https://github.com/has2k1/scikit-misc'
+}
 __classifiers__ = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Operating System :: Unix',
     'Operating System :: MacOS',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
     'Programming Language :: C',
     'Programming Language :: Fortran',
     'Programming Language :: Python :: 3',
     'Topic :: Scientific/Engineering',
 ]
+__platforms__ = ['Linux', 'Mac OS-X', 'Unix', 'Windows' ]
 
 # BEFORE importing setuptools, remove MANIFEST. Otherwise it may
 # not be properly updated when the contents of directories change
@@ -144,11 +152,13 @@ def setup_package():
         version=versioneer.get_version(),
         cmdclass=versioneer.get_cmdclass(numpy_cmdclass),
         url=__url__,
+        project_urls=__project_urls__,
         install_requires=get_required_packages(),
         setup_requires=setup_requires(),
         packages=find_packages(),
         package_data=get_package_data(),
         classifiers=__classifiers__,
+        platforms=__platforms__,
         configuration=configuration
     )
     setup(**metadata)

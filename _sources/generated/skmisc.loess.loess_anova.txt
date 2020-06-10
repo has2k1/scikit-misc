@@ -1,7 +1,0 @@
-skmisc.loess.loess_anova
-========================
-
-.. currentmodule:: skmisc.loess
-
-.. autoclass:: loess_anova
-   :members:

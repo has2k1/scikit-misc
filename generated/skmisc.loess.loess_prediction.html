@@ -1,39 +1,19 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>skmisc.loess.loess_prediction &#8212; scikit-misc 0.1.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>skmisc.loess.loess_prediction &#8212; scikit-misc 0.1.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.1.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/copybutton.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="skmisc.loess.loess_confidence_intervals" href="skmisc.loess.loess_confidence_intervals.html" />
@@ -42,9 +22,12 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -57,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -76,11 +59,13 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-3">v0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-2">v0.1.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-1">v0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-0">v0.1.0</a></li>
 </ul>
@@ -126,87 +111,88 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="skmisc-loess-loess-prediction">
 <h1>skmisc.loess.loess_prediction<a class="headerlink" href="#skmisc-loess-loess-prediction" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="skmisc.loess.loess_prediction">
-<em class="property">class </em><code class="descclassname">skmisc.loess.</code><code class="descname">loess_prediction</code><span class="sig-paren">(</span><em>newdata</em>, <em>loess</em>, <em>stderror=False</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_prediction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">skmisc.loess.</code><code class="sig-name descname">loess_prediction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newdata</span></em>, <em class="sig-param"><span class="n">loess</span></em>, <em class="sig-param"><span class="n">stderror</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_prediction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for loess prediction results</p>
 <p>Holds the predicted values and standard errors of a loess object</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>newdata</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="#skmisc.loess.loess_prediction.m" title="skmisc.loess.loess_prediction.m"><em>m</em></a><em>, </em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; Independent variables where the surface must be estimated,
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>newdata</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<a class="reference internal" href="#skmisc.loess.loess_prediction.m" title="skmisc.loess.loess_prediction.m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>Independent variables where the surface must be estimated,
 with m the number of new data points, and p the number of
-independent variables.</li>
-<li><strong>loess</strong> (<a class="reference internal" href="skmisc.loess.loess.html#skmisc.loess.loess" title="skmisc.loess.loess"><em>loess.loess</em></a>) &#8211; Loess object that has been successfully fitted,
+independent variables.</p>
+</dd>
+<dt><strong>loess</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess.loess</span></code></span></dt><dd><p>Loess object that has been successfully fitted,
 i.e <cite>loess.fit</cite> has been called and it returned without
-any errors.</li>
-<li><strong>stderror</strong> (<em>boolean</em>) &#8211; Whether the standard error should be computed</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
+any errors.</p>
+</dd>
+<dt><strong>stderror</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boolean</span></code></a></span></dt><dd><p>Whether the standard error should be computed</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="skmisc.loess.loess_prediction.confidence">
-<code class="descname">confidence</code><span class="sig-paren">(</span><em>self</em>, <em>alpha=0.05</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_prediction.confidence" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">confidence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.05</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_prediction.confidence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the pointwise confidence intervals</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) &#8211; The alpha level for the confidence interval. The
-default <code class="docutils literal"><span class="pre">alpha=0.05</span></code> returns a 95% confidence
-interval. Therefore it must be in the range (0, 1).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>out</strong> &#8211; Confidence intervals object. It has attributes <cite>fit</cite>,
-<cite>lower</cite> and <cite>upper</cite></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="skmisc.loess.loess_confidence_intervals.html#skmisc.loess.loess_confidence_intervals" title="skmisc.loess.loess_confidence_intervals">loess_confidence_intervals</a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>alpha</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The alpha level for the confidence interval. The
+default <code class="docutils literal notranslate"><span class="pre">alpha=0.05</span></code> returns a 95% confidence
+interval. Therefore it must be in the range (0, 1).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>out</strong><span class="classifier"><a class="reference internal" href="skmisc.loess.loess_confidence_intervals.html#skmisc.loess.loess_confidence_intervals" title="skmisc.loess.loess_confidence_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_confidence_intervals</span></code></a></span></dt><dd><p>Confidence intervals object. It has attributes <cite>fit</cite>,
+<cite>lower</cite> and <cite>upper</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_prediction.df">
-<code class="descname">df</code><a class="headerlink" href="#skmisc.loess.loess_prediction.df" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">float</span></code></a> - Degrees of freedom of the loess fit.</p>
+<code class="sig-name descname">df</code><a class="headerlink" href="#skmisc.loess.loess_prediction.df" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Degrees of freedom of the loess fit.</p>
 <p>It is used with the t-distribution to compute pointwise
 confidence intervals for the evaluated surface. It is
-obtained using the formula <code class="docutils literal"><span class="pre">(one_delta</span> <span class="pre">**</span> <span class="pre">2)</span> <span class="pre">/</span> <span class="pre">two_delta</span></code>.</p>
+obtained using the formula <code class="docutils literal notranslate"><span class="pre">(one_delta</span> <span class="pre">**</span> <span class="pre">2)</span> <span class="pre">/</span> <span class="pre">two_delta</span></code>.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_prediction.m">
-<code class="descname">m</code><a class="headerlink" href="#skmisc.loess.loess_prediction.m" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a> - Number of observations in the new data points</p>
+<code class="sig-name descname">m</code><a class="headerlink" href="#skmisc.loess.loess_prediction.m" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> - Number of observations in the new data points</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_prediction.residual_scale">
-<code class="descname">residual_scale</code><a class="headerlink" href="#skmisc.loess.loess_prediction.residual_scale" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">float</span></code></a> - Estimate of the scale of the residuals</p>
+<code class="sig-name descname">residual_scale</code><a class="headerlink" href="#skmisc.loess.loess_prediction.residual_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Estimate of the scale of the residuals</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_prediction.stderr">
-<code class="descname">stderr</code><a class="headerlink" href="#skmisc.loess.loess_prediction.stderr" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code></a> - Estimates of the standard error on
-the estimated values, shape <code class="docutils literal"><span class="pre">(m,)</span></code></p>
+<code class="sig-name descname">stderr</code><a class="headerlink" href="#skmisc.loess.loess_prediction.stderr" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Estimates of the standard error on
+the estimated values, shape <code class="docutils literal notranslate"><span class="pre">(m,)</span></code></p>
 <p>Raises <cite>ValueError</cite> if the standard error was not computed.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_prediction.values">
-<code class="descname">values</code><a class="headerlink" href="#skmisc.loess.loess_prediction.values" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code></a> - loess values evaluated at newdata,
-shape <code class="docutils literal"><span class="pre">(m,)</span></code></p>
+<code class="sig-name descname">values</code><a class="headerlink" href="#skmisc.loess.loess_prediction.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - loess values evaluated at newdata,
+shape <code class="docutils literal notranslate"><span class="pre">(m,)</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -232,8 +218,8 @@ shape <code class="docutils literal"><span class="pre">(m,)</span></code></p>
       
     </p>
     <p>
-        &copy; Copyright 2016, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.<br/>
+        &copy; Copyright 2020, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,7 +1,0 @@
-onelib.loess.loess_anova
-========================
-
-.. currentmodule:: onelib.loess
-
-.. autoclass:: loess_anova
-   :members:

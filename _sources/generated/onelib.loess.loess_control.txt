@@ -1,7 +1,0 @@
-onelib.loess.loess_control
-==========================
-
-.. currentmodule:: onelib.loess
-
-.. autoclass:: loess_control
-   :members:

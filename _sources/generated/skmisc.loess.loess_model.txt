@@ -1,7 +1,0 @@
-skmisc.loess.loess_model
-========================
-
-.. currentmodule:: skmisc.loess
-
-.. autoclass:: loess_model
-   :members:

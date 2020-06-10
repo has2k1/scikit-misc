@@ -1,39 +1,19 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>skmisc.loess.loess_inputs &#8212; scikit-misc 0.1.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>skmisc.loess.loess_inputs &#8212; scikit-misc 0.1.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.1.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/copybutton.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="skmisc.loess.loess_model" href="skmisc.loess.loess_model.html" />
@@ -42,9 +22,12 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -57,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -76,11 +59,13 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-3">v0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-2">v0.1.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-1">v0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-0">v0.1.0</a></li>
 </ul>
@@ -126,54 +111,53 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="skmisc-loess-loess-inputs">
 <h1>skmisc.loess.loess_inputs<a class="headerlink" href="#skmisc-loess-loess-inputs" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="skmisc.loess.loess_inputs">
-<em class="property">class </em><code class="descclassname">skmisc.loess.</code><code class="descname">loess_inputs</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_inputs" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">skmisc.loess.</code><code class="sig-name descname">loess_inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_inputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialization class for loess data inputs</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>, </em><a class="reference internal" href="#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; n independent observations for p no. of variables</li>
-<li><strong>y</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>)</em><em></em>) &#8211; A (n,) ndarray of response observations</li>
-<li><strong>weights</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>) or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><em>None</em></a>) &#8211; Weights to be given to individual observations
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code></a>, <a class="reference internal" href="#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code></a>]</span></dt><dd><p>n independent observations for p no. of variables</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code></a>]</span></dt><dd><p>A (n,) ndarray of response observations</p>
+</dd>
+<dt><strong>weights</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<a class="reference internal" href="#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Weights to be given to individual observations
 in the sum of squared residuals that forms the local fitting
 criterion. If not None, the weights should be non negative. If
 the different observations have non-equal variances, the weights
 should be inversely proportional to the variances. By default,
-an unweighted fit is carried out (all the weights are one).</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
+an unweighted fit is carried out (all the weights are one).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_inputs.n">
-<code class="descname">n</code><a class="headerlink" href="#skmisc.loess.loess_inputs.n" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a> - Number of independent observations</p>
+<code class="sig-name descname">n</code><a class="headerlink" href="#skmisc.loess.loess_inputs.n" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> - Number of independent observations</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_inputs.p">
-<code class="descname">p</code><a class="headerlink" href="#skmisc.loess.loess_inputs.p" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a> - Number of variables</p>
+<code class="sig-name descname">p</code><a class="headerlink" href="#skmisc.loess.loess_inputs.p" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> - Number of variables</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_inputs.x">
-<code class="descname">x</code><a class="headerlink" href="#skmisc.loess.loess_inputs.x" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code></a> - Independent observations, shape <code class="docutils literal"><span class="pre">(n,</span> <span class="pre">p)</span></code></p>
+<code class="sig-name descname">x</code><a class="headerlink" href="#skmisc.loess.loess_inputs.x" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Independent observations, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">p)</span></code></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="skmisc.loess.loess_inputs.y">
-<code class="descname">y</code><a class="headerlink" href="#skmisc.loess.loess_inputs.y" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.12)"><code class="xref py py-class docutils literal"><span class="pre">ndarray</span></code></a> - Response observations, shape <code class="docutils literal"><span class="pre">(n,)</span></code></p>
+<code class="sig-name descname">y</code><a class="headerlink" href="#skmisc.loess.loess_inputs.y" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Response observations, shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -199,8 +183,8 @@ an unweighted fit is carried out (all the weights are one).</li>
       
     </p>
     <p>
-        &copy; Copyright 2016, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.<br/>
+        &copy; Copyright 2020, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,39 +1,19 @@
 
 <!DOCTYPE html>
 
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>skmisc.loess.loess &#8212; scikit-misc 0.1.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>skmisc.loess.loess &#8212; scikit-misc 0.1.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.1.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/copybutton.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="skmisc.loess.loess_inputs" href="skmisc.loess.loess_inputs.html" />
@@ -42,9 +22,12 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -57,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -76,11 +59,13 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="docutils literal"><span class="pre">skmisc.loess</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-3">v0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-2">v0.1.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-1">v0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-0">v0.1.0</a></li>
 </ul>
@@ -126,116 +111,97 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="skmisc-loess-loess">
 <h1>skmisc.loess.loess<a class="headerlink" href="#skmisc-loess-loess" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="skmisc.loess.loess">
-<em class="property">class </em><code class="descclassname">skmisc.loess.</code><code class="descname">loess</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>weights=None</em>, <em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">skmisc.loess.</code><code class="sig-name descname">loess</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Locally-weighted regression</p>
 <p>A loess object is initialized with the combined parameters of
-<a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal"><span class="pre">loess_inputs</span></code></a>, <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> and
-<a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal"><span class="pre">loess_control</span></code></a>. The parameters of <a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal"><span class="pre">loess_inputs</span></code></a>
-i.e <code class="docutils literal"><span class="pre">x</span></code>, <code class="docutils literal"><span class="pre">y</span></code> and <code class="docutils literal"><span class="pre">weights</span></code> can be positional in that order.
+<a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_inputs</span></code></a>, <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_model</span></code></a> and
+<a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_control</span></code></a>. The parameters of <a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_inputs</span></code></a>
+i.e <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> can be positional in that order.
 In the descriptions below, <cite>n</cite> is the number of observations,
 and <cite>p</cite> is the number of predictor variables.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>, </em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; n independent observations for p no. of variables</li>
-<li><strong>y</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>)</em><em></em>) &#8211; A (n,) ndarray of response observations</li>
-<li><strong>weights</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.n" title="skmisc.loess.loess_inputs.n"><em>n</em></a><em>,</em><em></em><em>) or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)"><em>None</em></a>) &#8211; Weights to be given to individual observations
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>n independent observations for p no. of variables</p>
+</dd>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[n,]</span></dt><dd><p>A (n,) ndarray of response observations</p>
+</dd>
+<dt><strong>weights</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Weights to be given to individual observations
 in the sum of squared residuals that forms the local fitting
 criterion. If not None, the weights should be non negative. If
 the different observations have non-equal variances, the weights
 should be inversely proportional to the variances. By default,
-an unweighted fit is carried out (all the weights are one).</li>
-<li><strong>**options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) &#8211; The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> and
-<a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal"><span class="pre">loess_control</span></code></a>.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="skmisc.loess.loess.inputs">
-<code class="descname">inputs</code><a class="headerlink" href="#skmisc.loess.loess.inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal"><span class="pre">loess_inputs</span></code></a> &#8211; Object that handles the inputs</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.model">
-<code class="descname">model</code><a class="headerlink" href="#skmisc.loess.loess.model" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal"><span class="pre">loess_model</span></code></a> &#8211; Object that handles the model</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.control">
-<code class="descname">control</code><a class="headerlink" href="#skmisc.loess.loess.control" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal"><span class="pre">loess_control</span></code></a> &#8211; Object that holds the control parameters</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.kd_tree">
-<code class="descname">kd_tree</code><a class="headerlink" href="#skmisc.loess.loess.kd_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-class docutils literal"><span class="pre">loess_kdtree</span></code> &#8211; Object that holds the parameters and structures used
+an unweighted fit is carried out (all the weights are one).</p>
+</dd>
+<dt><strong>**options</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_model</span></code></a> and
+<a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_control</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes</dt>
+<dd class="field-even"><dl>
+<dt><strong>inputs</strong><span class="classifier"><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_inputs</span></code></a></span></dt><dd><p>Object that handles the inputs</p>
+</dd>
+<dt><strong>model</strong><span class="classifier"><a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_model</span></code></a></span></dt><dd><p>Object that handles the model</p>
+</dd>
+<dt><strong>control</strong><span class="classifier"><a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_control</span></code></a></span></dt><dd><p>Object that holds the control parameters</p>
+</dd>
+<dt><strong>kd_tree</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_kdtree</span></code></span></dt><dd><p>Object that holds the parameters and structures used
 internally by the regression algorithm.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="skmisc.loess.loess.outputs">
-<code class="descname">outputs</code><a class="headerlink" href="#skmisc.loess.loess.outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p><a class="reference internal" href="skmisc.loess.loess_outputs.html#skmisc.loess.loess_outputs" title="skmisc.loess.loess_outputs"><code class="xref py py-class docutils literal"><span class="pre">loess_outputs</span></code></a> &#8211; Object that holds the output values and parameters.
-These should be read after <a class="reference internal" href="#skmisc.loess.loess.fit" title="skmisc.loess.loess.fit"><code class="xref py py-meth docutils literal"><span class="pre">loess.fit()</span></code></a> has been
+</dd>
+<dt><strong>outputs</strong><span class="classifier"><a class="reference internal" href="skmisc.loess.loess_outputs.html#skmisc.loess.loess_outputs" title="skmisc.loess.loess_outputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_outputs</span></code></a></span></dt><dd><p>Object that holds the output values and parameters.
+These should be read after <a class="reference internal" href="#skmisc.loess.loess.fit" title="skmisc.loess.loess.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">loess.fit()</span></code></a> has been
 called.</p>
-</dd></dl>
-
-<dl class="method">
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
 <dt id="skmisc.loess.loess.fit">
-<code class="descname">fit</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the loess parameters on the current inputs and
 sets of parameters.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="skmisc.loess.loess.input_summary">
-<code class="descname">input_summary</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.input_summary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">input_summary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.input_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns some generic information about the loess parameters.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="skmisc.loess.loess.output_summary">
-<code class="descname">output_summary</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.output_summary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">output_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.output_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns some generic information about the loess fit.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="skmisc.loess.loess.predict">
-<code class="descname">predict</code><span class="sig-paren">(</span><em>self</em>, <em>newdata</em>, <em>stderror=False</em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.predict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">newdata</span></em>, <em class="sig-param"><span class="n">stderror</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.predict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute loess estimates at the given new data points newdata.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>newdata</strong> (<em>ndarray of shape</em><em> (</em><a class="reference internal" href="skmisc.loess.loess_prediction.html#skmisc.loess.loess_prediction.m" title="skmisc.loess.loess_prediction.m"><em>m</em></a><em>, </em><a class="reference internal" href="skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs.p" title="skmisc.loess.loess_inputs.p"><em>p</em></a><em>)</em><em></em>) &#8211; Independent variables where the surface must be estimated,
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>newdata</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>Independent variables where the surface must be estimated,
 with m the number of new data points, and p the number of
-independent variables.</li>
-<li><strong>stderror</strong> (<em>boolean</em>) &#8211; Whether the standard error should be computed</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="skmisc.loess.loess_prediction.html#skmisc.loess.loess_prediction" title="skmisc.loess.loess_prediction"><code class="xref py py-class docutils literal"><span class="pre">loess_prediction</span></code></a> object.</p>
-</td>
-</tr>
-</tbody>
-</table>
+independent variables.</p>
+</dd>
+<dt><strong>stderror</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boolean</span></code></a></span></dt><dd><p>Whether the standard error should be computed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">A</span></code> <a class="reference internal" href="skmisc.loess.loess_prediction.html#skmisc.loess.loess_prediction" title="skmisc.loess.loess_prediction"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_prediction</span></code></a> object.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -261,8 +227,8 @@ independent variables.</li>
       
     </p>
     <p>
-        &copy; Copyright 2016, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.<br/>
+        &copy; Copyright 2020, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.0.<br/>
     </p>
   </div>
 </footer>

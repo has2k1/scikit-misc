@@ -1,7 +1,0 @@
-onelib.loess.loess_outputs
-==========================
-
-.. currentmodule:: onelib.loess
-
-.. autoclass:: loess_outputs
-   :members:

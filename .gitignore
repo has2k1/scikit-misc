@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# cython files
+cythonize.dat
+
+# Distribution / packaging
+dist/
+sdist/
+build/
+*.egg-info/
+
+# Not required for the documentation static site
+skmisc/
+doc/
+
+#
+valgrind-python.supp

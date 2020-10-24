@@ -14,6 +14,10 @@ jobs:
       env:
         - JOB: 'UNITTEST'
         - FULL_DEPS: true
+    - python: 3.9
+      env:
+        - JOB: 'UNITTEST'
+        - FULL_DEPS: true
     - python: 3.8
       env:
         - JOB: 'DOCS'

@@ -36,10 +36,10 @@ Installation
 .. |license| image:: https://img.shields.io/pypi/l/scikit-misc.svg
 .. _license: https://pypi.python.org/pypi/scikit-misc
 
-.. |buildstatus| image:: https://api.travis-ci.org/has2k1/scikit-misc.svg?branch=master
-.. _buildstatus: https://travis-ci.org/has2k1/scikit-misc
+.. |buildstatus| image:: https://github.com/has2k1/scikit-misc/workflows/build/badge.svg?branch=master
+.. _buildstatus: https://github.com/has2k1/scikit-misc/actions?query=branch%3Amaster+workflow%3A%22build%22
 
-.. |coverage| image:: https://coveralls.io/repos/github/has2k1/scikit-misc/badge.svg?branch=master
-.. _coverage: https://coveralls.io/github/has2k1/scikit-misc?branch=master
+.. |coverage| image:: https://codecov.io /github/has2k1/scikit-misc/coverage.svg?branch=master
+.. _coverage: https://codecov.io/github/has2k1/scikit-misc?branch=master
 
 .. _Documentation: https://has2k1.github.io/scikit-misc

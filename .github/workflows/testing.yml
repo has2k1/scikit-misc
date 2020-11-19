@@ -1,0 +1,147 @@
+name: build
+
+on: [push, pull_request]
+
+jobs:
+  # Unittests
+  unittests:
+    runs-on: ubuntu-latest
+
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run
+    # by the push to the branch.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.9]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Packages
+        shell: bash -l {0}
+        run: |
+          apt-get install libblas-dev gfortran ccache
+          pip install numpy pytest-cov
+          pip install --install-option="--no-cython-compile" "Cython>=0.29"
+          pip install -v -e .
+
+      - name: Environment Information
+        shell: bash -l {0}
+        run: pip list
+
+      - name: Run Tests
+        shell: bash -l {0}
+        run: |
+          coverage erase
+          make test
+          ls -la
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
+          name: "py${{ matrix.python-version }}"
+
+  # Linting
+  lint:
+    runs-on: ubuntu-latest
+
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run
+    # by the push to the branch.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Ref: https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#caching-dependencies
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Install Packages
+        shell: bash -l {0}
+        run: pip install flake8
+
+      - name: Environment Information
+        shell: bash -l {0}
+        run: pip list
+
+      - name: Run Tests
+        shell: bash -l {0}
+        run: make lint
+
+  # Documentation
+  documentation:
+    runs-on: ubuntu-latest
+
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run
+    # by the push to the branch.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Ref: https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#caching-dependencies
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: Install Packages
+        shell: bash -l {0}
+        run: |
+          apt-get install libblas-dev gfortran ccache
+          pip install numpy pytest-cov
+          pip install --install-option="--no-cython-compile" "Cython>=0.29"
+          pip install numpydoc sphinx sphinx_rtd_theme
+          pip install -v -e .
+
+      - name: Environment Information
+        shell: bash -l {0}
+        run: pip list
+
+      - name: Build Documentation
+        shell: bash -l {0}
+        run: |
+          pushd doc
+          SPHINXOPTS=-W
+          make html && popd

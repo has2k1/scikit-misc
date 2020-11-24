@@ -11,20 +11,53 @@ COMMIT_AUTHOR_NAME="Github Actions"
 COMMIT_AUTHOR_EMAIL="github-actions@github.com"
 release_re='[0-9]\+\.[0-9]\+\.[0-9]\+'
 pre_re='\(\(a\|b\|rc\|alpha\|beta\)[0-9]*\)\?'
-VERSION=$(echo $SOURCE_TAG | grep "^v${release_re}${pre_re}$") || VERSION="unknown"
+VERSION=$(echo $SOURCE_TAG | grep "^v${release_re}${pre_re}$") || VERSION=""
+RELEASE_VERSION=$(echo $SOURCE_TAG | grep "^v${release_re}$") || RELEASE_VERSION=""
 COMMIT_MSG="Documentation: ${VERSION}"
+DEST_DIR=""
+NEW_RELEASE="No"
 
-# Pull requests and commits to other branches should not deploy
-# Deploy when master is tagged with a releasable version tag
-if [[ $VERSION == "unknown" ]] || \
-   [[ "$SOURCE_BRANCH" != "master" ]]; then
-    echo "Not deploying documentation"
-    exit 0
+# dev, latest, stable, v1.0.0
+if [[ "$SOURCE_BRANCH" == "master" ]]; then
+  if [[ "$RELEASE_VERSION" ]]; then
+    DEST_DIR="$RELEASE_VERSION"
+  else
+    DEST_DIR="latest"
+  fi
+elif [[ "$SOURCE_BRANCH" == "dev" ]]; then
+  DEST_DIR="dev"
+fi
+
+# A release (tag) without a corresponding directory entry means we
+# are seeing it for the first time.
+if [[ "$DEST_DIR" == "$RELEASE_VERSION" ]] && [[ ! -d "$DEST_DIR" ]]; then
+  NEW_RELEASE="Yes"
+fi
+
+# Do not deploy if destination directory has been created at this point.
+# If the destination directory exists clear it out
+# Otherwise we create it
+if [[ -z "$DEST_DIR" ]]; then
+  echo "Nothing to deploy."; exit 0
+elif [[ -d "$DEST_DIR" ]]; then
+  rm -f "$DEST_DIR/*"
+else
+  mkdir -p $DEST_DIR
 fi
 
 # Copy documentation
-rm -rf .
-cp -a "$HTML_DIR/." ./
+touch .nojekyll
+cp -a "$HTML_DIR/." $DEST_DIR
+
+# A new release becomes the stable version
+# and also becomes the latest
+if [[ "$NEW_RELEASE" == "Yes" ]]; then
+  ln -sf $DEST_DIR stable
+  ln -sf "$DEST_DIR/index.html" ./
+
+  rm -rf latest
+  ln -sf $DEST_DIR latest
+fi
 
 # Configure commit information
 git config user.name "$COMMIT_AUTHOR_NAME  [GA Deploy Doc.]"
@@ -39,6 +72,5 @@ if [[ -z `git diff --cached --exit-code --shortstat` ]]; then
   exit 0
 fi
 
-echo "SUCCESS"
-# git commit -m "$COMMIT_MSG"
-# git push
+git commit -m "$COMMIT_MSG"
+git push

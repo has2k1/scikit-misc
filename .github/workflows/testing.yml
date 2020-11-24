@@ -2,6 +2,11 @@ name: build
 
 on: [push, pull_request]
 
+env:
+   HTML_DIR: "${{ github.workspace }}/../html"
+   DOC_TOOLS_DIR: "${{ github.workspace }}/../doc_tools"
+   DOC_BRANCH: "gh-pages"
+
 jobs:
   # Unittests
   unittests:
@@ -145,3 +150,55 @@ jobs:
           pushd doc
           SPHINXOPTS=-W
           make html && popd
+
+      - name: Upload HTML
+        uses: actions/upload-artifact@v2
+        with:
+          name: html
+          path: "doc/_build/html/"
+
+  # Documentation
+  deploy_documentation:
+    name: Deploy Documentation
+    needs: [unittests, documentation]
+    runs-on: ubuntu-latest
+    if: "startsWith(github.ref, 'refs/tags/v')"
+    steps:
+      - name: Download HTML
+        uses: actions/download-artifact@v2
+        with:
+          name: html
+          path: "${{ env.HTML_DIR }}"
+
+      - name: Get branch information
+        id: branch_info
+        run: |
+          echo "::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}"
+          echo "::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}"
+
+      - name: ls
+        run: |
+           pwd
+           ls -la "$HTML_DIR"
+           cd "$HTML_DIR"
+           pwd
+
+      - name: Check main repository
+        uses: actions/checkout@v2
+
+      - name: Copy commit tools from main repository
+        run: |
+          mkdir -p "$DOC_TOOLS_DIR"
+          cp tools/deploy_documentation.sh "$DOC_TOOLS_DIR"
+
+      - name: Checkout Documentation branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.DOC_BRANCH }}
+
+      - name: Commit Documentation
+        shell: bash -l {0}
+        env:
+          SOURCE_BRANCH: ${{ steps.branch_info.outputs.SOURCE_BRANCH }}
+          SOURCE_TAG: ${{ steps.branch_info.outputs.SOURCE_TAG }}
+        run : source "$DOC_TOOLS_DIR/deploy_documentation.sh"

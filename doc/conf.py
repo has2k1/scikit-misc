@@ -47,6 +47,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.autosummary',
+    'sphinx.ext.githubpages',
 
     'sphinxext.inline_code_highlight',
     'numpydoc',

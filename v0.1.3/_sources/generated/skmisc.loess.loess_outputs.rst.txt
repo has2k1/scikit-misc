@@ -1,4 +1,4 @@
-skmisc.loess.loess_outputs
+﻿skmisc.loess.loess_outputs
 ==========================
 
 .. currentmodule:: skmisc.loess

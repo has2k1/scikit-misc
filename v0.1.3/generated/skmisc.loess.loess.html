@@ -4,10 +4,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>skmisc.loess.loess &#8212; scikit-misc 0.1.3 documentation</title>
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>skmisc.loess.loess &#8212; scikit-misc 0+untagged.1.g21abb51 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0+untagged.1.g21abb51</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -128,18 +128,18 @@ and <cite>p</cite> is the number of predictor variables.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>n independent observations for p no. of variables</p>
+<dt><strong>x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>n independent observations for p no. of variables</p>
 </dd>
-<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[n,]</span></dt><dd><p>A (n,) ndarray of response observations</p>
+<dt><strong>y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[n,]</span></dt><dd><p>A (n,) ndarray of response observations</p>
 </dd>
-<dt><strong>weights</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Weights to be given to individual observations
+<dt><strong>weights</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">n</span></code>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Weights to be given to individual observations
 in the sum of squared residuals that forms the local fitting
 criterion. If not None, the weights should be non negative. If
 the different observations have non-equal variances, the weights
 should be inversely proportional to the variances. By default,
 an unweighted fit is carried out (all the weights are one).</p>
 </dd>
-<dt><strong>**options</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_model</span></code></a> and
+<dt><strong>**options</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>The parameters of <a class="reference internal" href="skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_model</span></code></a> and
 <a class="reference internal" href="skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-class docutils literal notranslate"><span class="pre">loess_control</span></code></a>.</p>
 </dd>
 </dl>
@@ -177,7 +177,7 @@ sets of parameters.</p>
 
 <dl class="py method">
 <dt id="skmisc.loess.loess.output_summary">
-<code class="sig-name descname">output_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.output_summary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">output_summary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess.output_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns some generic information about the loess fit.</p>
 </dd></dl>
 
@@ -188,11 +188,11 @@ sets of parameters.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>newdata</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>Independent variables where the surface must be estimated,
+<dt><strong>newdata</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code>]</span></dt><dd><p>Independent variables where the surface must be estimated,
 with m the number of new data points, and p the number of
 independent variables.</p>
 </dd>
-<dt><strong>stderror</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boolean</span></code></a></span></dt><dd><p>Whether the standard error should be computed</p>
+<dt><strong>stderror</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">boolean</span></code></a></span></dt><dd><p>Whether the standard error should be computed</p>
 </dd>
 </dl>
 </dd>
@@ -228,7 +228,7 @@ independent variables.</p>
     </p>
     <p>
         &copy; Copyright 2020, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
 </footer>

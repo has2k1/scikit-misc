@@ -1,4 +1,4 @@
-skmisc.loess.loess_anova
+﻿skmisc.loess.loess_anova
 ========================
 
 .. currentmodule:: skmisc.loess

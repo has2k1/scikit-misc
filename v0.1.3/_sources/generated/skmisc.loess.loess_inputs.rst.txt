@@ -1,4 +1,4 @@
-skmisc.loess.loess_inputs
+﻿skmisc.loess.loess_inputs
 =========================
 
 .. currentmodule:: skmisc.loess

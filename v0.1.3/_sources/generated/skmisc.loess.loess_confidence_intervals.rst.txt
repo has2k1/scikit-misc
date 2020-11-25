@@ -1,4 +1,4 @@
-skmisc.loess.loess_confidence_intervals
+﻿skmisc.loess.loess_confidence_intervals
 =======================================
 
 .. currentmodule:: skmisc.loess

@@ -1,4 +1,4 @@
-skmisc.loess.loess
+﻿skmisc.loess.loess
 ==================
 
 .. currentmodule:: skmisc.loess

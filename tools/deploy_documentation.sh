@@ -13,7 +13,6 @@ release_re='[0-9]\+\.[0-9]\+\.[0-9]\+'
 pre_re='\(\(a\|b\|rc\|alpha\|beta\)[0-9]*\)\?'
 VERSION=$(echo $SOURCE_TAG | grep "^v${release_re}${pre_re}$") || VERSION=""
 RELEASE_VERSION=$(echo $SOURCE_TAG | grep "^v${release_re}$") || RELEASE_VERSION=""
-COMMIT_MSG="Documentation: ${VERSION}"
 DEST_DIR=""
 NEW_RELEASE="No"
 
@@ -59,8 +58,10 @@ if [[ "$NEW_RELEASE" == "Yes" ]]; then
   ln -sf $DEST_DIR latest
 fi
 
+COMMIT_MSG="Documentation: ${DEST_DIR}"
+
 # Configure commit information
-git config user.name "$COMMIT_AUTHOR_NAME  [GA Deploy Doc.]"
+git config user.name "$COMMIT_AUTHOR_NAME"
 git config user.email "$COMMIT_AUTHOR_EMAIL"
 
 # Commit the "changes", i.e. the new version.

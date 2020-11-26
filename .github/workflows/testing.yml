@@ -14,7 +14,9 @@ jobs:
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: |
+       ((github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+       && ! contains(github.event.head_commit.message, '[skip ci]'))
 
     strategy:
       matrix:
@@ -60,7 +62,9 @@ jobs:
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: |
+       ((github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+       && ! contains(github.event.head_commit.message, '[skip ci]'))
 
     strategy:
       matrix:
@@ -104,7 +108,9 @@ jobs:
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    if: |
+       ((github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+       && ! contains(github.event.head_commit.message, '[skip ci]'))
 
     strategy:
       matrix:

@@ -44,7 +44,7 @@ cdef boolarray_from_data(int rows, int cols, int *data):
     # Since the memory is owned by the containing object, we pass a copy
     # of the data so that when the owner is destroyed the return data
     # is not destroyed.
-    return a_ndr.astype(np.bool).copy()
+    return a_ndr.astype(bool).copy()
 
 
 cdef class loess_inputs:
@@ -417,7 +417,7 @@ cdef class loess_model:
                 "of independent variables")
 
         p_ndr = np.atleast_1d(np.array(value, copy=False, subok=True,
-                                       dtype=np.bool))
+                                       dtype=bool))
         for i in range(self.p):
             self._base.parametric[i] = p_ndr[i]
 
@@ -438,7 +438,7 @@ cdef class loess_model:
                 "of independent variables")
 
         d_ndr = np.atleast_1d(np.array(value, copy=False,
-                                       subok=True, dtype=np.bool))
+                                       subok=True, dtype=bool))
         for i in range(self.p):
             self._base.drop_square[i] = d_ndr[i]
 

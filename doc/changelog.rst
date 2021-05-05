@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v0.1.4
+------
+*(2021-05-05)*
+
+- This is a maintenance release to keep up to date with deprecations
+  in upstream packages.
+
+
 v0.1.3
 ------
 *(2020-05-14)*

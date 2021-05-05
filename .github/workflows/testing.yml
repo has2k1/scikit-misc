@@ -168,7 +168,7 @@ jobs:
     name: Deploy Documentation
     needs: [unittests, documentation]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev' || startswith(github.ref, 'refs/tags/v')
     steps:
       - name: Download HTML
         uses: actions/download-artifact@v2

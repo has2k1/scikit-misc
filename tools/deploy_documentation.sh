@@ -18,13 +18,13 @@ NEW_RELEASE="No"
 
 # dev, latest, stable, v1.0.0
 if [[ "$SOURCE_BRANCH" == "master" ]]; then
-  if [[ "$RELEASE_VERSION" ]]; then
-    DEST_DIR="$RELEASE_VERSION"
-  else
     DEST_DIR="latest"
-  fi
 elif [[ "$SOURCE_BRANCH" == "dev" ]]; then
   DEST_DIR="dev"
+elif [[ "${SOURCE_BRANCH:0:11}" == "refs/tags/v" ]]; then
+  if [[ "$RELEASE_VERSION" ]]; then
+    DEST_DIR="$RELEASE_VERSION"
+  fi
 fi
 
 # A release (tag) without a corresponding directory entry means we
@@ -51,11 +51,16 @@ cp -a "$HTML_DIR/." $DEST_DIR
 # A new release becomes the stable version
 # and also becomes the latest
 if [[ "$NEW_RELEASE" == "Yes" ]]; then
-  ln -sf $DEST_DIR stable
+  rm stable
+
+  ln -s "$DEST_DIR" stable
   ln -sf "$DEST_DIR/index.html" ./
 
   rm -rf latest
   ln -sf $DEST_DIR latest
+
+  # For debugging
+  ls -la
 fi
 
 COMMIT_MSG="Documentation: ${DEST_DIR}"
@@ -66,7 +71,10 @@ git config user.email "$COMMIT_AUTHOR_EMAIL"
 
 # Commit the "changes", i.e. the new version.
 # The delta will show diffs between new and old versions.
-git add .
+git add "$DEST_DIR"
+git add stable
+git add latest
+git add index.html
 
 if [[ -z `git diff --cached --exit-code --shortstat` ]]; then
   echo "No changes to the output on this push; exiting."

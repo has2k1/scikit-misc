@@ -1,0 +1,7 @@
+﻿skmisc.loess.loess_confidence_intervals
+=======================================
+
+.. currentmodule:: skmisc.loess
+
+.. autoclass:: loess_confidence_intervals
+   :members:

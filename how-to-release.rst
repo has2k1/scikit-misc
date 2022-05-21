@@ -21,11 +21,11 @@ Testing
 Tagging
 =======
 
-Check out the master branch, tag with the version number & push the tags
+Check out the main branch, tag with the version number & push the tags
 
   ::
 
-    git checkout master
+    git checkout main
     git tag -a v0.1.0 -m 'Version: 0.1.0'
     git push upstream --tags
 
@@ -41,7 +41,7 @@ to the version. i.e.
 
     git clone https://github.com/has2k1/scikit-misc-wheels  # (optional)
     cd scikit-misc-wheels
-    git submodule foreach 'git fetch --all; git reset --hard origin/master'
+    git submodule foreach 'git fetch --all; git reset --hard origin/main'
 
     # Edit .github/workflows/wheels.yml and set the version e.g.
     #     - BUILD_COMMIT: v0.1.0

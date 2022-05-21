@@ -17,7 +17,7 @@ DEST_DIR=""
 NEW_RELEASE="No"
 
 # dev, latest, stable, v1.0.0
-if [[ "$SOURCE_BRANCH" == "master" ]]; then
+if [[ "$SOURCE_BRANCH" == "main" ]]; then
     DEST_DIR="latest"
 elif [[ "$SOURCE_BRANCH" == "dev" ]]; then
   DEST_DIR="dev"

@@ -1,16 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Locally-weighted regression (skmisc.loess) &#8212; scikit-misc 0+untagged.1.g21f88c8 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Locally-weighted regression (skmisc.loess) &#8212; scikit-misc 0.0.post1+g4014843 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/copybutton.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -39,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0+untagged.1.g21f88c8</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.post1+g4014843</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -116,8 +118,8 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <span class="target" id="module-skmisc.loess"></span><div class="section" id="locally-weighted-regression-skmisc-loess">
-<h1>Locally-weighted regression (<a class="reference internal" href="#module-skmisc.loess" title="skmisc.loess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code></a>)<a class="headerlink" href="#locally-weighted-regression-skmisc-loess" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-skmisc.loess"></span><section id="locally-weighted-regression-skmisc-loess">
+<h1>Locally-weighted regression (<a class="reference internal" href="#module-skmisc.loess" title="skmisc.loess"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code></a>)<a class="headerlink" href="#locally-weighted-regression-skmisc-loess" title="Permalink to this heading">¶</a></h1>
 <p>Loess is a procedure for estimating a regression surface by a multivariate
 smoothing procedure. A linear or quadratic function of the independent
 variables is fit in a moving fashion that is analogous to how a moving
@@ -128,7 +130,7 @@ distortion. However, analogues of the statistical procedures used
 in parametric function fitting – for example, ANOVA and t intervals –
 involve statistics whose distributions are well approximated by familiar
 distributions.</p>
-<table class="longtable docutils align-default">
+<table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -140,10 +142,10 @@ distributions.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_inputs.html#skmisc.loess.loess_inputs" title="skmisc.loess.loess_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_inputs</span></code></a>(x, y[, weights])</p></td>
 <td><p>Initialization class for loess data inputs</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_model</span></code></a>(p[, family, span, degree, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_model.html#skmisc.loess.loess_model" title="skmisc.loess.loess_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_model</span></code></a>(p[, family, span, degree, ...])</p></td>
 <td><p>Initialization class for loess fitting parameters</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_control</span></code></a>([surface, statistics, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_control.html#skmisc.loess.loess_control" title="skmisc.loess.loess_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_control</span></code></a>([surface, statistics, ...])</p></td>
 <td><p>Initialization class for loess control parameters</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skmisc.loess.loess_outputs.html#skmisc.loess.loess_outputs" title="skmisc.loess.loess_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loess_outputs</span></code></a>(n, p, family)</p></td>
@@ -160,8 +162,8 @@ distributions.</p>
 </tr>
 </tbody>
 </table>
-<div class="section" id="source">
-<h2>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h2>
+<section id="source">
+<h2>Source<a class="headerlink" href="#source" title="Permalink to this heading">¶</a></h2>
 <p>The original source code was written by William S. Cleveland, Eric Grosse
 and Ming-Jen Shyu. It is available at <a class="reference external" href="http://www.netlib.org/a/dloess">http://www.netlib.org/a/dloess</a>. It
 was initially adapted to for use in Scipy by Pierre GF Gerard-Marchant.</p>
@@ -183,8 +185,8 @@ Scatterplots. Journal of the American Statistical Association, 74:
 pp. 829–836. 1979.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
     </div>
@@ -205,8 +207,8 @@ pp. 829–836. 1979.</p>
       
     </p>
     <p>
-        &copy; Copyright 2020, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2022, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br/>
     </p>
   </div>
 </footer>

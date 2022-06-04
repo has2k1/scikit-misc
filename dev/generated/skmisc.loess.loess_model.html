@@ -1,16 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>skmisc.loess.loess_model &#8212; scikit-misc 0+untagged.1.g21f88c8 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>skmisc.loess.loess_model &#8212; scikit-misc 0.0.post1+g4014843 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -39,7 +41,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0+untagged.1.g21f88c8</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.post1+g4014843</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -113,43 +115,43 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="skmisc-loess-loess-model">
-<h1>skmisc.loess.loess_model<a class="headerlink" href="#skmisc-loess-loess-model" title="Permalink to this headline">¶</a></h1>
+  <section id="skmisc-loess-loess-model">
+<h1>skmisc.loess.loess_model<a class="headerlink" href="#skmisc-loess-loess-model" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
-<dt id="skmisc.loess.loess_model">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">skmisc.loess.</span></code><code class="sig-name descname"><span class="pre">loess_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="skmisc.loess.loess_model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">skmisc.loess.</span></span><span class="sig-name descname"><span class="pre">loess_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_square</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialization class for loess fitting parameters</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>p</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables</p>
+<dt><strong>p</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables</p>
 </dd>
-<dt><strong>family</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>One of (‘gaussian’, ‘symmetric’)
+<dt><strong>family</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>One of (‘gaussian’, ‘symmetric’)
 Determines the assumed distribution of the errors. If ‘gaussian’
 the fit is performed with least-squares. If ‘symmetric’ is
 selected, the fit is performed robustly by redescending
 M-estimators.</p>
 </dd>
-<dt><strong>span</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Smoothing factor, as a fraction of the number of points to take
+<dt><strong>span</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Smoothing factor, as a fraction of the number of points to take
 into account. Should be in the range (0, 1]. Default is 0.75</p>
 </dd>
-<dt><strong>degree</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Overall degree of locally-fitted polynomial. 1 is locally-linear
+<dt><strong>degree</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Overall degree of locally-fitted polynomial. 1 is locally-linear
 fitting and 2 is locally-quadratic fitting. Degree should be 2 at
 most. Default is 2.</p>
 </dd>
-<dt><strong>normalize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Determines whether the independent variables should be normalized.
+<dt><strong>normalize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Determines whether the independent variables should be normalized.
 If True, the normalization is performed by setting the 10% trimmed
 standard deviation to one. If False, no normalization is carried
 out. This option is only useful for more than one variable. For
 spatial coordinates predictors or variables with a common scale,
 it should be set to False. Default is True.</p>
 </dd>
-<dt><strong>parametric</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | list-of-bools <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">length</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code></span></dt><dd><p>Indicates which independent variables should be
+<dt><strong>parametric</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | list-of-bools <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">length</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code></span></dt><dd><p>Indicates which independent variables should be
 conditionally-parametric (if there are two or more independent
 variables). If a sequence is given, the values should be ordered
 according to the predictor group in x.</p>
 </dd>
-<dt><strong>drop_square</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | list-of-bools <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">length</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code></span></dt><dd><p>Which squares to drop. When there are two or more independent
+<dt><strong>drop_square</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | list-of-bools <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">length</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">p</span></code></span></dt><dd><p>Which squares to drop. When there are two or more independent
 variables and when a 2nd order polynomial(degree) is used,
 ‘drop_square’ specifies those numeric predictors
 whose squares should be dropped from the set of fitting variables.
@@ -161,7 +163,7 @@ the predictor group in x.</p>
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
     </div>
@@ -182,8 +184,8 @@ the predictor group in x.</p>
       
     </p>
     <p>
-        &copy; Copyright 2020, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+        &copy; Copyright 2022, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br/>
     </p>
   </div>
 </footer>

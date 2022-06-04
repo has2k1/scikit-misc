@@ -31,9 +31,9 @@ scikit-misc can be installed in a handful of ways.
 
    .. code-block:: console
 
-       $ curl -OL https://github.com/has2k1/scikit-misc/archive/master.zip
-       $ unzip master
-       $ cd scikit-misc-master
+       $ curl -OL https://github.com/has2k1/scikit-misc/archive/main.zip
+       $ unzip main
+       $ cd scikit-misc-main
        $ python setup.py install
 
 

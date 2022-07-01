@@ -73,9 +73,9 @@ git config user.email "$COMMIT_AUTHOR_EMAIL"
 git add "$DEST_DIR"
 git add stable
 git add latest
-git add index.html
 
-if [[ -z `git diff --cached --exit-code --shortstat` ]]; then
+changes=$(git diff --cached --shortstat)
+if [[ -z "$changes" ]]; then
   echo "No changes to the output on this push; exiting."
   exit 0
 fi

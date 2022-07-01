@@ -54,7 +54,6 @@ if [[ "$NEW_RELEASE" == "Yes" ]]; then
   rm stable
 
   ln -s "$DEST_DIR" stable
-  ln -sf "$DEST_DIR/index.html" ./
 
   rm -rf latest
   ln -sf $DEST_DIR latest

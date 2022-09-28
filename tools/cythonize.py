@@ -168,7 +168,7 @@ def process(path, fromfile, tofile, processor_function, hash_db):
     fulltopath = os.path.join(path, tofile)
     current_hash = get_hash(fullfrompath, fulltopath)
     if current_hash == hash_db.get(normpath(fullfrompath), None):
-        sys.stderr.write('%s has not changed' % fullfrompath)
+        print('%s has not changed' % fullfrompath, file=sys.stderr)
         return
 
     orig_cwd = os.getcwd()

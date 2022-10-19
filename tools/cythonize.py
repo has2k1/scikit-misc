@@ -168,13 +168,13 @@ def process(path, fromfile, tofile, processor_function, hash_db):
     fulltopath = os.path.join(path, tofile)
     current_hash = get_hash(fullfrompath, fulltopath)
     if current_hash == hash_db.get(normpath(fullfrompath), None):
-        print('%s has not changed' % fullfrompath)
+        print('%s has not changed' % fullfrompath, file=sys.stderr)
         return
 
     orig_cwd = os.getcwd()
     try:
         os.chdir(path)
-        print('Processing %s' % fullfrompath)
+        sys.stderr.write('Processing %s' % fullfrompath)
         processor_function(fromfile, tofile)
     finally:
         os.chdir(orig_cwd)

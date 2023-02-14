@@ -31,7 +31,7 @@ if on_rtd:
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '3.0.0'
+needs_sphinx = '6.1.3'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -67,7 +67,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'scikit-misc'
-copyright = '2020, Hassan Kibirige'
+copyright = '2023, Hassan Kibirige'
+github_repo_url = f'https://github.com/has2k1/{project}'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -315,7 +316,7 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
-    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
 }
 
 
@@ -323,8 +324,10 @@ intersphinx_mapping = {
 autodoc_member_order = 'bysource'
 autosummary_generate = True
 
+
 extlinks = {
-    'issue': ('https://github.com/has2k1/scikit-misc/issues/%s', 'GH')
+    'issue': (f'{github_repo_url}/issues/%s', '#%s'),
+    'pr': (f'{github_repo_url}/pul/%s', 'PR #%s')
 }
 
 # numpydoc

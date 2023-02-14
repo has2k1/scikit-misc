@@ -40,11 +40,11 @@ clean-test:
 lint:
 	flake8 skmisc --exclude=skmisc/__config__.py
 
-test: clean-test
-	pytest
+build:
+	./dev.py build
 
-test-all:
-	tox
+test: clean-test
+	./dev.py test
 
 coverage:
 	coverage report -m

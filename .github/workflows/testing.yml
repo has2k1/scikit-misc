@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.9]
+        python-version: [3.8, 3.9, 3.10, 3.11]
 
     steps:
       - name: Checkout Code
@@ -35,9 +35,9 @@ jobs:
         shell: bash -l {0}
         run: |
           apt-get install libblas-dev gfortran ccache
-          pip install numpy pytest-cov
-          pip install --install-option="--no-cython-compile" "Cython>=0.29"
-          pip install -v -e .
+          pip install -r requirements/build.txt
+          pip install meson-py
+          make build
 
       - name: Environment Information
         shell: bash -l {0}
@@ -68,7 +68,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -114,7 +114,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.11]
 
     steps:
       - name: Checkout Code
@@ -141,10 +141,10 @@ jobs:
         shell: bash -l {0}
         run: |
           apt-get install libblas-dev gfortran ccache
-          pip install numpy pytest-cov
-          pip install --install-option="--no-cython-compile" "Cython>=0.29"
+          pip install -r requirements/build.txt
           pip install numpydoc sphinx sphinx_rtd_theme
-          pip install -v -e .
+          make build
+          pip install --no-build-isolation .
 
       - name: Environment Information
         shell: bash -l {0}

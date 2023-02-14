@@ -15,7 +15,7 @@ from numpy cimport (
     NPY_DOUBLE,
     PyArray_SimpleNewFromData,
 )
-cimport c_loess
+cimport c_loess   # c_loess.pxd
 
 # NumPy must be initialized
 np.import_array()

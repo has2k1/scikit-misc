@@ -26,6 +26,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Deepen Repository
+        run: |
+          python ./tools/deepen-shallow-repo.py
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -45,6 +49,7 @@ jobs:
       - name: Environment Information
         shell: bash -l {0}
         run: |
+          git describe
           ls -la
           pip list
 
@@ -137,6 +142,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Deepen Repository
+        run: |
+          python ./tools/deepen-shallow-repo.py
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -154,13 +163,21 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      - name: Install Packages
+      - name: Install Ubuntu dependencies
         shell: bash -l {0}
         run: |
           sudo apt-get update
           sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
+
+      - name: Install Python Packages
+        shell: bash -l {0}
+        run: |
           pip install -r requirements/build.txt
           pip install numpydoc sphinx sphinx_rtd_theme
+
+      - name: Build Package
+        shell: bash -l {0}
+        run: |
           make build
           pip install --no-build-isolation .
 

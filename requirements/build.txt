@@ -1,5 +1,6 @@
-cython
+Cython
 git+https://github.com/scientific-python/devpy
-meson
+meson-python
+ninja
 numpy
 pytest-cov

@@ -35,7 +35,7 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo apt-get update
-          sudo apt-get install libopenblas-dev gfortran ccache
+          sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
 
       - name: Install Python Packages
         shell: bash -l {0}
@@ -159,7 +159,7 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo apt-get update
-          sudo apt-get install libopenblas-dev gfortran ccache
+          sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
           pip install -r requirements/build.txt
           pip install numpydoc sphinx sphinx_rtd_theme
           make build

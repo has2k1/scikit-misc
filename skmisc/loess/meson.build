@@ -25,7 +25,7 @@ floess_lib = static_library(
   'floess',
   floess_sources,
   fortran_args: [fortran_ignore_warnings],
-  # dependencies: [blas, lapack]
+  dependencies: [blas, lapack]
 )
 ###
 

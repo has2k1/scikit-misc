@@ -37,7 +37,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install libopenblas-dev gfortran ccache
           pip install -r requirements/build.txt
-          pip install meson-py
           make build
 
       - name: Environment Information

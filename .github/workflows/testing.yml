@@ -53,6 +53,14 @@ jobs:
           ls
           make build
 
+      - name: Upload meson log file
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: meson-logs
+          path: build/meson-logs/meson-log.txt
+          if-no-files-found: ignore
+
       - name: Run Tests
         shell: bash -l {0}
         run: |

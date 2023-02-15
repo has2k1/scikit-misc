@@ -4,16 +4,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>skmisc.loess.loess_control &#8212; scikit-misc 0+untagged.1.g222e5a9 documentation</title>
+    <title>skmisc.loess.loess_control &#8212; scikit-misc 0.0.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -41,7 +39,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           scikit-misc</a>
-        <span class="navbar-text navbar-version pull-left"><b>0+untagged.1.g222e5a9</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.0.0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -85,7 +83,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">skmisc.loess.loess_control</a></li>
+<li><a class="reference internal" href="#">skmisc.loess.loess_control</a><ul>
+<li><a class="reference internal" href="#skmisc.loess.loess_control"><code class="docutils literal notranslate"><span class="pre">loess_control</span></code></a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -122,22 +123,22 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">skmisc.loess.</span></span><span class="sig-name descname"><span class="pre">loess_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interpolate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statistics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'approximate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wait.to.decide'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_control" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialization class for loess control parameters</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>surface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘interpolate’, ‘direct’]
+<dt><strong>surface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘interpolate’, ‘direct’]
 Determines whether the fitted surface is computed directly
 at all points (‘direct’) or whether an interpolation method
 is used (‘interpolate’). The default ‘interpolate’) is what
 most users should use unless special circumstances warrant.</p>
 </dd>
-<dt><strong>statistics</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘approximate’, ‘exact’]
+<dt><strong>statistics</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘approximate’, ‘exact’]
 Determines whether the statistical quantities are computed
 exactly (‘exact’) or approximately (‘approximate’). ‘exact’
 should only be used for testing the approximation in
 statistical development and is not meant for routine usage
 because computation time can be horrendous.</p>
 </dd>
-<dt><strong>trace_hat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘wait.to.decide’, ‘exact’, ‘approximate’]
+<dt><strong>trace_hat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional</span></dt><dd><p>One of [‘wait.to.decide’, ‘exact’, ‘approximate’]
 Determines how the trace of the hat matrix should be computed.
 The hat matrix is used in the computation of the statistical
 quantities. If ‘exact’, an exact computation is done; this
@@ -149,10 +150,10 @@ interpolated. If surface is ‘exact’, an exact computation is
 always done for the trace. Setting trace_hat to ‘approximate’
 for large dataset will substantially reduce the computation time.</p>
 </dd>
-<dt><strong>iterations</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, optional</span></dt><dd><p>Number of iterations of the robust fitting method. If the family
+<dt><strong>iterations</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, optional</span></dt><dd><p>Number of iterations of the robust fitting method. If the family
 is ‘gaussian’, the number of iterations is set to 0.</p>
 </dd>
-<dt><strong>cell</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, optional</span></dt><dd><p>Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
+<dt><strong>cell</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, optional</span></dt><dd><p>Maximum cell size of the kd-tree. Suppose k = floor(n*cell*span),
 where n is the number of observations, and span the smoothing
 parameter. Then, a cell is further divided if the number of
 observations within it is greater than or equal to k. This
@@ -184,8 +185,8 @@ option is only used if the surface is interpolated.</p>
       
     </p>
     <p>
-        &copy; Copyright 2020, Hassan Kibirige.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br/>
+        &copy; Copyright 2023, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 6.1.3.<br/>
     </p>
   </div>
 </footer>

@@ -34,7 +34,8 @@ jobs:
       - name: Install Packages
         shell: bash -l {0}
         run: |
-          sudo apt-get install libblas-dev gfortran ccache
+          sudo apt-get update
+          sudo apt-get install libopenblas-dev gfortran ccache
           pip install -r requirements/build.txt
           pip install meson-py
           make build
@@ -140,7 +141,8 @@ jobs:
       - name: Install Packages
         shell: bash -l {0}
         run: |
-          sudo apt-get install libblas-dev gfortran ccache
+          sudo apt-get update
+          sudo apt-get install libopenblas-dev gfortran ccache
           pip install -r requirements/build.txt
           pip install numpydoc sphinx sphinx_rtd_theme
           make build

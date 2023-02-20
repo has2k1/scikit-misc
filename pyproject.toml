@@ -93,3 +93,36 @@ Environments = [
     "devpy.ipython",
     "devpy.python",
 ]
+
+[tool.cibuildwheel]
+skip = "cp36-* cp37-* pp* *_ppc64le *_i686 *_s390x *-musllinux*"
+build-verbosity = "3"
+# gmpy2 and scikit-umfpack are usually added for testing. However, there are
+# currently wheels missing that make the test script fail.
+test-requires = ["pytest", "pytest-cov"]
+test-command = "bash {project}/tools/wheels/cibw_test_command.sh {project}"
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+before-build = "bash {project}/tools/wheels/cibw_before_build_linux.sh {project}"
+
+[tool.cibuildwheel.macos]
+before-build = "bash {project}/tools/wheels/cibw_before_build_macos.sh {project}"
+test-skip = "cp38-macosx_arm64"
+
+[tool.cibuildwheel.windows]
+before-build = "bash {project}/tools/wheels/cibw_before_build_win.sh {project}"
+repair-wheel-command = "bash ./tools/wheels/repair_windows.sh {wheel} {dest_dir}"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-win32"
+
+[[tool.cibuildwheel.overrides]]
+select = "*-win_amd64"
+# can use pkg-config detection for win_amd64 because the installed rtools
+# provide a working pkg-config.
+# An alternative is to set CMAKE_PREFIX_PATH="c:/opt/openblas/if_32/32"
+# Don't use double backslash for path separators, they don't get passed
+# to the build correctly
+environment = { PKG_CONFIG_PATH="c:/opt/64/lib/pkgconfig" }

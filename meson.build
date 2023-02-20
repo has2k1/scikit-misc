@@ -8,7 +8,9 @@ project(
   default_options: [
     'buildtype=debugoptimized',
     'c_std=c99',
-    'fortran_std=legacy'
+    'fortran_std=legacy',
+    'blas=openblas',
+    'lapack=openblas'
   ],
 )
 ###

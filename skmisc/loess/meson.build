@@ -44,6 +44,7 @@ py.extension_module(
    dependencies: [py_dep, npymath_lib],
    link_with: [floess_lib],
    link_args: [cython_c_link_args],
+   link_language: 'c',
    install: true,
    subdir: 'skmisc/loess'
 )

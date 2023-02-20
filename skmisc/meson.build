@@ -91,9 +91,12 @@ fortran_ignore_warnings = ff.get_supported_arguments(
 
 #### Check Supported Linker Flags
 
-# C
-Wlno_compact_unwind = cc.has_link_argument('-Wl,-no_compact_unwind')
-
+## C
+Wlno_compact_unwind = cc.get_supported_link_arguments('-Wl,-no_compact_unwind')
+# TODO: This should not exist long term
+# Disable warning about undefined dynamic lookup of symbols. It is harmless.
+# https://github.com/python/cpython/issues/97524#issuecomment-1270616173
+Wlno_fixup_chains = cc.get_supported_link_arguments('-Wl,-no_fixup_chains')
 ###
 
 #### Setup on Operating System
@@ -137,13 +140,9 @@ if is_windows
   # explicitly add the define as a compiler flag for Cython-generated code.
   use_math_defines = ['-D_USE_MATH_DEFINES']
 elif is_macos
-  cython_c_link_args +=  [
-    '-Wl,-no_compact_unwind',
-
-    # TODO: This should not exist long term
-    # Disable warning about undefined dynamic lookup of symbols. It is harmless.
-    # https://github.com/python/cpython/issues/97524#issuecomment-1270616173
-    '-Wl,-no_fixup_chains'
+  cython_c_link_args += [
+    Wlno_compact_unwind,
+    Wlno_fixup_chains
   ]
 else
   use_math_defines = []
@@ -201,7 +200,8 @@ endforeach
 #### Include Python Sources in this Directory
 # Copy the main __init__ to the build dir
 python_sources = [
-  '__init__.py'
+  '__init__.py',
+  '_distributor_init.py',
 ]
 
 py.install_sources(

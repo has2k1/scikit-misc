@@ -1,6 +1,10 @@
 name: build
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - !wheels
+  pull_request:
 
 env:
    HTML_DIR: "${{ github.workspace }}/../html"

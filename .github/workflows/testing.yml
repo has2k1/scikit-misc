@@ -178,8 +178,7 @@ jobs:
       - name: Build Package
         shell: bash -l {0}
         run: |
-          make build
-          pip install --no-build-isolation .
+          make develop
 
       - name: Environment Information
         shell: bash -l {0}
@@ -232,7 +231,7 @@ jobs:
           ref: ${{ env.DOC_BRANCH }}
 
       - name: Commit Documentation
-        shell: bash -l {0}
+        shell: bash
         env:
           SOURCE_BRANCH: ${{ steps.branch_info.outputs.SOURCE_BRANCH }}
           SOURCE_TAG: ${{ steps.branch_info.outputs.SOURCE_TAG }}

@@ -12,7 +12,6 @@
 # Here we try to fetch more commits (deepen the repo) until we reach a
 # version tag. Git describe need a version tag.
 
-from pathlib import Path
 import os
 import re
 import shlex

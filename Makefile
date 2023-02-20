@@ -46,14 +46,16 @@ build:
 test: clean-test
 	./dev.py test
 
+sdist: clean-test
+	./dev.py sdist
+
 coverage:
-	coverage report -m
-	coverage html
+	./dev.py coverage
+	./dev.py coverage-html
 	$(BROWSER) htmlcov/index.html
 
 docs:
-	$(MAKE) -C doc clean
-	$(MAKE) -C doc html
+	./dev.py docs
 	$(BROWSER) doc/_build/html/index.html
 
 release: clean
@@ -67,5 +69,5 @@ dist: clean
 install: clean
 	python setup.py install
 
-develop: clean-pyc
-	python setup.py develop
+develop: build
+	pip install --no-build-isolation .

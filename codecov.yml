@@ -1,0 +1,3 @@
+codecov:
+  require_ci_to_pass: true
+  token: 6ab72dfa-64d7-4a9c-b4de-5f8614b7b70a

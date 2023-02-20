@@ -1,11 +1,5 @@
 # Testing
 pytest-cov
-tox
-coveralls
-
-# Documentation
-sphinx
-sphinx_rtd_theme
 
 # Release
 wheel

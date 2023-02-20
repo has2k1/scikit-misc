@@ -36,6 +36,7 @@ test = [
   "pytest-cov",
 ]
 doc = [
+  "numydoc",
   "sphinx",
 ]
 dev = [
@@ -59,6 +60,22 @@ requires = [
     "oldest-supported-numpy"
 ]
 
+
+[tool.pytest.ini_options]
+testpaths = [
+    "skmisc/loess/tests"
+]
+doctest_optionflags = "ALLOW_UNICODE ALLOW_BYTES NORMALIZE_WHITESPACE"
+addopts = "--pyargs --cov=skmisc --cov-report=xml --import-mode=importlib"
+
+
+[tool.coverage.run]
+branch = true
+source = ["skmisc"]
+omit = [
+    "skmisc/__config__.py",
+]
+
 [tool.devpy]
 package = "skmisc"
 
@@ -66,6 +83,10 @@ package = "skmisc"
 Build = [
     "devpy.build",
     "devpy.test",
+    ".devpy/cmds.py:docs",
+    ".devpy/cmds.py:coverage",
+    ".devpy/cmds.py:coverage_html",
+    ".devpy/cmds.py:sdist",
 ]
 Environments = [
     "devpy.shell",

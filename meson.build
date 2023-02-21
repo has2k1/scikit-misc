@@ -1,7 +1,7 @@
 #### Project Information
 project(
   'Scikit-Misc',
-  'c', 'cython', 'fortran',
+  'c', 'cython',
   version: run_command('skmisc/_build_utils/version.py', check: true).stdout().strip(),
   license: 'BSD-3',
   meson_version: '>= 0.64.0',
@@ -13,6 +13,9 @@ project(
     'lapack=openblas'
   ],
 )
+
+# Adding at project level causes many spurious -lgfortran flags.
+add_languages('fortran', native: false)
 ###
 
 #### Configuration Information

@@ -7,8 +7,7 @@ authors = [
   {name = "Hassan Kibirige", email = "has2k1@gmail.com"},
 ]
 dynamic = ['version']
-# long_description = {file = "README.rst"}
-# long_description_content_type = "text/rst"
+readme = "README.rst"
 dependencies = [
     # TODO: update to "pin-compatible" once possible, see
     # https://github.com/FFY00/meson-python/issues/29

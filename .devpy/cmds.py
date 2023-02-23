@@ -85,6 +85,17 @@ def coverage_html(build_dir):
 @click.command()
 def sdist():
     """
-    📦 Build a source distribution in `dist/`.
+    📦 Build a source distribution in `build/meson-dist/`.
     """
-    util.run(["python", "-m", "build", ".", "--sdist"])
+    # cd into build directory and generate source-distribution
+    # without first compiling and testing
+    # Uncommitted changes will not be included
+    util.run([
+        "meson",
+        "dist",
+        "-C",
+        "build",
+        "--allow-dirty",
+        "--formats=gztar",
+        "--no-tests"
+    ], replace=True)

@@ -8,7 +8,7 @@
 # in the get_commit_message job include [wheel build] in your commit
 # message to trigger the build. All files related to wheel building are located
 # at tools/wheels/
-name: Wheel builder
+name: Wheel Builder
 on:
   schedule:
   #        ┌───────────── minute (0 - 59)
@@ -33,36 +33,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  get_commit_message:
-    name: Get commit message
+  parse_commit_info:
+    name: Parse Commit Information
     runs-on: ubuntu-latest
     if: github.repository == 'has2k1/scikit-misc'
     outputs:
-      message: ${{ steps.commit_message.outputs.message }}
+      can_build: ${{ steps.check_commit_message.outputs.can_build }}
+      can_release: ${{ steps.check_tag.outputs.can_release }}
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
         # Gets the correct commit message for pull request
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Get commit message
-        id: commit_message
+
+      - name: Check if Commit Message Tells Us to Build Wheels
+        id: check_commit_message
         run: |
           set -xe
           COMMIT_MSG=$(git log --no-merges -1)
-          RUN="0"
+          RUN="No"
           if [[ "$COMMIT_MSG" == *"[wheel build]"* ]]; then
-              RUN="1"
+              RUN="Yes"
           fi
-          echo "message=$RUN" >> $GITHUB_OUTPUT
+          echo "can_build=$RUN" >> $GITHUB_OUTPUT
           echo github.ref ${{ github.ref }}
+
+      - name: Check If Tag is Releasible
+        id: check_tag
+        run: |
+          set -xe
+          # Yes or No
+          CAN_RELEASE=$(python ./tools/github/can_release.py)
+          echo "can_release=$CAN_RELEASE" >> $GITHUB_OUTPUT
 
   build_wheels:
     name: Build wheel for ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }} ${{ matrix.buildplat[2] }}
-    needs: get_commit_message
+    needs: parse_commit_info
 
     if: >-
-      contains(needs.get_commit_message.outputs.message, '1') ||
+      contains(needs.parse_commit_info.outputs.can_build, 'Yes') ||
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.buildplat[0] }}
@@ -95,7 +105,7 @@ jobs:
       IS_32_BIT: ${{ matrix.buildplat[2] == 'x86' }}
       # upload to staging if it's a push to a maintenance branch and the last
       # commit message contains '[wheel build]'
-      IS_PUSH: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/wheels') && contains(needs.get_commit_message.outputs.message, '1') }}
+      IS_PUSH: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/wheels') && contains(needs.parse_commit_info.outputs.can_build, 'Yes') }}
       IS_SCHEDULE_DISPATCH: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
 
     steps:
@@ -156,5 +166,68 @@ jobs:
             _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64
       - uses: actions/upload-artifact@v3
         with:
+          name: wheels
           path: ./wheelhouse/*.whl
-          name: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}
+
+  build_sdist:
+    runs-on: ubuntu-latest
+    name: Build Source Distribution
+    needs: [build_wheels]
+    steps:
+      - name: Checkout scikit-misc
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: 3.8
+
+      - name: Install requirements
+        run:
+          pip install -r requirements/build.txt
+
+      - name: Build
+        run: |
+          make sdist
+
+      - name: Upload Source dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: "build/meson-dist/"
+
+  release:
+    runs-on: ubuntu-latest
+    name: Upload Release to PyPI
+    needs: [build_wheels, build_sdist, parse_commit_info]
+    if: contains(needs.parse_commit_info.outputs.can_release, 'Yes')
+    steps:
+      - name: Checkout scikit-misc
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: 3.8
+
+      - name: Install Release Requirements
+        run: |
+          pip install -r requirements/release.txt
+
+      - name: Download wheels
+        uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: dist
+
+      - name: Publish to PyPI
+        run: |
+          ls -la ${{ github.workspace }}/dist
+
+          # publish wheels first so that there is no window where users
+          # may accidentally install an sdist instead of a wheel
+          twine upload ${{ github.workspace }}/dist/*.whl
+          twine upload ${{ github.workspace }}/dist/*.tar.gz
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}

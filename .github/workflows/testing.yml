@@ -32,10 +32,10 @@ jobs:
 
       - name: Deepen Repository
         run: |
-          python ./tools/deepen-shallow-repo.py
+          python ./tools/github/deepen-shallow-repo.py
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -148,10 +148,10 @@ jobs:
 
       - name: Deepen Repository
         run: |
-          python ./tools/deepen-shallow-repo.py
+          python ./tools/github/deepen-shallow-repo.py
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 

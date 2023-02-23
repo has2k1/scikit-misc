@@ -1,0 +1,46 @@
+1. Use the latests tag version of scipy
+
+2. Download
+    - tools/wheels/LICENSE_linux.txt
+      %s/scipy/scikit_misc/
+    - tools/wheels/LICENSE_osx.txt
+      %s/scipy/scikit_misc/
+    - tools/wheels/LICENSE_win32.txt
+      %s/scipy/scikit_misc/
+    - tools/wheels/check_license.py
+      %s/scipy binary/scikit-misc binary/
+      %s/default="scipy"/default="skmisc"/
+    - tools/wheels/cibw_before_all_cp38_macosx_arm64.sh
+    - tools/wheels/cibw_before_build_linux.sh
+    - tools/wheels/cibw_before_build_macos.sh
+    - tools/wheels/cibw_before_build_win.sh
+      %s/make_init('scipy')/make_init('skmisc')/
+    - tools/wheels/cibw_test_command.sh
+      %s/import scipy/import skmisc/
+      %s{scipy.test{skmisc.test{
+    - tools/wheels/gfortran_utils.sh
+    - tools/wheels/repair_windows.sh
+      %s/pushd scipy/pushd scikit_misc/
+      %s{find ./scipy*{find ./skmisc*{
+    - tools/wheels/test.f
+
+3. Download
+    - tools/openblas_support.py
+      %s/via scipy/via scikit-misc/
+      %s/import scipy//
+      %s/import scipy.linalg/import skmisc.loess/
+      %s/scipy.linalg.cython_blas.__file__/skmisc.loess._loess.__file__/
+      %s/OUT_SCIPY_DIR/OUT_SKMISC_DIR/
+
+4. Copy
+    - pyproject.toml
+      Copy [tool.cibuildwheel.*] sections
+
+5. Update
+    - .github/workflows/build-wheels.yml
+
+6. Update
+    - meson_options.txt
+    - meson.build
+    - skmisc/meson.build
+    - skmisc/loess/meson.build

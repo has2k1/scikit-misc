@@ -1,23 +1,11 @@
 #!/usr/bin/env python
 
-# This script allows `git describe` to work on github actions.
-# It assumes that the repo has been checkout e.g. with
-#
-# jobs:
-#    steps:
-#       - name: Checkout
-#         uses: actions/checkout@v3
-#
-# This fetches a single commit and results in a shallow repository.
-# Here we try to fetch more commits (deepen the repo) until we reach a
-# version tag. Git describe need a version tag.
-
 import os
 import re
 import shlex
 from subprocess import Popen, PIPE
-from typing import Sequence
 
+from typing import Sequence
 
 # https://docs.github.com/en/actions/learn-github-actions/variables
 # #default-environment-variables
@@ -112,26 +100,14 @@ class Repo:
         """
         return run(f"git fetch --deepen={n}")
 
+    def describe(self):
+        """
+        Git describe to determine version
+        """
+        return run("git describe --dirty --tags --long --match '*[0-9]*'")
+
     def can_describe(self):
         """
         Return True if repo can be "described" from a semver tag
         """
-        res = run("git describe --dirty --tags --long --match '*[0-9]*'")
-        return DESCRIBE_PATTERN.match(res) is not None
-
-    def deepen_to_version_tag(self):
-        """
-        Retrieve more commits upto version tag
-        """
-        n = 5
-        while not self.can_describe():
-            if self.is_shallow():
-                self.deepen(n)
-                n *= 2
-            else:
-                break
-
-
-if __name__ == "__main__":
-    repo = Repo(GithubInfo())
-    repo.deepen_to_version_tag()
+        return DESCRIBE_PATTERN.match(self.describe()) is not None

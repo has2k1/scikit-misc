@@ -1,6 +1,6 @@
 #### Project Information
 project(
-  'Scikit-Misc',
+  'scikit-misc',
   'c', 'cython',
   version: run_command('skmisc/_build_utils/version.py', check: true).stdout().strip(),
   license: 'BSD-3',

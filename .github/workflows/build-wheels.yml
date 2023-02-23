@@ -182,11 +182,20 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Install Ubuntu dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libopenblas-dev liblapack-dev gfortran
+
       - name: Install requirements
         run:
           pip install -r requirements/build.txt
 
       - name: Build
+        run: |
+          make build
+
+      - name: Create Source Distribution
         run: |
           make sdist
 

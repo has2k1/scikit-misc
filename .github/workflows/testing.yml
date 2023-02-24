@@ -43,7 +43,7 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo apt-get update
-          sudo apt-get in
+          sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
 
       - name: Install Python Packages
         shell: bash -l {0}

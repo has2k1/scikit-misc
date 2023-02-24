@@ -38,8 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'has2k1/scikit-misc'
     outputs:
-      can_build: ${{ steps.check_commit_message.outputs.can_build }}
-      can_release: ${{ steps.check_tag.outputs.can_release }}
+      can_build: ${{ steps.decide.outputs.can_build }}
+      can_release: ${{ steps.decide.outputs.can_release }}
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
@@ -47,25 +47,25 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Check if Commit Message Tells Us to Build Wheels
-        id: check_commit_message
+      - name: Decide Whether to Build and/or Release
+        id: decide
         run: |
           set -xe
-          COMMIT_MSG=$(git log --no-merges -1)
-          RUN="No"
-          if [[ "$COMMIT_MSG" == *"[wheel build]"* ]]; then
-              RUN="Yes"
-          fi
-          echo "can_build=$RUN" >> $GITHUB_OUTPUT
-          echo github.ref ${{ github.ref }}
+          ACTION=$(python ./tools/github/get_wheels_action.py)
+          CAN_BUILD="No"
+          CAN_RELEASE="No"
 
-      - name: Check If Tag is Releasible
-        id: check_tag
-        run: |
-          set -xe
-          # Yes or No
-          CAN_RELEASE=$(python ./tools/github/can_release.py)
+          if [[ "$ACTION" == *"build"* ]]; then
+            CAN_BUILD="Yes"
+          fi
+
+          if [[ "$ACTION" == *"release"* ]]; then
+            CAN_RELEASE="Yes"
+          fi
+
+          echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
           echo "can_release=$CAN_RELEASE" >> $GITHUB_OUTPUT
+          echo github.ref ${{ github.ref }}
 
   build_wheels:
     name: Build wheel for ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }} ${{ matrix.buildplat[2] }}
@@ -98,7 +98,8 @@ jobs:
         - [macos-10.15, macosx, x86_64]
         - [windows-2019, win, AMD64]
 
-        python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
+        # python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
+        python: [["cp38", "3.8"], ["cp311", "3.11"]]
         # python[0] is used to specify the python versions made by cibuildwheel
 
     env:
@@ -176,6 +177,10 @@ jobs:
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
+
+      - name: Deepen Repository
+        run: |
+          python ./tools/github/deepen-shallow-repo.py
 
       - name: Setup Python
         uses: actions/setup-python@v4.2.0

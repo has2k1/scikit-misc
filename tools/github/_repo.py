@@ -87,6 +87,13 @@ class Repo:
         depth = f"--depth={n}"
         return run(f"git clone {depth} {branch} {self.info.repo_url} .")
 
+    def commit_titles(self, n=1) -> list[str]:
+        output = run(
+            f"git log --oneline --no-merges --pretty='format:%s' -{n}"
+        )
+        return output.split("\n")
+
+
     def is_shallow(self) -> bool:
         """
         Return True if current repo is shallow
@@ -100,14 +107,20 @@ class Repo:
         """
         return run(f"git fetch --deepen={n}")
 
-    def describe(self):
+    def describe(self) -> str:
         """
         Git describe to determine version
         """
         return run("git describe --dirty --tags --long --match '*[0-9]*'")
 
-    def can_describe(self):
+    def can_describe(self) -> bool:
         """
         Return True if repo can be "described" from a semver tag
         """
-        return DESCRIBE_PATTERN.match(self.describe()) is not None
+        return bool(DESCRIBE_PATTERN.match(self.describe()))
+
+    def tag_message(self, tag: str) -> str:
+        """
+        Get the message of an annotated tag
+        """
+        return run(f"git tag -l --format='%(contents)' {tag}")

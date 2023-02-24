@@ -29,7 +29,7 @@ def docs(build_dir, clean=False):
 
     site_path = util.get_site_packages(build_dir)
     if site_path is None:
-        print("No built scikit-image found; run `./dev.py build` first.")
+        print("No built scikit-misc found; run `./dev.py build` first.")
         sys.exit(1)
 
     util.run(["pip", "install", "-q", "-r", "requirements/docs.txt"])

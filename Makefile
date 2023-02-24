@@ -20,6 +20,7 @@ clean: clean-build clean-pyc clean-test
 
 clean-build:
 	rm -fr build/
+	rm -fr build-install/
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
@@ -46,9 +47,6 @@ build:
 test: clean-test
 	./dev.py test
 
-sdist: clean-test
-	./dev.py sdist
-
 coverage:
 	./dev.py coverage
 	./dev.py coverage-html
@@ -61,13 +59,11 @@ docs:
 release: clean
 	bash ./tools/release.sh
 
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+sdist: clean-test
+	./dev.py sdist
 
-install: clean
-	python setup.py install
+dist: clean sdist wheel
+	python -m build
 
 develop: build
 	pip install --no-build-isolation .

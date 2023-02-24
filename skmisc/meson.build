@@ -218,6 +218,21 @@ configure_file(
 )
 ###
 
+#### Build _version.py
+configure_file(
+  input: '_version.py.in',
+  output: '_version.py',
+  configuration: conf_data,
+  install_dir: skmisc_dir,
+)
+
+# Meson does not inculde any generated files in the source distribution
+# We want the generated _version.py so that a versioned build can be
+# created from the source dist.
+meson.add_dist_script('_build_utils/copy_version_to_dist.py')
+
+###
+
 #### Included sub-packages
 subdir('loess')
 ###

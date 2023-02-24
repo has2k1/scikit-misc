@@ -29,7 +29,6 @@ VERSION_TAG_MESSAGE_PATTERN = re.compile(
     VERSION_TAG_PATTERN.pattern[2:]
 )
 
-
 BUILD_PATTERN = re.compile(
     r"\[wheel build\]$"
 )

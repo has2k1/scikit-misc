@@ -1,4 +1,5 @@
 Cython
+build
 git+https://github.com/scientific-python/devpy
 meson-python
 ninja

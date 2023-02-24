@@ -65,6 +65,7 @@ doc/generated/
 target/
 
 # Specific to this project
+skmisc/_version.py
 skmisc/__config__.py
 skmisc/loess/src/_loess.c
 examples/.ipynb_checkpoints/

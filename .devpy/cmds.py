@@ -87,15 +87,14 @@ def sdist():
     """
     📦 Build a source distribution in `build/meson-dist/`.
     """
-    # cd into build directory and generate source-distribution
-    # without first compiling and testing
-    # Uncommitted changes will not be included
+    # Using the build module gives better results than using
+    # meson directory. It creates an sdist with PKG-INFO
     util.run([
-        "meson",
-        "dist",
-        "-C",
+        "python",
+        "-m",
         "build",
-        "--allow-dirty",
-        "--formats=gztar",
-        "--no-tests"
+        "--no-isolation",
+        "--skip-dependency-check",
+        "--sdist",
+        ".",
     ], replace=True)

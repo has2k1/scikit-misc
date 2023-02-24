@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import re
 import shlex
+from pathlib import Path
 from subprocess import Popen, PIPE
 
 from typing import Sequence
@@ -35,6 +36,10 @@ DESCRIBE_PATTERN = re.compile(
     r"$"
 )
 
+VERSION_LINE_PATTERN = re.compile(
+    r'__version__ = "(?P<version>.+?)"'
+)
+
 
 def run(cmd: str | Sequence[str]) -> str:
     if isinstance(cmd, str) and os.name == "posix":
@@ -51,7 +56,15 @@ def run(cmd: str | Sequence[str]) -> str:
     return stdout.strip()
 
 
-def get_version() -> str:
+def is_git() -> bool:
+    """
+    Return True if inside a git repo
+    """
+    res = run("git rev-parse --is-inside-work-tree")
+    return res == "return"
+
+
+def get_version_from_scm() -> str:
     """
     Return a SemVer (& PEP440 compliant) from `git describe` output
     """
@@ -59,7 +72,7 @@ def get_version() -> str:
     m = DESCRIBE_PATTERN.match(desc)
 
     if not m:
-        return "0.0.0"
+        return ""
 
     info = m.groupdict()
     if "commits" in info:
@@ -71,9 +84,25 @@ def get_version() -> str:
     return v
 
 
-def get_last_commit_shorthash() -> str:
-    h = run(LAST_COMMIT_SHORTHASH)
-    return h
+def get_version_from_file() -> str:
+    """
+    Read version from package/_version.py
+    """
+    file = Path(__file__).parent.parent / "_version.py"
+
+    if file.exists():
+        s = file.read_text()
+        match = VERSION_LINE_PATTERN.search(s)
+        if match:
+            return match.group('version')
+    return ""
+
+
+def get_version() -> str:
+    """
+    Return a SemVer (& PEP440 compliant) from `git describe` output
+    """
+    return get_version_from_scm() or get_version_from_file() or "0.0.0"
 
 
 if __name__ == "__main__":

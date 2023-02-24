@@ -2,7 +2,7 @@
 project(
   'scikit-misc',
   'c', 'cython',
-  version: run_command('skmisc/_build_utils/version.py', check: true).stdout().strip(),
+  version: run_command('skmisc/_build_utils/version_please.py', check: true).stdout().strip(),
   license: 'BSD-3',
   meson_version: '>= 0.64.0',
   default_options: [
@@ -20,6 +20,10 @@ add_languages('fortran', native: false)
 
 #### Configuration Information
 conf_data = configuration_data()
+
+# The object above is stored so that we can write it to
+# a file.
+conf_data.set('VERSION', meson.project_version())
 ###
 
 #### Setup Python

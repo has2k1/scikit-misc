@@ -48,6 +48,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Deepen Repository
+        run: |
+          python ./tools/github/deepen-shallow-repo.py
+
+      - name: Environment information
+        run: |
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
+          echo "GITHUB_REF_TYPE=$GITHUB_REF_TYPE"
+          echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
+          echo "git describe: $(git describe --long)"
+
       - name: Decide Whether to Build and/or Release
         id: decide
         run: |
@@ -105,8 +118,7 @@ jobs:
         - [macos-10.15, macosx, x86_64]
         - [windows-2019, win, AMD64]
 
-        # python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
-        python: [["cp38", "3.8"], ["cp311", "3.11"]]
+        python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
         # python[0] is used to specify the python versions made by cibuildwheel
 
     env:
@@ -119,9 +131,10 @@ jobs:
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
-        with:
-          submodules: true
-          fetch-depth: 0
+
+      - name: Deepen Repository
+        run: |
+          python ./tools/github/deepen-shallow-repo.py
 
       - uses: actions/setup-python@v4.2.0
         with:

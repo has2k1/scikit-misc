@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import annotations
 
 import os
 import re
@@ -69,6 +70,13 @@ class Git:
         """
         res = run("git rev-parse --is-inside-work-tree")
         return res == "return"
+
+    @staticmethod
+    def fetch_tags() -> str:
+        """
+        Fetch all tags
+        """
+        return run("git fetch --tags --force")
 
     @staticmethod
     def is_shallow() -> bool:

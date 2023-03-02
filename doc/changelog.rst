@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v0.2.0a1
+--------
+*(2023-03-02)*
+
+- Requires numpy>=1.19.5
+- Changed the build system to meson-build
+- This is the first release that has wheels for WindowsOS
+
 v0.1.4
 ------
 *(2021-05-05)*

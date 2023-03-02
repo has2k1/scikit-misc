@@ -5,18 +5,41 @@ How to release
 Testing
 =======
 
-* `cd` to the root of project and run
+* Create a new virtual environment
+
+* Install project, build and test
   ::
 
+    git switch main
+    pip install -r requirements/build.txt
+    make build
     make test
 
-* Or, to test in all environments
+* Test that the wheels will build on github actions
+
   ::
 
-    tox
+    git switch main
+    git log --oneline wheels -n 20
+    git switch --force-create wheels
+    git commit --amend -m "TST: Preparing for release [wheel build]"
+    git push origin
+
+  1. Switch to main branch
+  2. Make sure the wheel branch does not have unmerged commits
+  3. Create a new wheels branch at the head of main
+  4. Update the commit header to one that will get the wheels to build
+  5. Push to build the while
 
 * Once all the tests pass move on
 
+Changelog
+=========
+
+* Modify changelog doc/changelog.rst and commit
+
+  1. Set the version number
+  2. Set the release date
 
 Tagging
 =======
@@ -26,32 +49,26 @@ Check out the main branch, tag with the version number & push the tags
   ::
 
     git checkout main
+    # git tag -a v0.1.0a1 -m 'Version: 0.1.0a1' pre-release
     git tag -a v0.1.0 -m 'Version: 0.1.0'
-    git push upstream --tags
 
-Note the `v` before the version number.
+The version tag for a release must be of the form `v<semantic-version>` and
+the version comment of the form `Version: <semantic-version>`, as shown above.
 
+The version tag for a test release must be of the form
+`v<semantic-version>(a|b|alpha|beta)\d+` and the version comment of the form
+`Version: <semantic-version>(a|b|alpha|beta)\d+`, as shown above. The pre-release
+is upload to `PyPiTest <https://test.pypi.org/project/scikit-misc>`. The link is
 
-Build Wheels
-============
-Clone/cd into the wheels repository, edit `.github/workflows/wheels.yml` to point
-to the version. i.e.
+A link to install
 
-  ::
+Build Wheels and Release
+========================
 
-    git clone https://github.com/has2k1/scikit-misc-wheels  # (optional)
-    cd scikit-misc-wheels
-    git submodule foreach 'git fetch --all; git reset --hard origin/main'
+Push to release
 
-    # Edit .github/workflows/wheels.yml and set the version e.g.
-    #     - BUILD_COMMIT: v0.1.0
-
-    git commit -a -m 'Version: 0.1.0'
+::
     git push origin --tags
-
-Check `Github Actions <https://github.com/has2k1/scikit-misc-wheels/actions>`_ to confirm
-that all the builds for the last commit pass. Debug as necessary, then continue
-below.
 
 
 Release

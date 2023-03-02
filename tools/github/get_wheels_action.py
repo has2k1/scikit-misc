@@ -6,22 +6,24 @@
 #     - build, release
 #     - nothing
 # One of these values is printed to the standard output.
+import os
 import re
+import sys
 
-from _repo import Repo, GithubInfo
+from _repo import Git, Workspace
 
 # Define a releasable version to be valid according to PEP440
 # and is a semver
 count = r"(?:[0-9]|[1-9][0-9]+)"
 
-VERSION_TAG_PATTERN = re.compile(
+RELEASE_TAG_PATTERN = re.compile(
     r"^v"
     rf"{count}\.{count}\.{count}"
     r"$"
 )
 
 # Prerelease version
-VERSION_TAG_PRE_PATTERN = re.compile(
+PRE_RELEASE_TAG_PATTERN = re.compile(
     r"^v"
     rf"{count}\.{count}\.{count}"
     r"(?:"
@@ -30,63 +32,81 @@ VERSION_TAG_PRE_PATTERN = re.compile(
     r"$"
 )
 
-VERSION_TAG_MESSAGE_PATTERN = re.compile(
-    r"^Version: " +
-    VERSION_TAG_PATTERN.pattern[2:]
-)
+VERSION_TAG_MESSAGE_PREFIX = "Version "
 
 BUILD_PATTERN = re.compile(
     r"\[wheel build\]$"
 )
 
-
-def is_wheel_build(repo: Repo) -> bool:
+def head_commit_wants_wheel_build() -> bool:
     """
     Return True commit title ends in "[wheel build]"
     """
-    title = repo.commit_titles(1)[0]
-    return bool(BUILD_PATTERN.search(title))
+    return bool(BUILD_PATTERN.search(Git.head_commit_title()))
 
 
-def is_release_version_tag(repo: Repo) -> bool:
+def is_release_tag(tag: str) -> bool:
     """
     Return True if the ref is a tag that is a releasible version
     """
-    if repo.info.ref_type != "tag":
-        return False
-    return bool(VERSION_TAG_PATTERN.match(repo.info.ref_name))
+    return bool(RELEASE_TAG_PATTERN.match(tag))
 
 
-def is_pre_release_version_tag(repo: Repo) -> bool:
+def is_pre_release_tag(tag: str) -> bool:
     """
     Return True if the ref is a tag that is a prereleasible version
     """
-    if repo.info.ref_type != "tag":
-        return False
-    return bool(VERSION_TAG_PRE_PATTERN.match(repo.info.ref_name))
+    return bool(PRE_RELEASE_TAG_PATTERN.match(tag))
 
 
-def is_version_tag_message(repo: Repo) -> bool:
+def is_release_tag_message_ok(tag: str) -> bool:
     """
-    Return True if tag message is of the form "Version: 0.1.0"
+    Return True if tag message is of the form "Version 0.1.0"
+
+    Check for both the release and pre-release
     """
-    if repo.info.ref_type != "tag":
-        return False
-    tag_msg = repo.tag_message(repo.info.ref_name)
-    return bool(VERSION_TAG_MESSAGE_PATTERN.match(tag_msg))
+    tag_msg = Git.tag_message(tag)
+    return tag_msg == f"{VERSION_TAG_MESSAGE_PREFIX}{tag[1:]}"
+
+
+def set_test_env():
+    env = {
+        "GITHUB_REF_NAME": "v0.2.0a1",
+        "GITHUB_REF_TYPE": "dev",
+        "GITHUB_REPOSITORY":  "has2k1/scikit-misc",
+        "GITHUB_SERVER_URL":  "https://github.com",
+        "GITHUB_SHA": "",
+        "GITHUB_WORKSPACE":   "/home/runner/work/scikit-misc/scikit-misc"
+    }
+    for k, v in env.items():
+        os.environ[k] = v
 
 
 if __name__ == "__main__":
-    repo = Repo(GithubInfo())
-    build_cmd = is_wheel_build(repo)
-    release_version_tag = is_release_version_tag(repo) and is_version_tag_message(repo)
-    pre_release_version_tag = is_pre_release_version_tag(repo) and is_version_tag_message(repo)
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "test":
+            set_test_env()
 
-    if release_version_tag:
+    ws = Workspace()
+    tag = ws.head_tag()
+
+    build = head_commit_wants_wheel_build()
+    release = (
+        Git.is_annotated(tag) and
+        is_release_tag(tag) and
+        is_release_tag_message_ok(tag)
+    )
+    pre_release = (
+        Git.is_annotated(tag) and
+        is_pre_release_tag(tag) and
+        is_release_tag_message_ok(tag)
+    )
+
+    if release:
         print("build, release")
-    elif pre_release_version_tag:
+    elif pre_release:
         print("build, pre_release")
-    elif build_cmd:
+    elif build:
         print("build")
     else:
         print("nothing")

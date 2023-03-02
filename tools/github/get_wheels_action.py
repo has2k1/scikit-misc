@@ -17,10 +17,16 @@ count = r"(?:[0-9]|[1-9][0-9]+)"
 VERSION_TAG_PATTERN = re.compile(
     r"^v"
     rf"{count}\.{count}\.{count}"
-    # optional pre-release part
+    r"$"
+)
+
+# Prerelease version
+VERSION_TAG_PRE_PATTERN = re.compile(
+    r"^v"
+    rf"{count}\.{count}\.{count}"
     r"(?:"
     rf"(?:a|b|rc|alpha|beta){count}"
-    r")?"
+    r")"
     r"$"
 )
 
@@ -42,13 +48,22 @@ def is_wheel_build(repo: Repo) -> bool:
     return bool(BUILD_PATTERN.search(title))
 
 
-def is_version_tag(repo: Repo) -> bool:
+def is_release_version_tag(repo: Repo) -> bool:
     """
     Return True if the ref is a tag that is a releasible version
     """
     if repo.info.ref_type != "tag":
         return False
     return bool(VERSION_TAG_PATTERN.match(repo.info.ref_name))
+
+
+def is_pre_release_version_tag(repo: Repo) -> bool:
+    """
+    Return True if the ref is a tag that is a prereleasible version
+    """
+    if repo.info.ref_type != "tag":
+        return False
+    return bool(VERSION_TAG_PRE_PATTERN.match(repo.info.ref_name))
 
 
 def is_version_tag_message(repo: Repo) -> bool:
@@ -64,10 +79,13 @@ def is_version_tag_message(repo: Repo) -> bool:
 if __name__ == "__main__":
     repo = Repo(GithubInfo())
     build_cmd = is_wheel_build(repo)
-    version_tag = is_version_tag(repo) or is_version_tag_message(repo)
+    release_version_tag = is_release_version_tag(repo) and is_version_tag_message(repo)
+    pre_release_version_tag = is_pre_release_version_tag(repo) and is_version_tag_message(repo)
 
-    if version_tag:
+    if release_version_tag:
         print("build, release")
+    elif pre_release_version_tag:
+        print("build, pre_release")
     elif build_cmd:
         print("build")
     else:

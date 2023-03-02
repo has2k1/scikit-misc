@@ -40,6 +40,7 @@ jobs:
     outputs:
       can_build: ${{ steps.decide.outputs.can_build }}
       can_release: ${{ steps.decide.outputs.can_release }}
+      can_pre_release: ${{ steps.decide.outputs.can_pre_release }}
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
@@ -54,6 +55,7 @@ jobs:
           ACTION=$(python ./tools/github/get_wheels_action.py)
           CAN_BUILD="No"
           CAN_RELEASE="No"
+          CAN_PRE_RELEASE="No"
 
           if [[ "$ACTION" == *"build"* ]]; then
             CAN_BUILD="Yes"
@@ -63,8 +65,13 @@ jobs:
             CAN_RELEASE="Yes"
           fi
 
+          if [[ "$ACTION" == *"pre_release"* ]]; then
+            CAN_PRE_RELEASE="Yes"
+          fi
+
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
           echo "can_release=$CAN_RELEASE" >> $GITHUB_OUTPUT
+          echo "can_pre_release=$CAN_PRE_RELEASE" >> $GITHUB_OUTPUT
           echo github.ref ${{ github.ref }}
 
   build_wheels:
@@ -245,3 +252,39 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+
+  pre_release:
+    runs-on: ubuntu-latest
+    name: Upload Release to TestPyPI
+    needs: [build_wheels, build_sdist, parse_commit_info]
+    if: contains(needs.parse_commit_info.outputs.can_pre_release, 'Yes')
+    steps:
+      - name: Checkout scikit-misc
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4.2.0
+        with:
+          python-version: 3.8
+
+      - name: Install Release Requirements
+        run: |
+          pip install -r requirements/release.txt
+
+      - name: Download wheels
+        uses: actions/download-artifact@v3
+        with:
+          name: wheels
+          path: dist
+
+      - name: Publish to TestPyPI
+        run: |
+          ls -la ${{ github.workspace }}/dist
+
+          # publish wheels first so that there is no window where users
+          # may accidentally install an sdist instead of a wheel
+          twine upload --repository testpypi ${{ github.workspace }}/dist/*.whl
+          twine upload --repository testpypi ${{ github.workspace }}/dist/*.tar.gz
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME_TEST }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD_TEST }}

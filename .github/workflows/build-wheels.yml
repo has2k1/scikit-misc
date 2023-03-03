@@ -64,21 +64,15 @@ jobs:
         id: decide
         run: |
           set -xe
-          ACTION=$(python .github/utils/get_wheels_action.py)
-          CAN_BUILD="No"
-          CAN_RELEASE="No"
-          CAN_PRE_RELEASE="No"
+          CAN_RELEASE=$(python .github/utils/can_i.py release)
+          CAN_PRE_RELEASE=$(python .github/utils/can_i.py pre_release)
 
-          if [[ "$ACTION" == *":build:"* ]]; then
-            CAN_BUILD="Yes"
-          fi
-
-          if [[ "$ACTION" == *":release:"* ]]; then
-            CAN_RELEASE="Yes"
-          fi
-
-          if [[ "$ACTION" == *":pre_release:"* ]]; then
-            CAN_PRE_RELEASE="Yes"
+          if [[ $CAN_RELEASE == "true" ]]; then
+            CAN_BUILD="true"
+          elif [[ $CAN_PRE_RELEASE == "true" ]]; then
+            CAN_BUILD="true"
+          else
+            CAN_BUILD=$(python .github/utils/can_i.py build)
           fi
 
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
@@ -91,7 +85,7 @@ jobs:
     needs: parse_commit_info
 
     if: >-
-      contains(needs.parse_commit_info.outputs.can_build, 'Yes') ||
+      contains(needs.parse_commit_info.outputs.can_build, 'true') ||
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ${{ matrix.buildplat[0] }}
@@ -106,25 +100,17 @@ jobs:
         # should also be able to do multi-archs on a single entry, e.g.
         # [windows-2019, win*, "AMD64 x86"]. However, those two require a different compiler setup
         # so easier to separate out here.
-        - [ubuntu-20.04, manylinux, x86_64]
+        - [ubuntu-22.04, manylinux, x86_64]
 
-        # When the macos-10.15 image is retired the gfortran/openblas chain
-        # may have to be reworked because the gfortran-4.9.0 compiler currently
-        # used in CI doesn't work in the macos-11.0 image. This will require a more
-        # recent gfortran (gfortran-9 is present on the macOS-11.0 image), and
-        # will probably require that the prebuilt openBLAS is updated.
-        # xref https://github.com/andyfaff/scipy/pull/28#issuecomment-1203496836
-        - [macos-10.15, macosx, x86_64]
+        - [macos-11, macosx, x86_64]
         - [windows-2019, win, AMD64]
 
-        python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
+        # python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
+        python: [["cp38", "3.8"], ["cp311", "3.11"]]
 
     env:
       IS_32_BIT: ${{ matrix.buildplat[2] == 'x86' }}
-      # upload to staging if it's a push to a maintenance branch and the last
-      # commit message contains '[wheel build]'
-      IS_PUSH: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/heads/wheels') && contains(needs.parse_commit_info.outputs.can_build, 'Yes') }}
-      IS_SCHEDULE_DISPATCH: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+      IS_64_BIT: ${{ matrix.buildplat[2] == 'AMD64' || matrix.buildplat[2] == 'x86_64' }}
 
     steps:
       - name: Checkout scikit-misc
@@ -142,7 +128,7 @@ jobs:
           python-version: "3.10"
 
       - name: win_amd64 - install rtools
-        if: ${{ runner.os == 'Windows' && env.IS_32_BIT == 'false' }}
+        if: ${{ runner.os == 'Windows' && env.IS_64_BIT == 'true' }}
         run: |
           # mingw-w64
           choco install rtools --no-progress
@@ -161,31 +147,29 @@ jobs:
 #          echo $(gcc --version)
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.12.0
         if: >-
           ( ! contains(matrix.buildplat[2], 'arm64' ) )
-        # Build all wheels here, apart from macosx_arm64, linux_aarch64
-        # cibuildwheel is currently unable to pass configuration flags to
-        # CIBW_BUILD_FRONTEND https://github.com/pypa/cibuildwheel/issues/1227
-        # (pip/build). Cross compilation with meson requires an initial
-        # configuration step to create a build directory. The subsequent wheel
-        # build then needs to use that directory. This can be done with pip
-        # using a command like:
-        # python -m pip wheel --config-settings builddir=build .
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
           CIBW_ENVIRONMENT_PASS_LINUX: RUNNER_OS
 
+          # setting SDKROOT necessary when using the gfortran compiler
+          # installed in cibw_before_build_macos.sh
           # MACOS_DEPLOYMENT_TARGET is set because of
           # https://github.com/pypa/cibuildwheel/issues/1419. Once that
-          # is closed and meson-python==0.13 is available, then
+          # is closed and an update to pypa/cibuildwheel is done, then
           # that environment variable can be removed.
           CIBW_ENVIRONMENT_MACOS: >
-            CC=clang
+            SDKROOT=/Applications/Xcode_11.7.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk
+            LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
             MACOSX_DEPLOYMENT_TARGET=10.9
             MACOS_DEPLOYMENT_TARGET=10.9
             _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+            DYLD_LIBRARY_PATH=/usr/local/lib delocate-listdeps {wheel} &&
+            DYLD_LIBRARY_PATH=/usr/local/lib delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}
 
       - name: Check Package Version
         run: |
@@ -244,7 +228,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Upload Release to PyPI
     needs: [build_wheels, build_sdist, parse_commit_info]
-    if: contains(needs.parse_commit_info.outputs.can_release, 'Yes')
+    if: contains(needs.parse_commit_info.outputs.can_release, 'true')
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3
@@ -280,7 +264,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Upload Release to TestPyPI
     needs: [build_wheels, build_sdist, parse_commit_info]
-    if: contains(needs.parse_commit_info.outputs.can_pre_release, 'Yes')
+    if: contains(needs.parse_commit_info.outputs.can_pre_release, 'true')
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@v3

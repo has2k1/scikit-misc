@@ -3,12 +3,9 @@
 import sys
 from pathlib import Path
 
-from _repo import Workspace
-
 PACKAGE_NAME = "scikit_misc"
 NULL_VERSION = "0.0.0"
-TAG = Workspace().head_tag()[1:]
-PFX = f"{PACKAGE_NAME}-{TAG}"
+BAD_PFX = f"{PACKAGE_NAME}-{NULL_VERSION}"
 
 WHEELS = Path("wheelhouse/").glob("*.whl")
 DISTS = Path("dist/").glob("*.tar.gz")
@@ -18,14 +15,14 @@ def wheels_have_good_version() -> bool:
     """
     Return True if there is a wheel with a null version
     """
-    return any(not s.name.startswith(PFX) for s in WHEELS)
+    return all(not s.name.startswith(BAD_PFX) for s in WHEELS)
 
 
 def sdists_have_good_version() -> bool:
     """
     Return True if there is an sdist with a null version
     """
-    return any(not s.name.startswith(PFX) for s in DISTS)
+    return all(not s.name.startswith(BAD_PFX) for s in DISTS)
 
 
 def have_good_versions() -> bool:
@@ -38,5 +35,5 @@ def have_good_versions() -> bool:
 
 
 if __name__ == "__main__":
-    if have_good_versions():
+    if not have_good_versions():
         sys.exit(1)

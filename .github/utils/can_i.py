@@ -1,21 +1,27 @@
 #!/usr/bin/env python
 
 # Determines what to do when the build-wheels action is running
-# Options are:
-#     - :build:
-#     - :build:release:
-#     - :build:pre_release:
-#     - :nothing:
+# If called with an argument
+# Determines whether to build and/or (pre)release wheels
+#   can_i.py build|release|pre_release
+#
+# Prints "true" or "false"
+#
 # One of these values is printed to the standard output.
 # Testing:
-#   GITHUB_REF_NAME="v0.2.0a1" GITHUB_REF_TYPE="tag" ./get_wheels_action.py
-#   GITHUB_REF_NAME="v0.2.0" GITHUB_REF_TYPE="tag" ./get_wheels_action.py
+#   GITHUB_REF_NAME="v0.2.0a1" GITHUB_REF_TYPE="tag" ./can_i.py build
+#   GITHUB_REF_NAME="v0.2.0" GITHUB_REF_TYPE="tag" ./can_i.py release
 
-import os
 import re
 import sys
 
+from typing import Callable, TypeAlias
+
 from _repo import Git, Workspace
+
+
+Ask: TypeAlias = Callable[[], bool]
+TAG = Workspace().head_tag()
 
 # Define a releasable version to be valid according to PEP440
 # and is a semver
@@ -74,27 +80,45 @@ def is_release_tag_message_ok(tag: str) -> bool:
     return tag_msg == f"{VERSION_TAG_MESSAGE_PREFIX}{tag[1:]}"
 
 
+def can_build() -> bool:
+    """
+    Return True commit message request build
+    """
+    return head_commit_wants_wheel_build()
+
+
+def can_release() -> bool:
+    """
+    Return True if tag what we expect for a release
+    """
+    return (
+        Git.is_annotated(TAG) and
+        is_release_tag(TAG) and
+        is_release_tag_message_ok(TAG)
+    )
+
+
+def can_pre_release() -> bool:
+    """
+    Return True if tag what we expect for a pre_release
+    """
+    return (
+        Git.is_annotated(TAG) and
+        is_pre_release_tag(TAG) and
+        is_release_tag_message_ok(TAG)
+    )
+
+
+ACTIONS: dict[str, Ask] = {
+    "build": can_build,
+    "release": can_release,
+    "pre_release": can_pre_release,
+}
+
 if __name__ == "__main__":
-    ws = Workspace()
-    tag = ws.head_tag()
-
-    build = head_commit_wants_wheel_build()
-    release = (
-        Git.is_annotated(tag) and
-        is_release_tag(tag) and
-        is_release_tag_message_ok(tag)
-    )
-    pre_release = (
-        Git.is_annotated(tag) and
-        is_pre_release_tag(tag) and
-        is_release_tag_message_ok(tag)
-    )
-
-    if release:
-        print(":build:release:")
-    elif pre_release:
-        print(":build:pre_release:")
-    elif build:
-        print(":build:")
+    if len(sys.argv) == 2:
+        action = sys.argv[1]
+        result = ACTIONS.get(action, lambda: False)()
+        print(str(result).lower())  # "true", "false"
     else:
-        print(":nothing:")
+        print("false")

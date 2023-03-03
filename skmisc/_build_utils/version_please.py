@@ -27,10 +27,11 @@ LAST_COMMIT_SHORTHASH = [
     "1",
 ]
 
+count = r"(?:[0-9]|[1-9][0-9]+)"
 DESCRIBE_PATTERN = re.compile(
-    r"^"
-    r"v"
-    r"(?P<version>\d+\.\d+\.\d+)"
+    r"^v"
+    rf"(?P<version>{count}\.{count}\.{count})"
+    rf"(?P<pre>(a|b|rc|alpha|beta){count})?"
     r"(-(?P<commits>\d+)-g(?P<hash>[a-z0-9]+))?"
     r"(?P<dirty>-dirty)?"
     r"$"
@@ -40,6 +41,7 @@ VERSION_LINE_PATTERN = re.compile(
     r'__version__ = "(?P<version>.+?)"'
 )
 
+NULL_VERSION = "0.0.0"
 
 def run(cmd: str | Sequence[str]) -> str:
     if isinstance(cmd, str) and os.name == "posix":
@@ -75,10 +77,10 @@ def get_version_from_scm() -> str:
         return ""
 
     info = m.groupdict()
-    if "commits" in info:
+    if info.get("commits", "0") != "0":
         tpl = "{version}.dev{commits}"
     else:
-        tpl = "{version}"
+        tpl = "{version}{pre}"
 
     v = tpl.format(**info)
     return v
@@ -102,7 +104,7 @@ def get_version() -> str:
     """
     Return a SemVer (& PEP440 compliant) from `git describe` output
     """
-    return get_version_from_scm() or get_version_from_file() or "0.0.0"
+    return get_version_from_scm() or get_version_from_file() or NULL_VERSION
 
 
 if __name__ == "__main__":

@@ -2,10 +2,15 @@
 
 # Determines what to do when the build-wheels action is running
 # Options are:
-#     - build
-#     - build, release
-#     - nothing
+#     - :build:
+#     - :build:release:
+#     - :build:pre_release:
+#     - :nothing:
 # One of these values is printed to the standard output.
+# Testing:
+#   GITHUB_REF_NAME="v0.2.0a1" GITHUB_REF_TYPE="tag" ./get_wheels_action.py
+#   GITHUB_REF_NAME="v0.2.0" GITHUB_REF_TYPE="tag" ./get_wheels_action.py
+
 import os
 import re
 import sys
@@ -69,24 +74,7 @@ def is_release_tag_message_ok(tag: str) -> bool:
     return tag_msg == f"{VERSION_TAG_MESSAGE_PREFIX}{tag[1:]}"
 
 
-def set_test_env():
-    env = {
-        "GITHUB_REF_NAME": "v0.2.0a1",
-        "GITHUB_REF_TYPE": "dev",
-        "GITHUB_REPOSITORY":  "has2k1/scikit-misc",
-        "GITHUB_SERVER_URL":  "https://github.com",
-        "GITHUB_SHA": "",
-        "GITHUB_WORKSPACE":   "/home/runner/work/scikit-misc/scikit-misc"
-    }
-    for k, v in env.items():
-        os.environ[k] = v
-
-
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "test":
-            set_test_env()
-
     ws = Workspace()
     tag = ws.head_tag()
 
@@ -103,10 +91,10 @@ if __name__ == "__main__":
     )
 
     if release:
-        print("build, release")
+        print(":build:release:")
     elif pre_release:
-        print("build, pre_release")
+        print(":build:pre_release:")
     elif build:
-        print("build")
+        print(":build:")
     else:
-        print("nothing")
+        print(":nothing:")

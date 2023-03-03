@@ -32,7 +32,7 @@ jobs:
 
       - name: Deepen Repository
         run: |
-          python ./tools/github/deepen-shallow-repo.py
+          python .github/utils/deepen-shallow-repo.py
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -148,7 +148,7 @@ jobs:
 
       - name: Deepen Repository
         run: |
-          python ./tools/github/deepen-shallow-repo.py
+          python .github/utils/deepen-shallow-repo.py
 
       - name: Setup Python
         uses: actions/setup-python@v4

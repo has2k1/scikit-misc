@@ -28,7 +28,6 @@
     - tools/openblas_support.py
       %s/via scipy/via scikit-misc/
       %s/import scipy//
-      %s/import scipy.linalg/import skmisc.loess/
       %s/scipy.linalg.cython_blas.__file__/skmisc.loess._loess.__file__/
       %s/OUT_SCIPY_DIR/OUT_SKMISC_DIR/
 

@@ -118,7 +118,6 @@ jobs:
         - [windows-2019, win, AMD64]
 
         python: [["cp38", "3.8"], ["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"]]
-        # python[0] is used to specify the python versions made by cibuildwheel
 
     env:
       IS_32_BIT: ${{ matrix.buildplat[2] == 'x86' }}
@@ -136,6 +135,7 @@ jobs:
       - name: Fetch all Tags
         run: |
           git fetch --tags --force
+          echo "git describe: $(git describe --long)"
 
       - uses: actions/setup-python@v4
         with:
@@ -186,6 +186,12 @@ jobs:
             MACOSX_DEPLOYMENT_TARGET=10.9
             MACOS_DEPLOYMENT_TARGET=10.9
             _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64
+
+      - name: Check Package Version
+        run: |
+          ls wheelhouse/*.whl
+          python .github/utils/check_package_version.py
+
       - uses: actions/upload-artifact@v3
         with:
           name: wheels
@@ -219,19 +225,20 @@ jobs:
         run:
           pip install -r requirements/build.txt
 
-      - name: Build
-        run: |
-          make build
-
       - name: Create Source Distribution
         run: |
           make sdist
+
+      - name: Check Package Version
+        run: |
+          ls dist/*.tar.gz
+          python .github/utils/check_package_version.py
 
       - name: Upload Source dist
         uses: actions/upload-artifact@v3
         with:
           name: wheels
-          path: "build/meson-dist/"
+          path: dist
 
   release:
     runs-on: ubuntu-latest

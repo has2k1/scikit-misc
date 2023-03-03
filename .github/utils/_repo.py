@@ -20,10 +20,11 @@ GITHUB_VARS = [
 ]
 
 
+count = r"(?:[0-9]|[1-9][0-9]+)"
 DESCRIBE_PATTERN = re.compile(
-    r"^"
-    r"v"
-    r"(?P<version>\d+\.\d+\.\d+)"
+    r"^v"
+    rf"(?P<version>{count}\.{count}\.{count})"
+    rf"(?P<pre>(a|b|rc|alpha|beta){count})?"
     r"(-(?P<commits>\d+)-g(?P<hash>[a-z0-9]+))?"
     r"(?P<dirty>-dirty)?"
     r"$"

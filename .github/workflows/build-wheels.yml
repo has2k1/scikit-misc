@@ -274,8 +274,8 @@ jobs:
 
           # publish wheels first so that there is no window where users
           # may accidentally install an sdist instead of a wheel
-          twine upload ${{ github.workspace }}/dist/*.whl
-          twine upload ${{ github.workspace }}/dist/*.tar.gz
+          twine upload --skip-exiting ${{ github.workspace }}/dist/*.whl
+          twine upload --skip-exiting ${{ github.workspace }}/dist/*.tar.gz
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
@@ -310,8 +310,8 @@ jobs:
 
           # publish wheels first so that there is no window where users
           # may accidentally install an sdist instead of a wheel
-          twine upload --repository testpypi ${{ github.workspace }}/dist/*.whl
-          twine upload --repository testpypi ${{ github.workspace }}/dist/*.tar.gz
+          twine upload --skip-exiting --repository testpypi ${{ github.workspace }}/dist/*.whl
+          twine upload --skip-exiting --repository testpypi ${{ github.workspace }}/dist/*.tar.gz
         env:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME_TEST }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD_TEST }}

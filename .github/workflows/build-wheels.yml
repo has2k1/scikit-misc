@@ -51,9 +51,13 @@ jobs:
         run: |
           git fetch --tags --force
 
+      - name: Copy build utils
+        run: |
+          cp -r .github/utils ../utils
+
       - name: Checkout build target
         run: |
-          python .github/utils/please.py checkout_build_commit
+          python ../utils/please.py checkout_build_commit
 
       - name: Environment information
         run: |
@@ -68,15 +72,15 @@ jobs:
         id: decide
         run: |
           set -xe
-          CAN_RELEASE=$(python .github/utils/please.py can_i_release)
-          CAN_PRE_RELEASE=$(python .github/utils/please.py can_i_pre_release)
+          CAN_RELEASE=$(python ../utils/please.py can_i_release)
+          CAN_PRE_RELEASE=$(python ../utils/please.py can_i_pre_release)
 
           if [[ $CAN_RELEASE == "true" ]]; then
             CAN_BUILD="true"
           elif [[ $CAN_PRE_RELEASE == "true" ]]; then
             CAN_BUILD="true"
           else
-            CAN_BUILD=$(python .github/utils/please.py can_i_build)
+            CAN_BUILD=$(python ../utils/please.py can_i_build)
           fi
 
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
@@ -123,13 +127,17 @@ jobs:
           git fetch --tags --force
           echo "git describe: $(git describe --long)"
 
-      - name: Checkout build target
+      - name: Copy build utils
         run: |
-          python .github/utils/please.py checkout_build_commit
+          cp -r .github/utils ../utils
 
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
+      - name: Checkout build target
+        run: |
+          python ../utils/please.py checkout_build_commit
 
       - name: win_amd64 - install rtools
         if: ${{ runner.os == 'Windows' && env.IS_64_BIT == 'true' }}
@@ -178,7 +186,7 @@ jobs:
       - name: Check Package Version
         run: |
           ls wheelhouse/*.whl
-          python .github/utils/check_package_version.py
+          python ../utils/check_package_version.py
 
       - uses: actions/upload-artifact@v3
         with:
@@ -199,14 +207,18 @@ jobs:
         run: |
           git fetch --tags --force
 
-      - name: Checkout build target
+      - name: Copy build utils
         run: |
-          python .github/utils/please.py checkout_build_commit
+          cp -r .github/utils ../utils
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
+      - name: Checkout build target
+        run: |
+          python ../utils/please.py checkout_build_commit
 
       - name: Install Ubuntu dependencies
         run: |
@@ -224,7 +236,7 @@ jobs:
       - name: Check Package Version
         run: |
           ls dist/*.tar.gz
-          python .github/utils/check_package_version.py
+          python ../utils/check_package_version.py
 
       - name: Upload Source dist
         uses: actions/upload-artifact@v3

@@ -56,9 +56,6 @@ docs:
 	./dev.py docs
 	$(BROWSER) doc/_build/html/index.html
 
-release: clean
-	bash ./tools/release.sh
-
 sdist: clean-test
 	./dev.py sdist
 

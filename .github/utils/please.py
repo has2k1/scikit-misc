@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-# Determines what to do when the build-wheels action is running
-# If called with an argument
-# Determines whether to build and/or (pre)release wheels
-#   can_i.py build|release|pre_release
+# This script knows what to do
+#   1. please.py can_i_build|can_i_release|can_i_pre_release
+#      Prints "true" or "false"
 #
-# Prints "true" or "false"
+#   2. please.py checkout_build_commit
+#
 #
 # One of these values is printed to the standard output.
 # Testing:
@@ -21,7 +21,9 @@ from _repo import Git, Workspace
 
 
 Ask: TypeAlias = Callable[[], bool]
-TAG = Workspace().head_tag()
+Do: TypeAlias = Callable[[], str]
+
+WS = Workspace()
 
 # Define a releasable version to be valid according to PEP440
 # and is a semver
@@ -45,9 +47,26 @@ PRE_RELEASE_TAG_PATTERN = re.compile(
 
 VERSION_TAG_MESSAGE_PREFIX = "Version "
 
+# build head | branch | commit | tag
+# [wheel build]
+# [wheel build: main]
+# [wheel build: v0.2.1]
+# [wheel build: a4689f5]
 BUILD_PATTERN = re.compile(
-    r"\[wheel build\]$"
+    r"\[wheel build(: (?P<build_ref>.+?))?\]$"
 )
+
+
+def checkout_build_commit() -> str:
+    """
+    Checkout commit to build wheels for
+    """
+    m = BUILD_PATTERN.search(Git.head_commit_title())
+    if m and "build_ref" in m.groupdict():
+        build_ref = m.groups("build_ref")
+        return Git.checkout(build_ref)
+    return ""
+
 
 def head_commit_wants_wheel_build() -> bool:
     """
@@ -82,19 +101,26 @@ def is_release_tag_message_ok(tag: str) -> bool:
 
 def can_build() -> bool:
     """
-    Return True commit message request build
+    Return True if wheels should be built
     """
-    return head_commit_wants_wheel_build()
+    return (
+        head_commit_wants_wheel_build() or
+        WS.event_name == "schedule" or
+        WS.event_name == "workflow_dispatch"
+    )
 
 
 def can_release() -> bool:
     """
     Return True if tag what we expect for a release
     """
+    tag = Git.head_tag()
     return (
-        Git.is_annotated(TAG) and
-        is_release_tag(TAG) and
-        is_release_tag_message_ok(TAG)
+        bool(tag) and
+        WS.is_push_event() and
+        Git.is_annotated(tag) and
+        is_release_tag(tag) and
+        is_release_tag_message_ok(tag)
     )
 
 
@@ -102,23 +128,38 @@ def can_pre_release() -> bool:
     """
     Return True if tag what we expect for a pre_release
     """
+    tag = Git.head_tag()
     return (
-        Git.is_annotated(TAG) and
-        is_pre_release_tag(TAG) and
-        is_release_tag_message_ok(TAG)
+        bool(tag) and
+        WS.is_push_event() and
+        Git.is_annotated(tag) and
+        is_pre_release_tag(tag) and
+        is_release_tag_message_ok(tag)
     )
 
 
-ACTIONS: dict[str, Ask] = {
-    "build": can_build,
-    "release": can_release,
-    "pre_release": can_pre_release,
+def process(arg: str) -> str:
+    if arg in QUESTIONS:
+        result = QUESTIONS.get(arg, lambda: False)()
+        result = str(result).lower()
+    else:
+        result = ACTIONS.get(arg, lambda: "")()
+    return result
+
+
+QUESTIONS: dict[str, Ask] = {
+    "can_i_build": can_build,
+    "can_i_release": can_release,
+    "can_i_pre_release": can_pre_release,
 }
+
+
+ACTIONS: dict[str, Do] = {
+    "checkout_build_commit": checkout_build_commit
+}
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        action = sys.argv[1]
-        result = ACTIONS.get(action, lambda: False)()
-        print(str(result).lower())  # "true", "false"
-    else:
-        print("false")
+        arg = sys.argv[1]
+        print(process(arg))

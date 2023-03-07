@@ -51,6 +51,10 @@ jobs:
         run: |
           git fetch --tags --force
 
+      - name: Checkout build target
+        run: |
+          python .github/utils/please.py checkout_build_commit
+
       - name: Environment information
         run: |
           echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
@@ -64,15 +68,15 @@ jobs:
         id: decide
         run: |
           set -xe
-          CAN_RELEASE=$(python .github/utils/can_i.py release)
-          CAN_PRE_RELEASE=$(python .github/utils/can_i.py pre_release)
+          CAN_RELEASE=$(python .github/utils/please.py can_i_release)
+          CAN_PRE_RELEASE=$(python .github/utils/please.py can_i_pre_release)
 
           if [[ $CAN_RELEASE == "true" ]]; then
             CAN_BUILD="true"
           elif [[ $CAN_PRE_RELEASE == "true" ]]; then
             CAN_BUILD="true"
           else
-            CAN_BUILD=$(python .github/utils/can_i.py build)
+            CAN_BUILD=$(python .github/utils/please.py can_i_build)
           fi
 
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
@@ -84,10 +88,7 @@ jobs:
     name: Build wheel for ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }} ${{ matrix.buildplat[2] }}
     needs: parse_commit_info
 
-    if: >-
-      contains(needs.parse_commit_info.outputs.can_build, 'true') ||
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch'
+    if: contains(needs.parse_commit_info.outputs.can_build, 'true')
     runs-on: ${{ matrix.buildplat[0] }}
 
     strategy:
@@ -121,6 +122,10 @@ jobs:
         run: |
           git fetch --tags --force
           echo "git describe: $(git describe --long)"
+
+      - name: Checkout build target
+        run: |
+          python .github/utils/please.py checkout_build_commit
 
       - uses: actions/setup-python@v4
         with:
@@ -193,6 +198,10 @@ jobs:
       - name: Fetch all Tags
         run: |
           git fetch --tags --force
+
+      - name: Checkout build target
+        run: |
+          python .github/utils/please.py checkout_build_commit
 
       - name: Setup Python
         uses: actions/setup-python@v4

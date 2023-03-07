@@ -16,7 +16,8 @@ GITHUB_VARS = [
     "GITHUB_REPOSITORY",  # has2k1/scikit-misc
     "GITHUB_SERVER_URL",  # https://github.com
     "GITHUB_SHA",  # commit shasum
-    "GITHUB_WORKSPACE"  # /home/runner/work/scikit-misc/scikit-misc
+    "GITHUB_WORKSPACE",  # /home/runner/work/scikit-misc/scikit-misc
+    "GITHUB_EVENT_NAME"  # push, schedule, workflow_dispatch, ...
 ]
 
 
@@ -47,6 +48,14 @@ def run(cmd: str | Sequence[str]) -> str:
 
 
 class Git:
+    @staticmethod
+    def checkout(committish):
+        """
+        Return True if inside a git repo
+        """
+        res = run(f"git checkout {committish}")
+        return res
+
     @staticmethod
     def commit_titles(n=1) -> list[str]:
         """
@@ -133,12 +142,21 @@ class Git:
         _depth = f"--depth={depth}"
         return run(f"git clone {_depth} {_branch} {url} .")
 
+    @staticmethod
+    def head_tag() -> str:
+        """
+        Return tag at HEAD or empty string if there is none
+        """
+        tags = run("git tag --points-at HEAD").split("\n")
+        return tags[0]
+
 
 class Workspace:
     """
     Github Actions workspace information about the repository and action
     """
     # From github environment
+    event_name: str
     ref_name: str
     ref_type: str
     repository: str
@@ -162,8 +180,14 @@ class Workspace:
         """
         return self.ref_type == "tag"
 
-    def head_tag(self) -> str:
+    def is_push_event(self) -> bool:
         """
-        Return tag at HEAD or empty string if there is none
+        Return True if push triggered the action
+        """
+        return self.event_name == "push"
+
+    def pushed_tag(self) -> str:
+        """
+        Return pushed tag or empty string it isn't a tag
         """
         return self.ref_name if self.ref_is_tag() else ""

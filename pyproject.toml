@@ -10,9 +10,7 @@ authors = [
 dynamic = ['version']
 readme = "README.rst"
 dependencies = [
-    # TODO: update to "pin-compatible" once possible, see
-    # https://github.com/FFY00/meson-python/issues/29
-    "numpy>=1.19.5",
+    "numpy>=1.22.3",
 ]
 classifiers = [
     "Intended Audience :: Science/Research",

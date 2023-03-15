@@ -1,6 +1,6 @@
 Cython
 build
-git+https://github.com/scientific-python/devpy
+git+https://github.com/scientific-python/devpy@v0.1
 meson-python
 ninja
 numpy

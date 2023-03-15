@@ -5,6 +5,7 @@ from pathlib import Path
 
 import click
 from devpy import util
+from devpy.cmds import meson
 
 @click.command()
 @click.option(
@@ -27,7 +28,7 @@ def docs(build_dir, clean=False):
             print(f"Removing `{doc_dir}`")
             shutil.rmtree(doc_dir)
 
-    site_path = util.get_site_packages(build_dir)
+    site_path = meson._get_site_packages()
     if site_path is None:
         print("No built scikit-misc found; run `./dev.py build` first.")
         sys.exit(1)
@@ -50,7 +51,7 @@ def coverage(build_dir):
     """
     📊 Generate coverage report
     """
-    site_path = util.get_site_packages(build_dir)
+    site_path = meson._get_site_packages()
     util.run([
         "python",
         "-m",
@@ -71,7 +72,7 @@ def coverage_html(build_dir):
     """
     📊 Generate HTML coverage report
     """
-    site_path = util.get_site_packages(build_dir)
+    site_path = meson._get_site_packages()
     util.run([
         "python",
         "-m",

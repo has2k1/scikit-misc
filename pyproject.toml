@@ -112,22 +112,22 @@ omit = [
 ]
 
 ########## Tool - DevPy ##########
-[tool.devpy]
+[tool.spin]
 package = "skmisc"
 
-[tool.devpy.commands]
+[tool.spin.commands]
 Build = [
-    "devpy.cmds.meson.build",
-    "devpy.cmds.meson.test",
-    ".devpy/cmds.py:docs",
-    ".devpy/cmds.py:coverage",
-    ".devpy/cmds.py:coverage_html",
-    ".devpy/cmds.py:sdist",
+    "spin.cmds.meson.build",
+    "spin.cmds.meson.test",
+    ".spin/cmds.py:docs",
+    ".spin/cmds.py:coverage",
+    ".spin/cmds.py:coverage_html",
+    ".spin/cmds.py:sdist",
 ]
 Environments = [
-    "devpy.cmds.meson.shell",
-    "devpy.cmds.meson.ipython",
-    "devpy.cmds.meson.python",
+    "spin.cmds.meson.shell",
+    "spin.cmds.meson.ipython",
+    "spin.cmds.meson.python",
 ]
 
 ########## Tool - CIBuildWheel ##########

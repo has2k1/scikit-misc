@@ -1,6 +1,6 @@
 Cython
 build
-git+https://github.com/scientific-python/devpy@v0.1
+spin
 meson-python
 ninja
 numpy

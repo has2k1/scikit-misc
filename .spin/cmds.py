@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 
 import click
-from devpy import util
-from devpy.cmds import meson
+from spin import util
+from spin.cmds import meson
 
 @click.command()
 @click.option(
@@ -30,7 +30,7 @@ def docs(build_dir, clean=False):
 
     site_path = meson._get_site_packages()
     if site_path is None:
-        print("No built scikit-misc found; run `./dev.py build` first.")
+        print("No built scikit-misc found; run `./spin build` first.")
         sys.exit(1)
 
     util.run(["pip", "install", "-q", "-r", "requirements/docs.txt"])

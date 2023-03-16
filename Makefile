@@ -42,22 +42,22 @@ lint:
 	flake8 skmisc --exclude=skmisc/__config__.py
 
 build:
-	./dev.py build
+	./spin build
 
 test: clean-test
-	./dev.py test
+	./spin test
 
 coverage:
-	./dev.py coverage
-	./dev.py coverage-html
+	./spin coverage
+	./spin coverage-html
 	$(BROWSER) htmlcov/index.html
 
 docs:
-	./dev.py docs
+	./spin docs
 	$(BROWSER) doc/_build/html/index.html
 
 sdist: clean-test
-	./dev.py sdist
+	./spin sdist
 
 dist: clean sdist wheel
 	python -m build

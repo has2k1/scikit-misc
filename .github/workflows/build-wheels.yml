@@ -158,10 +158,15 @@ jobs:
 #          echo $(gfortran --version)
 #          echo $(gcc --version)
 
+      - name: Set Dynamic MACOSX Environment Variables
+        if: ${{ runner.os == 'macOS'}}
+        run: |
+          echo "SDKROOT=$(xcrun --show-sdk-path)" >> $GITHUB_ENV
+          echo "MACOSX_DEPLOYMENT_TARGET=10.9" >> $GITHUB_ENV
+          echo "_PYTHON_HOST_PLATFORM=macosx-10.9-x86_64" >> $GITHUB_ENV
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.1
-        if: >-
-          ( ! contains(matrix.buildplat[2], 'arm64' ) )
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
@@ -174,11 +179,11 @@ jobs:
           # an update is released, then that environment variable can
           # be removed.
           CIBW_ENVIRONMENT_MACOS: >
-            SDKROOT=/Applications/Xcode_11.7.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk
+            SDKROOT=$SDKROOT
             LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-            MACOSX_DEPLOYMENT_TARGET=10.9
-            MACOS_DEPLOYMENT_TARGET=10.9
-            _PYTHON_HOST_PLATFORM=macosx-10.9-x86_64
+            MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET
+            MACOS_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET
+            _PYTHON_HOST_PLATFORM=$_PYTHON_HOST_PLATFORM
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
             DYLD_LIBRARY_PATH=/usr/local/lib delocate-listdeps {wheel} &&
             DYLD_LIBRARY_PATH=/usr/local/lib delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}

@@ -159,7 +159,7 @@ jobs:
 #          echo $(gcc --version)
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.0
+        uses: pypa/cibuildwheel@v2.12.1
         if: >-
           ( ! contains(matrix.buildplat[2], 'arm64' ) )
         env:
@@ -170,9 +170,9 @@ jobs:
           # setting SDKROOT necessary when using the gfortran compiler
           # installed in cibw_before_build_macos.sh
           # MACOS_DEPLOYMENT_TARGET is set because of
-          # https://github.com/pypa/cibuildwheel/issues/1419. Once that
-          # is closed and an update to pypa/cibuildwheel is done, then
-          # that environment variable can be removed.
+          # https://github.com/mesonbuild/meson-python/pull/309. Once
+          # an update is released, then that environment variable can
+          # be removed.
           CIBW_ENVIRONMENT_MACOS: >
             SDKROOT=/Applications/Xcode_11.7.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk
             LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH

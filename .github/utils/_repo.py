@@ -57,21 +57,39 @@ class Git:
         return res
 
     @staticmethod
-    def commit_titles(n=1) -> list[str]:
+    def commit_subjects(n=1) -> list[str]:
         """
-        Return a list n of commit titles
+        Return a list n of commit subjects
         """
         output = run(
             f"git log --oneline --no-merges --pretty='format:%s' -{n}"
         )
-        return output.split("\n")
+        return output.split("\n")[:n]
 
     @staticmethod
-    def head_commit_title() -> str:
+    def commit_messages(n=1) -> list[str]:
         """
-        Commit title
+        Return a list n of commit messages
         """
-        return Git.commit_titles(1)[0]
+        sep = "%n:::::: MESSAGE :::::%n"
+        output = run(
+            f"git log --no-merges --pretty='format:%B{sep}' -{n}"
+        )
+        return output.split(sep)[:n]
+
+    @staticmethod
+    def commit_subject() -> str:
+        """
+        Commit subject
+        """
+        return Git.commit_subjects(1)[0]
+
+    @staticmethod
+    def head_commit_message() -> str:
+        """
+        Commit message
+        """
+        return Git.commit_messages(1)[0]
 
     @staticmethod
     def is_repo():

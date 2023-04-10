@@ -1,0 +1,122 @@
+# Ref: https://github.com/scipy/scipy/blob/main/ci/cirrus_wheels.yml
+
+setup_repo: &SETUP_REPO
+  # Makes sure we use the latest scripts especially when building
+  # wheels for old commits. These may have buggy scripts.
+  copy_build_utils_script: |
+    cp -r .github/utils ../utils
+
+  checkout_build_commit_script: |
+    python ../utils/please.py checkout_build_commit
+
+  export_env_script: |
+    set -xe
+    CAN_BUILD=$(python ../utils/please.py can_i_build)
+    CAN_RELEASE=$(python ../utils/please.py can_i_release)
+    CAN_PRE_RELEASE=$(python ../utils/please.py can_i_pre_release)
+
+    echo "CAN_BUILD=$CAN_BUILD" >> $CIRRUS_ENV
+    echo "CAN_RELEASE=$CAN_RELEASE" >> $CIRRUS_ENV
+    echo "CAN_PRE_RELEASE=$CAN_PRE_RELEASE" >> $CIRRUS_ENV
+
+do_release: &DO_RELEASE
+  depends_on: build_macosx_arm64_wheels
+
+  container:
+    image: python:3.11-slim
+
+  apt_install_script: |
+    apt update
+    apt install -y --no-install-recommends git curl unzip
+
+  <<: *SETUP_REPO
+
+  release_script: |
+    if [[ $CAN_RELEASE == 'true' ||  $CAN_PRE_RELEASE == 'true' ]]; then
+      # The name of the zip file is derived from the `wheels_artifact` line.
+      # If you change the artifact line to `myfile_artifact` then it would be
+      # called myfile.zip
+      curl https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/wheels.zip --output wheels.zip
+      unzip wheels.zip
+      mkdir dist
+      cp -r wheelhouse/* dist/*
+
+      pip install -r requirements/release.txt
+      # publish wheels first so that there is no window where users
+      # may accidentally install an sdist instead of a wheel
+      twine upload --skip-existing dist/*.whl
+      twine upload --skip-existing dist/*.tar.gz
+    fi
+
+######################################################################
+# Build macosx_arm64 natively
+######################################################################
+
+build_macosx_arm64_wheels_task:
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-monterey-xcode:14
+  matrix:
+    - env:
+        CIBW_BUILD: cp39-* cp310-* cp311-*
+  env:
+    PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
+    CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=12.0 _PYTHON_HOST_PLATFORM="macosx-12.0-arm64"
+    PKG_CONFIG_PATH: /opt/arm64-builds/lib/pkgconfig
+    # assumes that the cmake config is in /usr/local/lib/cmake
+    CMAKE_PREFIX_PATH: /opt/arm64-builds/
+    REPAIR_PATH: /usr/local/gfortran/lib:/opt/arm64-builds/lib
+    CIBW_REPAIR_WHEEL_COMMAND_MACOS: >
+      DYLD_LIBRARY_PATH=/usr/local/gfortran/lib:/opt/arm64-builds/lib delocate-listdeps {wheel} &&
+      DYLD_LIBRARY_PATH=/usr/local/gfortran/lib:/opt/arm64-builds/lib delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}
+
+  install_pre_requirements_script:
+    - brew install python@3.10
+    - ln -s python3 /opt/homebrew/opt/python@3.10/bin/python
+
+  <<: *SETUP_REPO
+
+  environment_info_script: |
+    pwd
+    ls -la
+    which python
+    # needed for submodules
+    git fetch --tags
+    git describe
+    git submodule update --init
+    uname -m
+    python -c "import platform;print(platform.python_version());print(platform.system());print(platform.machine())"
+    clang --version
+
+  install_cibuildwheel_script:
+    - python -m pip install cibuildwheel==2.12.1
+  cibuildwheel_script:
+    - cibuildwheel
+  wheels_artifacts:
+    path: "wheelhouse/*"
+  check_git_script:
+    - git status
+    - git describe
+
+######################################################################
+# Release to PyPi
+######################################################################
+
+release_task:
+  env:
+    TWINE_REPOSITORY: pypi
+    TWINE_USERNAME: __token__
+    TWINE_PASSWORD: ENCRYPTED[!f07f791168c1accdd2180bce2959066ba87ad07322037a7b3b18d3f874b673dfb315090a682ae51f6cfb3efbe5826007!]
+
+  <<: *DO_RELEASE
+
+######################################################################
+# Pre release to TestPyPi
+######################################################################
+
+pre_release_task:
+  env:
+    TWINE_REPOSITORY: testpypi
+    TWINE_USERNAME: __token__
+    TWINE_PASSWORD: ENCRYPTED[!042edd5137d04f45f06cd7fa2078f6efaa6df8c64e646d131d1c143284973c4c5ae66b9e3886231f159403ee993de34a!]
+
+  <<: *DO_RELEASE

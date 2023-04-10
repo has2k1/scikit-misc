@@ -72,16 +72,9 @@ jobs:
         id: decide
         run: |
           set -xe
+          CAN_BUILD=$(python ../utils/please.py can_i_build)
           CAN_RELEASE=$(python ../utils/please.py can_i_release)
           CAN_PRE_RELEASE=$(python ../utils/please.py can_i_pre_release)
-
-          if [[ $CAN_RELEASE == "true" ]]; then
-            CAN_BUILD="true"
-          elif [[ $CAN_PRE_RELEASE == "true" ]]; then
-            CAN_BUILD="true"
-          else
-            CAN_BUILD=$(python ../utils/please.py can_i_build)
-          fi
 
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
           echo "can_release=$CAN_RELEASE" >> $GITHUB_OUTPUT

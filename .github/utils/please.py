@@ -14,6 +14,7 @@
 
 import re
 import sys
+import os
 
 from typing import Callable, TypeAlias
 
@@ -56,23 +57,40 @@ BUILD_PATTERN = re.compile(
     r"\[wheel build(: (?P<build_ref>.+?))?\]$"
 )
 
+BUILD_PATTERN_CI = re.compile(
+    r"\[wheel build - (?P<ci>GHA|cirrus)\]$"
+)
 
 def checkout_build_commit() -> str:
     """
     Checkout commit to build wheels for
     """
-    m = BUILD_PATTERN.search(Git.head_commit_title())
+    m = BUILD_PATTERN.search(Git.commit_subject())
     if m and "build_ref" in m.groupdict():
-        build_ref = m.groups("build_ref")
+        build_ref = m.group("build_ref")
         return Git.checkout(build_ref)
     return ""
 
 
-def head_commit_wants_wheel_build() -> bool:
+def is_wheel_build_for_ci() -> bool:
     """
-    Return True commit title ends in "[wheel build]"
+    Return True if to build only on a specific ci"
     """
-    return bool(BUILD_PATTERN.search(Git.head_commit_title()))
+    m = BUILD_PATTERN_CI.search(Git.commit_subject())
+    if not m:
+        return False
+
+    ci = m.group("ci").lower()
+    gha = os.environ.get("GITHUB_ACTIONS") == "true"
+    cirrus = os.environ.get("CIRRUS_CI") == "true"
+    return (cirrus and ci == "cirrus") or (gha and ci == "gha")
+
+
+def is_wheel_build_for_all() -> bool:
+    """
+    Return True commit subject ends in "[wheel build]"
+    """
+    return bool(BUILD_PATTERN.search(Git.commit_subject()))
 
 
 def is_release_tag(tag: str) -> bool:
@@ -104,7 +122,10 @@ def can_build() -> bool:
     Return True if wheels should be built
     """
     return (
-        head_commit_wants_wheel_build() or
+        is_wheel_build_for_all() or
+        is_wheel_build_for_ci() or
+        can_release() or
+        can_pre_release() or
         WS.event_name == "schedule" or
         WS.event_name == "workflow_dispatch"
     )
@@ -138,7 +159,7 @@ def can_pre_release() -> bool:
     )
 
 
-def process(arg: str) -> str:
+def process_request(arg: str) -> str:
     if arg in QUESTIONS:
         result = QUESTIONS.get(arg, lambda: False)()
         result = str(result).lower()
@@ -162,4 +183,4 @@ ACTIONS: dict[str, Do] = {
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         arg = sys.argv[1]
-        print(process(arg))
+        print(process_request(arg))

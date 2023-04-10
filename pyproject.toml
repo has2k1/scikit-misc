@@ -111,7 +111,7 @@ omit = [
     "skmisc/__config__.py",
 ]
 
-########## Tool - DevPy ##########
+########## Tool - Spin ##########
 [tool.spin]
 package = "skmisc"
 

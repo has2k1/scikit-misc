@@ -9,8 +9,8 @@
 
 load("cirrus", "re", "env", "fs", "http")
 
-BUILD_TAG_PATTERN = re.compile(
-    r"\[wheel build(: (?P<build_ref>.+?))?\]$"
+BUILD_PATTERN = re.compile(
+    r"\[wheel build(: (?P<build_ref>.+?))?\]"
 )
 
 def main(ctx):
@@ -22,7 +22,6 @@ def main(ctx):
     #   but on the cirrus-ci repo page
     # - commit message containing [wheel build]
     ######################################################################
-
     if env.get("CIRRUS_REPO_FULL_NAME") != "has2k1/scikit-misc":
         return []
 
@@ -40,12 +39,7 @@ def main(ctx):
     if "[skip cirrus]" in message or "[skip ci]" in message:
         return []
 
-    c1 = "[wheel build]" in message
-    c2  = "[wheel build - cirrus]" in message
-    c3 = BUILD_TAG_PATTERN.match(message) != None
-    if c1 or c2 or c3:
-        return fs.read("ci/cirrus_wheels.yml")
-
-    return []
-
-
+    m = BUILD_PATTERN.search(message)
+    if not m:
+        return []
+    return fs.read("ci/cirrus_wheels.yml")

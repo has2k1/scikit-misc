@@ -71,10 +71,12 @@ class Git:
         """
         Return a list n of commit messages
         """
-        sep = "%n:::::: MESSAGE :::::%n"
+        sep = "______ MESSAGE _____"
         output = run(
             f"git log --no-merges --pretty='format:%B{sep}' -{n}"
-        )
+        ).strip()
+        if output.endswith(sep):
+            output = output[:-len(sep)]
         return output.split(sep)[:n]
 
     @staticmethod
@@ -85,7 +87,7 @@ class Git:
         return Git.commit_subjects(1)[0]
 
     @staticmethod
-    def head_commit_message() -> str:
+    def commit_message() -> str:
         """
         Commit message
         """
@@ -136,6 +138,13 @@ class Git:
         return bool(DESCRIBE_PATTERN.match(Git.describe()))
 
     @staticmethod
+    def get_tag_at_commit(committish: str) -> str:
+        """
+        Get tag of a given commit
+        """
+        return run(f"git describe --exact-match {committish}")
+
+    @staticmethod
     def tag_message(tag: str) -> str:
         """
         Get the message of a tag
@@ -159,53 +168,3 @@ class Git:
         _branch = f"--branch={branch}"
         _depth = f"--depth={depth}"
         return run(f"git clone {_depth} {_branch} {url} .")
-
-    @staticmethod
-    def head_tag() -> str:
-        """
-        Return tag at HEAD or empty string if there is none
-        """
-        tags = run("git tag --points-at HEAD").split("\n")
-        return tags[0]
-
-
-class Workspace:
-    """
-    Github Actions workspace information about the repository and action
-    """
-    # From github environment
-    event_name: str
-    ref_name: str
-    ref_type: str
-    repository: str
-    server_url: str
-    sha: str
-    workspace: str
-
-    # Derived
-    repo_url: str
-
-    def __init__(self):
-        for name in GITHUB_VARS:
-            param = name.replace("GITHUB_", "").lower()
-            setattr(self, param, os.environ.get(name))
-
-        self.repo_url = f"{self.server_url}/{self.repository}.git"
-
-    def ref_is_tag(self) -> bool:
-        """
-        Return true if ref (HEAD) is a tag
-        """
-        return self.ref_type == "tag"
-
-    def is_push_event(self) -> bool:
-        """
-        Return True if push triggered the action
-        """
-        return self.event_name == "push"
-
-    def pushed_tag(self) -> str:
-        """
-        Return pushed tag or empty string it isn't a tag
-        """
-        return self.ref_name if self.ref_is_tag() else ""

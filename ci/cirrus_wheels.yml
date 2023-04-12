@@ -1,13 +1,15 @@
 # Ref: https://github.com/scipy/scipy/blob/main/ci/cirrus_wheels.yml
 
 setup_repo: &SETUP_REPO
+  fetch_tags_script:
+    - git fetch --tags --force
+    - git describe
+    - git log -n 1
+
   # Makes sure we use the latest scripts especially when building
   # wheels for old commits. These may have buggy scripts.
   copy_build_utils_script: |
     cp -r .github/utils ../utils
-
-  checkout_build_commit_script: |
-    python ../utils/please.py checkout_build_commit
 
   export_env_script: |
     set -xe
@@ -18,6 +20,9 @@ setup_repo: &SETUP_REPO
     echo "CAN_BUILD=$CAN_BUILD" >> $CIRRUS_ENV
     echo "CAN_RELEASE=$CAN_RELEASE" >> $CIRRUS_ENV
     echo "CAN_PRE_RELEASE=$CAN_PRE_RELEASE" >> $CIRRUS_ENV
+
+  checkout_build_commit_script: |
+    python ../utils/please.py checkout_build_commit
 
 do_release: &DO_RELEASE
   depends_on: build_macosx_arm64_wheels
@@ -32,20 +37,17 @@ do_release: &DO_RELEASE
   <<: *SETUP_REPO
 
   release_script: |
+    set -xe
     if [[ $CAN_RELEASE == 'true' ||  $CAN_PRE_RELEASE == 'true' ]]; then
       # The name of the zip file is derived from the `wheels_artifact` line.
       # If you change the artifact line to `myfile_artifact` then it would be
       # called myfile.zip
       curl https://api.cirrus-ci.com/v1/artifact/build/$CIRRUS_BUILD_ID/wheels.zip --output wheels.zip
       unzip wheels.zip
-      mkdir dist
-      cp -r wheelhouse/* dist/*
+      ls -la ./wheelhouse
 
       pip install -r requirements/release.txt
-      # publish wheels first so that there is no window where users
-      # may accidentally install an sdist instead of a wheel
-      twine upload --skip-existing dist/*.whl
-      twine upload --skip-existing dist/*.tar.gz
+      twine upload --skip-existing wheelhouse/*.whl
     fi
 
 ######################################################################
@@ -79,10 +81,6 @@ build_macosx_arm64_wheels_task:
     pwd
     ls -la
     which python
-    # needed for submodules
-    git fetch --tags
-    git describe
-    git submodule update --init
     uname -m
     python -c "import platform;print(platform.python_version());print(platform.system());print(platform.machine())"
     clang --version
@@ -93,9 +91,6 @@ build_macosx_arm64_wheels_task:
     - cibuildwheel
   wheels_artifacts:
     path: "wheelhouse/*"
-  check_git_script:
-    - git status
-    - git describe
 
 ######################################################################
 # Release to PyPi

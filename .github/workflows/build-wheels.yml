@@ -50,14 +50,11 @@ jobs:
       - name: Fetch all Tags
         run: |
           git fetch --tags --force
+          git log -n 1
 
       - name: Copy build utils
         run: |
           cp -r .github/utils ../utils
-
-      - name: Checkout build target
-        run: |
-          python ../utils/please.py checkout_build_commit
 
       - name: Environment information
         run: |
@@ -67,6 +64,15 @@ jobs:
           echo "GITHUB_REF_TYPE=$GITHUB_REF_TYPE"
           echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
           echo "git describe: $(git describe --long)"
+
+      - name: Debug
+        run: |
+          set -xe
+          commit_message=$(python ../utils/please.py commit_message)
+          skip_ci_message=$(python ../utils/please.py skip_ci_message)
+          skip_gha_message=$(python ../utils/please.py skip_gha_message)
+          skip_build=$(python ../utils/please.py skip_build)
+          is_wheel_build=$(python ../utils/please.py is_wheel_build)
 
       - name: Decide Whether to Build and/or Release
         id: decide

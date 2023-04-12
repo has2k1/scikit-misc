@@ -76,13 +76,15 @@ def get_version_from_scm() -> str:
     if not m:
         return ""
 
-    info = m.groupdict()
-    if info.get("commits", "0") != "0":
-        tpl = "{version}.dev{commits}"
-    else:
-        tpl = "{version}{pre}"
+    pre = m.group("pre") or ""
+    version = m.group("version")
+    commits = m.group("commits")
 
-    v = tpl.format(**info)
+    if commits != "0":
+        v = f"{version}.dev{commits}"
+    else:
+        v = f"{version}{pre}"
+
     return v
 
 

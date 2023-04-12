@@ -1,9 +1,9 @@
 Changelog
 =========
 
-v0.2.0a1
+v0.2.0rc4
 --------
-*(2023-03-02)*
+*(2023-04-12)*
 
 - Requires numpy>=1.19.5
 - Changed the build system to meson-build

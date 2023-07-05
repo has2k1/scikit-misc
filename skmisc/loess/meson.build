@@ -40,8 +40,7 @@ py.extension_module(
      loess_cython_gen.process('src/_loess.pyx')
    ],
    c_args: [cython_c_args, numpy_nodepr_api],
-   include_directories: [inc_np],
-   dependencies: [py_dep, npymath_lib],
+   dependencies: [py_dep, npymath_lib, np_dep],
    link_with: [floess_lib],
    link_args: [cython_c_link_args],
    link_language: 'c',

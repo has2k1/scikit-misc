@@ -4,7 +4,7 @@ project(
   'c', 'cython',
   version: run_command('skmisc/_build_utils/version_please.py', check: true).stdout().strip(),
   license: 'BSD-3',
-  meson_version: '>= 0.64.0',
+  meson_version: '>= 1.1.0',
   default_options: [
     'buildtype=debugoptimized',
     'c_std=c99',
@@ -42,12 +42,12 @@ conf_data.set('PYTHON_VERSION', py.language_version())
 cc = meson.get_compiler('c')
 ff = meson.get_compiler('fortran')
 # generator() doesn't accept compilers, only found programs. Cast it.
-_cython = meson.get_compiler('cython')
-cython = find_program(_cython.cmd_array()[0])
+cy = meson.get_compiler('cython')
+cython = find_program(cy.cmd_array()[0])
 
 compilers = {
   'C': cc,
-  'CYTHON': _cython,
+  'CYTHON': cy,
   'FORTRAN': ff
 }
 

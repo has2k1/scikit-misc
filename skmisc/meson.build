@@ -11,20 +11,42 @@
 
 #### Setup NumPy
 # Include numpy directory - needed in all submodules
+# The chdir is needed because within numpy there's an `import signal`
+# statement, and we don't want that to pick up scipy's signal module rather
+# than the stdlib module. The try-except is needed because when things are
+# split across drives on Windows, there is no relative path and an exception
+# gets raised. There may be other such cases, so add a catch-all and switch to
+# an absolute path. Relative paths are needed when for example a virtualenv is
+# placed inside the source tree; Meson rejects absolute paths to places inside
+# the source tree.
 incdir_numpy = run_command(py,
   [
     '-c',
-    'import os; os.chdir(".."); import numpy; print(numpy.get_include())'
+   '''import os
+os.chdir(os.path.join("..", "tools"))
+import numpy as np
+try:
+  incdir = os.path.relpath(np.get_include())
+except Exception:
+  incdir = np.get_include()
+print(incdir)
+'''
   ],
   check: true
 ).stdout().strip()
 inc_np = include_directories(incdir_numpy)
+np_dep = declare_dependency(include_directories: inc_np)
 
-npymath_path = incdir_numpy / '..' / 'lib'
+# We do need an absolute path to feed to `cc.find_library` below
+_incdir_numpy_abs = run_command(py,
+  ['-c', 'import os; os.chdir(".."); import numpy; print(numpy.get_include())'],
+  check: true
+).stdout().strip()
+
+npymath_path = _incdir_numpy_abs / '..' / 'lib'
+npyrandom_path = _incdir_numpy_abs / '..' / '..' / 'random' / 'lib'
 npymath_lib = cc.find_library('npymath', dirs: npymath_path)
-npyrandom_path = incdir_numpy / '..' / '..' / 'random' / 'lib'
-# Note: `required: false` can be removed once numpy 1.19 is the minimum version
-npyrandom_lib = cc.find_library('npyrandom', dirs: npyrandom_path, required: false)
+npyrandom_lib = cc.find_library('npyrandom', dirs: npyrandom_path)
 
 # Don't use the deprecated NumPy C API. Define this to a fixed version instead of
 # NPY_API_VERSION in order not to break compilation for released SciPy versions
@@ -100,52 +122,35 @@ Wlno_fixup_chains = cc.get_supported_link_arguments('-Wl,-no_fixup_chains')
 ###
 
 #### Setup on Operating System
-if is_windows
-  is_mingw = is_windows and cc.get_id() == 'gcc'
+is_mingw = is_windows and cc.get_id() == 'gcc'
 
+if is_mingw and ff.get_id() != 'gcc'
+  error('If you are using GCC on Windows, you must also use GFortran! Detected ' + ff.get_id())
+endif
+
+if is_mingw
   # For mingw-w64, link statically against the UCRT.
   gcc_link_args = ['-lucrt', '-static']
-  if is_mingw
-    add_project_link_arguments(gcc_link_args, language: ['c'])
-    # Force gcc to float64 long doubles for compatibility with MSVC
-    # builds, for C only.
-    add_project_arguments('-mlong-double-64', language: 'c')
-    # Make fprintf("%zd") work (see https://github.com/rgommers/scipy/issues/118)
-    add_project_arguments('-D__USE_MINGW_ANSI_STDIO=1', language: ['c'])
-    # Manual add of MS_WIN64 macro when not using MSVC.
-    # https://bugs.python.org/issue28267
-    bitness = run_command('_build_utils/gcc_build_bitness.py', check: true).stdout().strip()
-    if bitness == '64'
-      add_project_arguments('-DMS_WIN64', language: ['c', 'fortran'])
-    endif
-    # Silence warnings emitted by PyOS_snprintf for (%zd), see
-    # https://github.com/rgommers/scipy/issues/118.
-    # Use as c_args for extensions containing Cython code
-    cython_c_args += ['-Wno-format-extra-args', '-Wno-format']
-  endif
-
-  # Using gfortran on windows
-  if ff.get_id() == 'gcc'
-    add_project_link_arguments(gcc_link_args, language: ['fortran'])
-    # Flag needed to work around BLAS and LAPACK Gfortran dependence on
-    # undocumented C feature when passing single character string
-    # arguments.
-    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90329
-    # https://github.com/wch/r-source/blob/838f9d5a7be08f2a8c08e47bcd28756f5d0aac90/src/gnuwin32/MkRules.rules#L121
-    add_project_arguments('-fno-optimize-sibling-calls', language: ['fortran'])
-  endif
-
-  # Deal with M_PI & friends; add `use_math_defines` to c_args or cpp_args
-  # Cython doesn't always get this right itself (see, e.g., gh-16800), so
-  # explicitly add the define as a compiler flag for Cython-generated code.
-  use_math_defines = ['-D_USE_MATH_DEFINES']
+  add_project_link_arguments(gcc_link_args, language: ['c', 'cpp', 'fortran'])
+  # Force gcc to float64 long doubles for compatibility with MSVC
+  # builds, for C only.
+  add_project_arguments('-mlong-double-64', language: 'c')
+  # Make fprintf("%zd") work (see https://github.com/rgommers/scipy/issues/118)
+  add_project_arguments('-D__USE_MINGW_ANSI_STDIO=1', language: ['c', 'cpp'])
+  # Silence warnings emitted by PyOS_snprintf for (%zd), see
+  # https://github.com/rgommers/scipy/issues/118.
+  # Use as c_args for extensions containing Cython code
+  cython_c_args += ['-Wno-format-extra-args', '-Wno-format']
+  # Flag needed to work around BLAS and LAPACK Gfortran dependence on
+  # undocumented C feature when passing single character string arguments. See:
+  #   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90329
+  #   https://github.com/wch/r-source/blob/838f9d5a7be08f2a8c08e47bcd28756f5d0aac90/src/gnuwin32/MkRules.rules#L121
+  add_project_arguments('-fno-optimize-sibling-calls', language: ['fortran'])
 elif is_macos
   cython_c_link_args += [
     Wlno_compact_unwind,
     Wlno_fixup_chains
   ]
-else
-  use_math_defines = []
 endif
 ###
 
@@ -164,13 +169,28 @@ lapack_name = get_option('lapack')
 # pkg-config uses a lower-case name while CMake uses a capitalized name, so try
 # that too to make the fallback detection with CMake work
 if blas_name == 'openblas'
-  blas_name = ['openblas', 'OpenBLAS']
+  blas = dependency(['openblas', 'OpenBLAS'])
+else
+  blas = dependency(blas_name)
 endif
+if blas_name == 'blas'
+  # Netlib BLAS has a separate `libcblas.so` which we use directly in the g77
+  # ABI wrappers, so detect it and error out if we cannot find it.
+  # In the future, this should be done automatically for:
+  #   `dependency('blas', modules: cblas)`
+  # see https://github.com/mesonbuild/meson/pull/10921.
+  cblas = dependency('cblas')
+else
+  cblas = []
+endif
+
 if lapack_name == 'openblas'
-  lapack_name = ['openblas', 'OpenBLAS']
+  lapack = dependency(['openblas', 'OpenBLAS'])
+else
+  lapack = dependency(lapack_name)
 endif
-blas = dependency(blas_name)
-lapack = dependency(lapack_name)
+
+
 ###
 
 #### Dependencies Information

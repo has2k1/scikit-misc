@@ -142,7 +142,7 @@ jobs:
         if: ${{ runner.os == 'Windows' && env.IS_64_BIT == 'true' }}
         run: |
           # mingw-w64
-          choco install rtools --no-progress
+          choco install rtools -y --no-progress --force --version=4.0.0.20220206
           echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
 
 #      - name: win32 - configure mingw for 32-bit builds

@@ -37,6 +37,8 @@
 
 5. Update
     - .github/workflows/build-wheels.yml
+      * Things to lookout for
+        - rtools version. compare with scipy/.github/workflows/wheels.yml
 
 6. Update
     - meson_options.txt

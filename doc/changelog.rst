@@ -1,14 +1,14 @@
 Changelog
 =========
 
-v0.2.1
---------
+v0.3.0
+------
 *not-released-yet*
 
 - Added support for pickling :class:`~skmisc.loess.loess` objects.
 
 v0.2.0
---------
+------
 *(2023-04-15)*
 
 - Requires numpy>=1.19.5

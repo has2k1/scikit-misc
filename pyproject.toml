@@ -3,7 +3,7 @@
 name = "scikit-misc"
 description = "Miscellaneous tools for scientific computing."
 license = {file = "LICENSE"}
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
   {name = "Hassan Kibirige", email = "has2k1@gmail.com"},
 ]
@@ -22,7 +22,6 @@ classifiers = [
     "Programming Language :: C",
     "Programming Language :: Fortran",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -52,8 +51,8 @@ changelog = "https://has2k1.github.io/scikit-misc/stable/changelog.html"
 [build-system]
 build-backend = 'mesonpy'
 requires = [
-    "meson-python>=0.9.0",
-    "Cython>=0.29.32",
+    "meson-python>=0.12.1",
+    "Cython>=0.29.35",
     "setuptools",
     "wheel",
 
@@ -63,26 +62,11 @@ requires = [
     # update minimum version to match our install_requires min version
     # ----------------------------------------------------------------
 
-    # skmisc supports 3.8
-    "numpy==1.22.3; python_version=='3.8'",
-
     # now matches minimum supported version, keep here as separate requirement
     # to be able to sync more easily with oldest-supported-numpy
-    # loongarch64 requires numpy>=1.22.0
-    "numpy==1.22.0; platform_machine=='loongarch64'",
-
-    # On Windows we need to avoid 1.21.6, 1.22.0 and 1.22.1 because they were
-    # built with vc142. 1.22.3 is the first version that has 32-bit Windows
-    # wheels *and* was built with vc141. So use that:
-    "numpy==1.22.3; python_version=='3.9' and platform_system=='Windows' and platform_python_implementation != 'PyPy'",
-    "numpy==1.22.3; python_version=='3.10' and platform_system=='Windows' and platform_python_implementation != 'PyPy'",
 
     # default numpy requirements
-    "numpy==1.21.6; python_version=='3.9' and (platform_system!='Windows' and platform_machine!='loongarch64') and platform_python_implementation != 'PyPy'",
-    # Note that 1.21.3 was the first version with a complete set of 3.10 wheels,
-    # however macOS was broken and it's safe C API/ABI-wise to build against 1.21.6
-    # (see oldest-supported-numpy issues gh-28 and gh-45)
-    "numpy==1.21.6; python_version=='3.10' and (platform_system!='Windows' and platform_machine!='loongarch64') and platform_python_implementation != 'PyPy'",
+    "numpy==1.22.4; python_version<='3.10' and platform_python_implementation != 'PyPy'",
     "numpy==1.23.2; python_version=='3.11' and platform_python_implementation != 'PyPy'",
 
     # For Python versions which aren't yet officially supported,
@@ -146,7 +130,6 @@ before-build = "bash {project}/tools/wheels/cibw_before_build_linux.sh {project}
 
 [tool.cibuildwheel.macos]
 before-build = "bash {project}/tools/wheels/cibw_before_build_macos.sh {project}"
-test-skip = "cp38-macosx_arm64"
 
 [tool.cibuildwheel.windows]
 before-build = "bash {project}/tools/wheels/cibw_before_build_win.sh {project}"

@@ -10,7 +10,6 @@
     - tools/wheels/check_license.py
       %s/scipy binary/scikit-misc binary/
       %s/default="scipy"/default="skmisc"/
-    - tools/wheels/cibw_before_all_cp38_macosx_arm64.sh
     - tools/wheels/cibw_before_build_linux.sh
     - tools/wheels/cibw_before_build_macos.sh
     - tools/wheels/cibw_before_build_win.sh

@@ -7,6 +7,7 @@
 #    - https://github.com/cython/cython/issues/2498
 #    - https://github.com/scipy/scipy/pull/10840#issuecomment-549939230
 
+import cython
 import numpy as np
 cimport numpy as np
 from numpy cimport (
@@ -801,6 +802,19 @@ cdef class loess_prediction:
                 ]
         return '\n'.join(strg)
 
+def _new_loess(init_arguments, fit):
+    """
+    Create the loess object from initial arguments
+
+    Used for pickling
+    """
+    # Generate the object from the initialising arguments
+    # Run the fit method if it was run before
+    l = loess(**init_arguments)
+    if fit:
+        l.fit()
+    return l
+
 
 cdef class loess:
     """
@@ -845,6 +859,13 @@ cdef class loess:
         Object that holds the output values and parameters.
         These should be read after :meth:`loess.fit` has been
         called.
+
+    Note
+    ----
+    Loess smoothing creates large state, so pickling a fitted loess
+    object does not save the state. It saves the `__init__` parameters
+    from which the state is recreated (refitting) when unpickled. So
+    pickling and unpickling does not save on computation time.
     """
     cdef c_loess.c_loess _base
     cdef readonly loess_inputs inputs
@@ -853,7 +874,14 @@ cdef class loess:
     cdef readonly loess_kd_tree kd_tree
     cdef readonly loess_outputs outputs
 
+    # save all the arguments to enable pickling
+    cdef object _init_arguments
+
     def __init__(self, object x, object y, object weights=None, **options):
+        self._init_arguments = {
+            "x": x, "y": y, "weights": weights, **options
+        }
+
         # Process options
         model_options = {}
         control_options= {}
@@ -949,6 +977,10 @@ cdef class loess:
 
         return loess_prediction(newdata, self, stderror)
 
+    # Pickling support
+    @cython.final
+    def __reduce__(self):
+        return (_new_loess, (self._init_arguments, self.outputs.activated))
 
 cdef class loess_anova:
     """

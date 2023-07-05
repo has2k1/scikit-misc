@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.2.1
+--------
+*not-released-yet*
+
+- Added support for pickling :class:`~skmisc.loess.loess` objects.
+
 v0.2.0
 --------
 *(2023-04-15)*

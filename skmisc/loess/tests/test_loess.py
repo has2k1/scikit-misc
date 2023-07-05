@@ -1,4 +1,6 @@
-import os
+import pickle
+import tempfile
+from pathlib import Path
 
 import pytest
 import numpy as np
@@ -6,12 +8,12 @@ import numpy.testing as npt
 
 from skmisc.loess import loess, loess_anova
 
-data_path = os.path.dirname(os.path.abspath(__file__))
+data_path = Path(__file__).parent
 
 
 def madeup_data():
-    dfile = os.path.join(data_path, 'madeup_data')
-    rfile = os.path.join(data_path, 'madeup_result')
+    dfile = data_path / 'madeup_data'
+    rfile = data_path / 'madeup_result'
 
     with open(dfile, 'r') as f:
         f.readline()
@@ -49,7 +51,7 @@ def gas_data():
                         1.0376667, 1.1308333, 1.2240000])
     alpha = 0.01
 
-    rfile = os.path.join(data_path, 'gas_result')
+    rfile = data_path / 'gas_result'
     results = []
     with open(rfile, 'r') as f:
         for i in range(8):
@@ -262,3 +264,21 @@ class TestLoessGas(object):
 
         # But this one should not ..........
         gas.predict(gas_fit_E, stderror=False)
+
+    def test_pickling(self):
+        rs = np.random.RandomState(seed=123)
+        n = 500
+        x1 = np.arange(n)
+        x = np.linspace(0, 500, n)
+        y = rs.randint(1, 1000, n)
+        lo = loess(y, x, span=0.3)
+        lo.fit()
+
+        # pickle lo, unpickle it as lo2 and compare
+        # predictions from both
+        with tempfile.TemporaryFile() as f:
+            pickle.dump(lo, f)
+            f.seek(0)
+            lo2 = pickle.load(f)
+
+        npt.assert_array_equal(lo.predict(x).values, lo2.predict(x).values)

@@ -3,7 +3,7 @@ Changelog
 
 v0.3.0
 ------
-*not-released-yet*
+*(2023-07-06)*
 
 - Added support for pickling :class:`~skmisc.loess.loess` objects.
 

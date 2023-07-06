@@ -7,6 +7,7 @@ import click
 from spin import util
 from spin.cmds import meson
 
+
 @click.command()
 @click.option(
     "--build-dir",

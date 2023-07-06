@@ -69,7 +69,7 @@ requires = [
     "numpy==1.22.4; python_version<='3.10' and platform_python_implementation != 'PyPy'",
     "numpy==1.23.2; python_version=='3.11' and platform_python_implementation != 'PyPy'",
 
-    # For Python versions which aren't yet officially supported,
+   # For Python versions which aren't yet officially supported,
     # we specify an unpinned NumPy which allows source distributions
     # to be used and allows wheels to be used as soon as they
     # become available.
@@ -95,6 +95,27 @@ omit = [
     "skmisc/__config__.py",
 ]
 
+########## Tool - Ruff ##########
+[tool.ruff]
+line-length = 79
+select = ["E", "F", "C"]
+ignore = [
+    "E741",  # Ambiguous l
+    "E743",  # Ambiguous I
+    "C901",  # Too complex
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "I"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+]
+
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 ########## Tool - Spin ##########
 [tool.spin]
 package = "skmisc"

@@ -48,10 +48,16 @@ For more see references [1]_ [2]_ and [3]_.
    Scatterplots. Journal of the American Statistical Association, 74:
    pp. 829--836. 1979.
 """
-from ._loess import (loess, loess_model, loess_inputs, loess_control,
-                     loess_outputs, loess_prediction,
-                     loess_confidence_intervals, loess_anova)
-
+from ._loess import (
+    loess,
+    loess_anova,
+    loess_confidence_intervals,
+    loess_control,
+    loess_inputs,
+    loess_model,
+    loess_outputs,
+    loess_prediction,
+)
 
 __all__ = ['loess', 'loess_model', 'loess_control', 'loess_inputs',
            'loess_model', 'loess_outputs', 'loess_prediction',

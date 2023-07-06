@@ -5,8 +5,7 @@ import os
 import re
 import shlex
 from pathlib import Path
-from subprocess import Popen, PIPE
-
+from subprocess import PIPE, Popen
 from typing import Sequence
 
 DEFAULT_DESCRIBE = [
@@ -42,6 +41,7 @@ VERSION_LINE_PATTERN = re.compile(
 )
 
 NULL_VERSION = "0.0.0"
+
 
 def run(cmd: str | Sequence[str]) -> str:
     if isinstance(cmd, str) and os.name == "posix":

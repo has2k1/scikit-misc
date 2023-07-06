@@ -1,17 +1,16 @@
 import glob
 import os
 import platform
-import sysconfig
-import sys
 import shutil
+import sys
+import sysconfig
 import tarfile
 import textwrap
 import time
 import zipfile
-
-from tempfile import mkstemp, gettempdir
-from urllib.request import urlopen, Request
+from tempfile import gettempdir, mkstemp
 from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 OPENBLAS_V = '0.3.21.dev'
 OPENBLAS_LONG = 'v0.3.20-571-g3dec11c6'
@@ -329,8 +328,9 @@ def test_version(expected_version, ilp64=get_ilp64()):
     actually available via scikit-misc
     """
 
-    import skmisc.loess
     import ctypes
+
+    import skmisc.loess
 
     dll = ctypes.CDLL(skmisc.loess._loess.__file__)
     if ilp64 == "64_":

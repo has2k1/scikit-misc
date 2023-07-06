@@ -2,9 +2,9 @@ import pickle
 import tempfile
 from pathlib import Path
 
-import pytest
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from skmisc.loess import loess, loess_anova
 
@@ -268,7 +268,7 @@ class TestLoessGas(object):
     def test_pickling(self):
         rs = np.random.RandomState(seed=123)
         n = 500
-        x1 = np.arange(n)
+        np.arange(n)
         x = np.linspace(0, 500, n)
         y = rs.randint(1, 1000, n)
         lo = loess(y, x, span=0.3)

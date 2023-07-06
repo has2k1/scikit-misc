@@ -4,8 +4,7 @@ from __future__ import annotations
 import os
 import re
 import shlex
-from subprocess import Popen, PIPE
-
+from subprocess import PIPE, Popen
 from typing import Sequence
 
 # https://docs.github.com/en/actions/learn-github-actions/variables

@@ -15,6 +15,7 @@ help:
 	@echo "dist - package"
 	@echo "install - install the package to the active Python's site-packages"
 	@echo "develop - install the package in development mode"
+	@echo "update - Upgrade installed python packages and linting tools"
 
 clean: clean-build clean-pyc clean-test
 
@@ -38,8 +39,17 @@ clean-test:
 	rm -f coverage.xml
 	rm -fr htmlcov/
 
-lint:
-	flake8 skmisc --exclude=skmisc/__config__.py
+ruff:
+	ruff . $(args)
+
+ruff-isort:
+	ruff --select I001 --quiet . $(args)
+
+
+lint: ruff ruff-isort
+
+lint-fix:
+	make lint args="--fix"
 
 build:
 	./spin build
@@ -64,3 +74,7 @@ dist: clean sdist wheel
 
 develop: build
 	pip install --no-build-isolation .
+
+update:
+	pip list --outdated | cut -d ' ' -f1 | xargs -n1 pip install -U
+	pre-commit autoupdate

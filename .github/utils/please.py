@@ -12,14 +12,12 @@
 #   GITHUB_REF_NAME="v0.2.0a1" GITHUB_REF_TYPE="tag" ./can_i.py build
 #   GITHUB_REF_NAME="v0.2.0" GITHUB_REF_TYPE="tag" ./can_i.py release
 
+import os
 import re
 import sys
-import os
-
 from typing import Callable, TypeAlias
 
 from _repo import Git
-
 
 Ask: TypeAlias = Callable[[], bool]
 Do: TypeAlias = Callable[[], str]

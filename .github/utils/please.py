@@ -172,8 +172,11 @@ def can_build() -> bool:
     """
     Return True if wheels should be built
     """
+    tag = get_build_tag()
     return (
         is_wheel_build() or
+        is_release_tag(tag) or
+        is_pre_release_tag(tag) or
         os.environ.get("GITHUB_EVENT_NAME") == "schedule" or
         os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
     )
@@ -187,7 +190,6 @@ def can_release() -> bool:
     return (
         bool(tag) and
         Git.is_annotated(tag) and
-        can_build() and
         is_release_tag(tag) and
         is_release_tag_message_ok(tag)
     )
@@ -201,7 +203,6 @@ def can_pre_release() -> bool:
     return (
         bool(tag) and
         Git.is_annotated(tag) and
-        can_build() and
         is_pre_release_tag(tag) and
         is_release_tag_message_ok(tag)
     )

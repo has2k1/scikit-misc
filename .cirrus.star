@@ -13,6 +13,12 @@ BUILD_PATTERN = re.compile(
     r"\[wheel build(: (?P<build_ref>.+?))?\]"
 )
 
+# This may match false postives but it is good enough.
+# Bad matches will be caught in the python check
+SEMVER_TAG_PATTERN = re.compile(
+    r"^v\d+\.\d+\.\d+((a|b|rc)\d+)?$"
+)
+
 def main(ctx):
     ######################################################################
     # Should wheels be built?
@@ -32,6 +38,7 @@ def main(ctx):
     url = "https://api.github.com/repos/has2k1/scikit-misc/git/commits/" + SHA
     dct = http.get(url).json()
     message = dct["message"]
+    tag = env.get("CIRRUS_TAG")
 
     # this configuration runs a single linux_aarch64 + macosx_arm64 run.
     # there's no need to do this during a wheel run as they automatically build
@@ -40,6 +47,7 @@ def main(ctx):
         return []
 
     m = BUILD_PATTERN.search(message)
-    if not m:
+    m2 = SEMVER_TAG_PATTERN.match(tag) if tag else None
+    if not m and not m2:
         return []
     return fs.read("ci/cirrus_wheels.yml")

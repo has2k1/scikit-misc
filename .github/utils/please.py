@@ -58,7 +58,7 @@ def get_build_ref() -> str:
     """
     Get reference to the commit that will be built
     """
-    m = BUILD_PATTERN.search(Git.commit_subject())
+    m = BUILD_PATTERN.search(Git.commit_message())
     if m and "build_ref" in m.groupdict():
         build_ref = m.group("build_ref")
         return build_ref

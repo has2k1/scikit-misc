@@ -2,8 +2,10 @@ name: build
 
 on:
   push:
-    branches:
-      - "!wheels"
+    branches-ignore:
+      - wheels
+    tags:
+      - v*
   pull_request:
 
 env:

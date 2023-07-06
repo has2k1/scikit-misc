@@ -29,16 +29,37 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = [
-  "pytest-cov",
+all = [
+    "scikit-misc[doc]",
+    "scikit-misc[build]",
+    "scikit-misc[lint]",
+    "scikit-misc[test]",
+    "scikit-misc[dev]",
 ]
+
 doc = [
-  "numydoc",
-  "sphinx",
+    "numydoc",
+    "sphinx",
 ]
+
+build = [
+    "build",
+    "spin",
+    "meson",
+    "meson-python"
+]
+
+lint = [
+    "ruff",
+]
+
+test = [
+    "pytest-cov",
+]
+
 dev = [
-  "wheel",
-  "twine"
+    "wheel",
+    "twine",
 ]
 
 [project.urls]

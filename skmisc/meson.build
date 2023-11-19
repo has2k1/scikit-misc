@@ -169,7 +169,9 @@ lapack_name = get_option('lapack')
 # pkg-config uses a lower-case name while CMake uses a capitalized name, so try
 # that too to make the fallback detection with CMake work
 if blas_name == 'openblas'
-  blas = dependency(['openblas', 'OpenBLAS'])
+  # openblas.pc renamed to openblas64.pc in v0.3.22
+  # https://github.com/OpenMathLib/OpenBLAS/issues/3790
+  blas = dependency(['openblas64', 'openblas', 'OpenBLAS'])
 else
   blas = dependency(blas_name)
 endif
@@ -185,7 +187,7 @@ else
 endif
 
 if lapack_name == 'openblas'
-  lapack = dependency(['openblas', 'OpenBLAS'])
+  lapack = dependency(['openblas64', 'openblas', 'OpenBLAS'])
 else
   lapack = dependency(lapack_name)
 endif

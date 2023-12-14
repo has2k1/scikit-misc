@@ -81,6 +81,7 @@ Wno_empty_body = cc.get_supported_arguments('-Wno-empty-body')
 Wno_implicit_function_declaration = cc.get_supported_arguments('-Wno-implicit-function-declaration')
 Wno_parentheses = cc.get_supported_arguments('-Wno-parentheses')
 Wno_switch = cc.get_supported_arguments('-Wno-switch')
+Wno_unused_result = cc.get_supported_arguments('-Wno-unused-result')
 Wno_unused_label = cc.get_supported_arguments('-Wno-unused-label')
 Wno_unused_variable = cc.get_supported_arguments('-Wno-unused-variable')
 

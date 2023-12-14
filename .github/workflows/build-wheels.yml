@@ -11,13 +11,13 @@
 name: Wheel Builder
 on:
   schedule:
-  #        ┌───────────── minute (0 - 59)
-  #        │  ┌───────────── hour (0 - 23)
-  #        │  │ ┌───────────── day of the month (1 - 31)
-  #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
-  #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
-  #        │  │ │ │ │
-  - cron: "0  0 * * 6"
+    #        ┌───────────── minute (0 - 59)
+    #        │  ┌───────────── hour (0 - 23)
+    #        │  │ ┌───────────── day of the month (1 - 31)
+    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        │  │ │ │ │
+    - cron: "0  0 * * 6"
   push:
     tags:
       - v*
@@ -153,7 +153,7 @@ jobs:
           echo "_PYTHON_HOST_PLATFORM=macosx-10.9-x86_64" >> $GITHUB_ENV
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.12.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
@@ -284,7 +284,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install Release Requirements
         run: |

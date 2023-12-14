@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>skmisc.loess.loess_outputs &#8212; scikit-misc 0.3.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=4468db6d" />
+    <script src="../_static/documentation_options.js?v=4621528c"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/copybutton.js?v=81dc062b"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="skmisc.loess.loess_prediction" href="skmisc.loess.loess_prediction.html" />
+    <link rel="prev" title="skmisc.loess.loess_control" href="skmisc.loess.loess_control.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          scikit-misc</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../loess.html">Locally-weighted regression (<code class="xref py py-mod docutils literal notranslate"><span class="pre">skmisc.loess</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-3-1">v0.3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-3-0">v0.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-2-0">v0.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-4">v0.1.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-3">v0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-2">v0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-1">v0.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html#v0-1-0">v0.1.0</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">skmisc.loess.loess_outputs</a><ul>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs"><code class="docutils literal notranslate"><span class="pre">loess_outputs</span></code></a><ul>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.diagonal"><code class="docutils literal notranslate"><span class="pre">loess_outputs.diagonal</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.divisor"><code class="docutils literal notranslate"><span class="pre">loess_outputs.divisor</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.enp"><code class="docutils literal notranslate"><span class="pre">loess_outputs.enp</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.fitted_residuals"><code class="docutils literal notranslate"><span class="pre">loess_outputs.fitted_residuals</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.fitted_values"><code class="docutils literal notranslate"><span class="pre">loess_outputs.fitted_values</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.one_delta"><code class="docutils literal notranslate"><span class="pre">loess_outputs.one_delta</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.pseudovalues"><code class="docutils literal notranslate"><span class="pre">loess_outputs.pseudovalues</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.residual_scale"><code class="docutils literal notranslate"><span class="pre">loess_outputs.residual_scale</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.robust"><code class="docutils literal notranslate"><span class="pre">loess_outputs.robust</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.trace_hat"><code class="docutils literal notranslate"><span class="pre">loess_outputs.trace_hat</span></code></a></li>
+<li><a class="reference internal" href="#skmisc.loess.loess_outputs.two_delta"><code class="docutils literal notranslate"><span class="pre">loess_outputs.two_delta</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <section id="skmisc-loess-loess-outputs">
+<h1>skmisc.loess.loess_outputs<a class="headerlink" href="#skmisc-loess-loess-outputs" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">skmisc.loess.</span></span><span class="sig-name descname"><span class="pre">loess_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#skmisc.loess.loess_outputs" title="Link to this definition">¶</a></dt>
+<dd><p>Class of a loess fit outputs</p>
+<p>This object is automatically created with empty values when a
+new loess object is instantiated. The object gets filled when the
+loess.fit() method is called.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>n</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of independent observation</p>
+</dd>
+<dt><strong>p</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of variables</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.diagonal">
+<span class="sig-name descname"><span class="pre">diagonal</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.diagonal" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Diagonal of the operator hat matrix,
+shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.divisor">
+<span class="sig-name descname"><span class="pre">divisor</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.divisor" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Normalization divisors for numeric
+predictors, shape <code class="docutils literal notranslate"><span class="pre">(p,)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.enp">
+<span class="sig-name descname"><span class="pre">enp</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.enp" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Equivalent number of parameters</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.fitted_residuals">
+<span class="sig-name descname"><span class="pre">fitted_residuals</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.fitted_residuals" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Fitted residuals, shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code>,
+(observations - fitted values)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.fitted_values">
+<span class="sig-name descname"><span class="pre">fitted_values</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.fitted_values" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Fitted values, shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.one_delta">
+<span class="sig-name descname"><span class="pre">one_delta</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.one_delta" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Statistical parameter used in the computation
+of standard errors</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.pseudovalues">
+<span class="sig-name descname"><span class="pre">pseudovalues</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.pseudovalues" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Adjusted values of the response
+when robust estimation is used, shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.residual_scale">
+<span class="sig-name descname"><span class="pre">residual_scale</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.residual_scale" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Estimate of the scale of residuals</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.robust">
+<span class="sig-name descname"><span class="pre">robust</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.robust" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> - Robustness weights for robust fitting,
+shape <code class="docutils literal notranslate"><span class="pre">(n,)</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.trace_hat">
+<span class="sig-name descname"><span class="pre">trace_hat</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.trace_hat" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Trace of the operator hat matrix</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="skmisc.loess.loess_outputs.two_delta">
+<span class="sig-name descname"><span class="pre">two_delta</span></span><a class="headerlink" href="#skmisc.loess.loess_outputs.two_delta" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> - Statistical parameter used in the computation
+of standard errors</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/generated/skmisc.loess.loess_outputs.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2023, Hassan Kibirige.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.2.6.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

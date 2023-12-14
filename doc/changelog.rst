@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.3.1
+------
+*(2023-12-14)*
+
+- Include tools/ in the source distribution
+
 v0.3.0
 ------
 *(2023-07-06)*

@@ -59,7 +59,7 @@ build_macosx_arm64_wheels_task:
     image: ghcr.io/cirruslabs/macos-monterey-xcode:14
   matrix:
     - env:
-        CIBW_BUILD: cp39-* cp310-* cp311-*
+        CIBW_BUILD: cp39-* cp310-* cp311-* cp312-*
   env:
     PATH: /opt/homebrew/opt/python@3.10/bin:$PATH
     CIBW_ENVIRONMENT: MACOSX_DEPLOYMENT_TARGET=12.0 _PYTHON_HOST_PLATFORM="macosx-12.0-arm64"
@@ -86,7 +86,7 @@ build_macosx_arm64_wheels_task:
     clang --version
 
   install_cibuildwheel_script:
-    - python -m pip install cibuildwheel==2.12.1
+    - python -m pip install cibuildwheel==2.16.2
   cibuildwheel_script:
     - cibuildwheel
   wheels_artifacts:

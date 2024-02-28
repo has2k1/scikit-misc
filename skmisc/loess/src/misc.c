@@ -7,7 +7,7 @@
 
 void *safe_malloc(size_t n, unsigned long line)
 {
-    void *p = malloc(n);
+    void *p = calloc(n, 1);
 
     if (!p) {
         fprintf(stderr, "[%s:%lu] Out of memory (%lu bytes)\n",

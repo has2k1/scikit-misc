@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v0.4.0
+------
+*(not-yet-released)*
+
+- Dropped support for python==3.9
+- Made compatible with numpy 2.0
+- Include tools/ in the source distribution
+
 v0.3.1
 ------
 *(2023-12-14)*

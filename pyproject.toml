@@ -47,7 +47,8 @@ build = [
     "build",
     "spin",
     "meson",
-    "meson-python"
+    "meson-python",
+    "ninja",
 ]
 
 lint = [

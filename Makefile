@@ -40,7 +40,7 @@ clean-test:
 	rm -fr htmlcov/
 
 ruff:
-	ruff . $(args)
+	ruff check . $(args)
 
 ruff-isort:
 	ruff --select I001 --quiet . $(args)

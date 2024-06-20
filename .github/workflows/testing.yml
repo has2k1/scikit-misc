@@ -50,14 +50,15 @@ jobs:
       - name: Install Python Packages
         shell: bash -l {0}
         run: |
-          pip install -r requirements/build.txt
+          pip install uv
+          uv pip install ".[build,test]"
 
       - name: Environment Information
         shell: bash -l {0}
         run: |
           git describe
           ls -la
-          pip list
+          uv pip list
 
       - name: Build Package
         shell: bash -l {0}
@@ -120,11 +121,13 @@ jobs:
 
       - name: Install Packages
         shell: bash -l {0}
-        run: pip install ruff
+        run: |
+          pip install uv
+          uv pip install ruff
 
       - name: Environment Information
         shell: bash -l {0}
-        run: pip list
+        run: uv pip list
 
       - name: Run Tests
         shell: bash -l {0}
@@ -178,17 +181,12 @@ jobs:
       - name: Install Python Packages
         shell: bash -l {0}
         run: |
-          pip install -r requirements/build.txt
-          pip install numpydoc sphinx sphinx_rtd_theme
-
-      - name: Build Package
-        shell: bash -l {0}
-        run: |
-          make develop
+          pip install uv
+          uv pip install -e ".[build, doc]"
 
       - name: Environment Information
         shell: bash -l {0}
-        run: pip list
+        run: uv pip list
 
       - name: Build Documentation
         shell: bash -l {0}

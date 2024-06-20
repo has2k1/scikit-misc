@@ -10,7 +10,7 @@ authors = [
 dynamic = ['version']
 readme = "README.rst"
 dependencies = [
-    "numpy>=1.22.3",
+    "numpy>=1.23.5",
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -39,11 +39,12 @@ all = [
 ]
 
 doc = [
-    "numydoc",
+    "numpydoc",
     "sphinx",
 ]
 
 build = [
+    "cython",
     "build",
     "spin",
     "meson",
@@ -73,24 +74,16 @@ changelog = "https://has2k1.github.io/scikit-misc/stable/changelog.html"
 [build-system]
 build-backend = 'mesonpy'
 requires = [
-    "meson-python>=0.12.1",
-    "Cython>=0.29.35,!=3.0.3",  # when updating version, also update check in meson.build
+    "meson-python>=0.15.0",
+    "Cython>=3.0.8",  # when updating version, also update check in meson.build
     "setuptools",
     "wheel",
 
-    # https://github.com/scipy/scipy/blob/main/pyproject.toml
     # NumPy dependencies - to update these, sync from
-    # https://github.com/scipy/oldest-supported-numpy/, and then
-    # update minimum version to match our install_requires min version
-    # ----------------------------------------------------------------
-
-    # now matches minimum supported version, keep here as separate requirement
-    # to be able to sync more easily with oldest-supported-numpy
-
-    # default numpy requirements
-    "numpy==1.22.4; python_version<='3.10' and platform_python_implementation != 'PyPy'",
-    "numpy==1.23.2; python_version=='3.11' and platform_python_implementation != 'PyPy'",
-    "numpy>=1.26.0,<1.27; python_version=='3.12'",
+    # https://github.com/scipy/scipy/blob/main/pyproject.toml
+    # building against 2.x yields wheels that are also compatible with
+    # numpy 1.x at runtime.
+    "numpy>=2.0",
 ]
 
 

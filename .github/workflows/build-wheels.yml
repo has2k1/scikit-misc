@@ -220,7 +220,7 @@ jobs:
       - name: Install requirements
         run:
           pip install uv
-          uv pip install ".[build]"
+          uv pip install --system ".[build]"
 
       - name: Create Source Distribution
         run: |
@@ -254,7 +254,7 @@ jobs:
       - name: Install Release Requirements
         run: |
           pip install uv
-          uv pip install twine
+          uv pip install --system twine
 
       - name: Download wheels
         uses: actions/download-artifact@v3

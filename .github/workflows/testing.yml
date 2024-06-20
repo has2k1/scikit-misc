@@ -26,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9, "3.10", 3.11, 3.12]
+        python-version: ["3.10", 3.11, 3.12]
 
     steps:
       - name: Checkout Code
@@ -37,7 +37,7 @@ jobs:
           python .github/utils/deepen-shallow-repo.py
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -103,21 +103,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-
-      # Ref: https://docs.github.com/en/free-pro-team@latest/actions/guides/building-and-testing-python#caching-dependencies
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          # This path is specific to Ubuntu
-          path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
 
       - name: Install Packages
         shell: bash -l {0}
@@ -156,7 +144,7 @@ jobs:
           python .github/utils/deepen-shallow-repo.py
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 

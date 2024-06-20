@@ -56,7 +56,7 @@ jobs:
       - name: Environment Information
         shell: bash
         run: |
-          git describe
+          git describe --tags
           ls -la
           uv pip list
 

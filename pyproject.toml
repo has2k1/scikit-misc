@@ -107,6 +107,8 @@ omit = [
 ########## Tool - Ruff ##########
 [tool.ruff]
 line-length = 79
+
+[tool.ruff.lint]
 select = ["E", "F", "C"]
 ignore = [
     "E741",  # Ambiguous l

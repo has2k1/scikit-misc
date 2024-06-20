@@ -35,7 +35,12 @@ print(incdir)
   check: true
 ).stdout().strip()
 inc_np = include_directories(incdir_numpy)
-np_dep = declare_dependency(include_directories: inc_np)
+
+# Don't use the deprecated NumPy C API. Define this to a fixed version instead of
+# NPY_API_VERSION in order not to break compilation for released SciPy versions
+# when NumPy introduces a new deprecation.
+numpy_nodepr_api = ['-DNPY_NO_DEPRECATED_API=NPY_1_9_API_VERSION']
+np_dep = declare_dependency(include_directories: inc_np, compile_args: numpy_nodepr_api)
 
 # We do need an absolute path to feed to `cc.find_library` below
 _incdir_numpy_abs = run_command(py,
@@ -47,17 +52,6 @@ npymath_path = _incdir_numpy_abs / '..' / 'lib'
 npyrandom_path = _incdir_numpy_abs / '..' / '..' / 'random' / 'lib'
 npymath_lib = cc.find_library('npymath', dirs: npymath_path)
 npyrandom_lib = cc.find_library('npyrandom', dirs: npyrandom_path)
-
-# Don't use the deprecated NumPy C API. Define this to a fixed version instead of
-# NPY_API_VERSION in order not to break compilation for released SciPy versions
-# when NumPy introduces a new deprecation. Use in a meson.build file
-#
-#   py.extension_module('_name',
-#     'source_fname',
-#     numpy_nodepr_api)
-
-# numpy_nodepr_api = '-DNPY_NO_DEPRECATED_API=NPY_1_9_API_VERSION'
-numpy_nodepr_api = '-DNPY_NO_DEPRECATED_API=1'
 ###
 
 #### Check Supported Compiler Flags

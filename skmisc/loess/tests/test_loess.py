@@ -19,11 +19,11 @@ def madeup_data():
         f.readline()
         x = np.fromiter(
             (float(v) for v in f.readline().rstrip().split()),
-            np.float_).reshape(-1, 2)
+            np.float64).reshape(-1, 2)
         f.readline()
         y = np.fromiter(
             (float(v) for v in f.readline().rstrip().split()),
-            np.float_)
+            np.float64)
 
     results = []
     with open(rfile, 'r') as f:
@@ -31,7 +31,7 @@ def madeup_data():
             f.readline()
             z = np.fromiter(
                 (float(v) for v in f.readline().rstrip().split()),
-                np.float_)
+                np.float64)
             results.append(z)
 
     newdata1 = np.array([[-2.5, 0.], [2.5, 0.], [0., 0.]])
@@ -58,7 +58,7 @@ def gas_data():
             f.readline()
             z = np.fromiter(
                 (float(v) for v in f.readline().rstrip().split()),
-                np.float_)
+                np.float64)
             results.append(z)
     return (E, NOx, gas_fit_E, newdata, alpha, results)
 

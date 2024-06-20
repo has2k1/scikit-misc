@@ -76,10 +76,8 @@ cdef class loess_inputs:
         # if none was allocated prior to the error.
         self.allocated = False
 
-        x = np.array(x, copy=False, subok=True,
-                      dtype=np.float_, order='C')
-        y = np.array(y, copy=False, subok=True,
-                      dtype=np.float_, order='C')
+        x = np.asarray(x, dtype=np.float64, order='C')
+        y = np.asarray(y, dtype=np.float64, order='C')
         n = len(x)
 
         # Check the dimensions
@@ -100,13 +98,12 @@ cdef class loess_inputs:
                              "observations.")
 
         if weights is None:
-            weights = np.ones((n,), dtype=np.float_)
+            weights = np.ones((n,), dtype=np.float64)
 
         if weights.ndim > 1 or weights.size != n:
             raise ValueError("Invalid size of the 'weights' vector!")
 
-        weights = np.array(weights, copy=False, subok=True,
-                           dtype=np.float_, order='C')
+        weights = np.asarray(weights, dtype=np.float64, order='C')
 
         # Python objects -> C structures -> *data in C structures
         _x = x.ravel()
@@ -417,8 +414,7 @@ cdef class loess_model:
                 "of booleans with length equal to the number "
                 "of independent variables")
 
-        p_ndr = np.atleast_1d(np.array(value, copy=False, subok=True,
-                                       dtype=bool))
+        p_ndr = np.atleast_1d(np.asarray(value, dtype=bool))
         for i in range(self.p):
             self._base.parametric[i] = p_ndr[i]
 
@@ -438,8 +434,7 @@ cdef class loess_model:
                 "of booleans with length equal to the number "
                 "of independent variables")
 
-        d_ndr = np.atleast_1d(np.array(value, copy=False,
-                                       subok=True, dtype=bool))
+        d_ndr = np.atleast_1d(np.asarray(value, dtype=bool))
         for i in range(self.p):
             self._base.drop_square[i] = d_ndr[i]
 
@@ -685,7 +680,7 @@ cdef class loess_prediction:
         self.allocated = False
 
         # Note : we need a copy as we may have to normalize
-        p_ndr = np.array(newdata, copy=True, subok=True, order='C')
+        p_ndr = np.asarray(newdata, copy=True, order='C')
         p_ndr = p_ndr.astype(float)
 
         # Dimensions should match those of the input

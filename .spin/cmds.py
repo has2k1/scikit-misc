@@ -34,7 +34,7 @@ def docs(build_dir, clean=False):
         print("No built scikit-misc found; run `./spin build` first.")
         sys.exit(1)
 
-    util.run(["uv", "pip", "install", "-q", "-r", "requirements/docs.txt"])
+    util.run(["pip", "install", "-q", "-r", "requirements/docs.txt"])
 
     PYTHONPATH = os.environ.get("PYTHONPATH", "")
     os.environ["SPHINXOPTS"] = "-W"

@@ -34,7 +34,7 @@ def docs(build_dir, clean=False):
         print("No built scikit-misc found; run `./spin build` first.")
         sys.exit(1)
 
-    util.run(["pip", "install", "-q", "-r", "requirements/docs.txt"])
+    util.run(["uv", "pip", "install", "-q", "-r", "requirements/docs.txt"])
 
     PYTHONPATH = os.environ.get("PYTHONPATH", "")
     os.environ["SPHINXOPTS"] = "-W"
@@ -90,7 +90,7 @@ def sdist():
     📦 Build a source distribution in `build/meson-dist/`.
     """
     # Using the build module gives better results than using
-    # meson directory. It creates an sdist with PKG-INFO
+    # meson directly. It creates an sdist with PKG-INFO
     util.run([
         "python",
         "-m",

@@ -73,8 +73,8 @@ dist: clean sdist wheel
 	python -m build
 
 develop: build
-	pip install --no-build-isolation .
+	uv pip install -e ".[all]"
 
 update:
-	pip list --outdated | cut -d ' ' -f1 | xargs -n1 pip install -U
+	uv pip list --outdated | cut -d ' ' -f1 | xargs -n1 pip install -U
 	pre-commit autoupdate

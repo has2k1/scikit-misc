@@ -170,7 +170,7 @@ jobs:
         shell: bash
         run: |
           pip install uv
-          uv pip install --system -e ".[build, doc]"
+          uv pip install --system ".[build, doc]"
 
       - name: Environment Information
         shell: bash

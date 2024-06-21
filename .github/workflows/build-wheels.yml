@@ -43,7 +43,7 @@ jobs:
       can_pre_release: ${{ steps.decide.outputs.can_pre_release }}
     steps:
       - name: Checkout scikit-misc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: Checkout scikit-misc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -180,7 +180,7 @@ jobs:
           ls wheelhouse/*.whl
           python ../utils/check_package_version.py
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: ./wheelhouse/*.whl
@@ -191,7 +191,7 @@ jobs:
     needs: [build_wheels]
     steps:
       - name: Checkout scikit-misc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -232,7 +232,7 @@ jobs:
           python ../utils/check_package_version.py
 
       - name: Upload Source dist
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: wheels
           path: dist
@@ -244,7 +244,7 @@ jobs:
     if: contains(needs.parse_commit_info.outputs.can_release, 'true')
     steps:
       - name: Checkout scikit-misc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -281,7 +281,7 @@ jobs:
     if: contains(needs.parse_commit_info.outputs.can_pre_release, 'true')
     steps:
       - name: Checkout scikit-misc
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5

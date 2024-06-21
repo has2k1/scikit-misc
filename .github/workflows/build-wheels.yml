@@ -109,7 +109,7 @@ jobs:
         - [macos-11, macosx, x86_64]
         - [windows-2019, win, AMD64]
 
-        python: [["cp39", "3.9"], ["cp310", "3.10"], ["cp311", "3.11"], ["cp312", "3.12"]]
+        python: [["cp310", "3.10"], ["cp311", "3.11"], ["cp312", "3.12"]]
 
     env:
       IS_32_BIT: ${{ matrix.buildplat[2] == 'x86' }}
@@ -138,6 +138,10 @@ jobs:
         run: |
           python ../utils/please.py checkout_build_commit
 
+      - name: Install pip packages
+        run: |
+          pip install wheel
+
       - name: win_amd64 - install rtools
         if: ${{ runner.os == 'Windows' && env.IS_64_BIT == 'true' }}
         run: |
@@ -153,7 +157,7 @@ jobs:
           echo "_PYTHON_HOST_PLATFORM=macosx-10.9-x86_64" >> $GITHUB_ENV
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.19.1
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
@@ -218,7 +222,7 @@ jobs:
           sudo apt-get install libopenblas-dev liblapack-dev gfortran
 
       - name: Install requirements
-        run:
+        run: |
           pip install uv
           uv pip install --system ".[build]"
 

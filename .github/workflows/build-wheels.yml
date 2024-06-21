@@ -186,7 +186,10 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels
+          # @v4 does not merge artifacts with the name (even if the contents)
+          # are different. So in a matrix, we have to give each artifact a
+          # unique name. We merge these later in another job.
+          name: wheel-${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -238,13 +241,25 @@ jobs:
       - name: Upload Source dist
         uses: actions/upload-artifact@v4
         with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  # Merge all the artifacts into a single bundle
+  # https://github.com/actions/upload-artifact/blob/main/merge/README.md
+  merge-artifacts:
+    runs-on: ubuntu-latest
+    needs: [build_wheels, build_sdist]
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
           name: wheels
-          path: dist
+          delete-merged: true
 
   release:
     runs-on: ubuntu-latest
     name: Upload Release to PyPI
-    needs: [build_wheels, build_sdist, parse_commit_info]
+    needs: [parse_commit_info, merge-artifacts]
     if: contains(needs.parse_commit_info.outputs.can_release, 'true')
     steps:
       - name: Checkout scikit-misc
@@ -261,7 +276,7 @@ jobs:
           uv pip install --system twine
 
       - name: Download wheels
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: wheels
           path: dist
@@ -281,7 +296,7 @@ jobs:
   pre_release:
     runs-on: ubuntu-latest
     name: Upload Release to TestPyPI
-    needs: [build_wheels, build_sdist, parse_commit_info]
+    needs: [parse_commit_info, merge-artifacts]
     if: contains(needs.parse_commit_info.outputs.can_pre_release, 'true')
     steps:
       - name: Checkout scikit-misc
@@ -294,10 +309,11 @@ jobs:
 
       - name: Install Release Requirements
         run: |
-          pip install -r requirements/release.txt
+          pip install uv
+          uv pip install --system twine
 
       - name: Download wheels
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: wheels
           path: dist

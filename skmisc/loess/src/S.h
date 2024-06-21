@@ -12,21 +12,16 @@
  * handed to the local loader; e.g., "x_" in system V, Berkeley & 9th edition
  */
 
-#ifdef lint
-#define F77_SUB(x) x
-#define F77_COM(x) x
+#ifdef _MSC_VER
+  // Microsoft Visual C++
+  #define F77_SUB(x) x##_
 #else
-#ifdef __STDC__
-#define F77_SUB(x) x##_
-#define F77_COM(x) x##_
-#else
-#define F77_SUB(x) x/**/_
-#define F77_COM(x) x/**/_
-#endif
+  // Other compilers
+  #ifdef __STDC__
+    #define F77_SUB(x) x##_
+  #else
+    #define F77_SUB(x) x/**/_
+  #endif
 #endif
 
 #define NULL_ENTRY          ((int *)NULL)
-
-
-
-

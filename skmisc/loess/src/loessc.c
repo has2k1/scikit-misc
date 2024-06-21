@@ -35,8 +35,8 @@ loess_grow(int *parameter, int *a, double *xi, double *vert,
 static void
 loess_free(void);
 
-#define min(x,y)  ((x) < (y) ? (x) : (y))
-#define max(x,y)  ((x) > (y) ? (x) : (y))
+#define MIN(x,y)  ((x) < (y) ? (x) : (y))
+#define MAX(x,y)  ((x) > (y) ? (x) : (y))
 #define GAUSSIAN  1
 #define SYMMETRIC 0
 
@@ -207,8 +207,8 @@ loess_workspace(int *d, int *n, double *span, int *degree,
 
     D = *d;
     N = *n;
-    nvmax = max(200, N);
-    nf = min(N, (int) floor(N * (*span) + 1e-5));
+    nvmax = MAX(200, N);
+    nf = MIN(N, (int) floor(N * (*span) + 1e-5));
     if (nf <= 0) {
     	error_status = 1;
     	error_message = "span is too small";

@@ -7,10 +7,10 @@ and that it appears to contain text prevalent for a scikit-misc binary
 distribution.
 
 """
-import argparse
-import io
-import re
+import os
 import sys
+import re
+import argparse
 from pathlib import Path
 
 
@@ -38,7 +38,7 @@ def main():
     # Check license text
     module_file = Path(mod.__file__)  # type: ignore
     license_txt = module_file.parent / "LICENSE.txt"
-    with io.open(license_txt, "r", encoding="utf-8") as f:
+    with open(license_txt, encoding="utf-8") as f:
         text = f.read()
 
     ok = check_text(text)

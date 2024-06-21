@@ -12,7 +12,7 @@ python_sources = [
   'test_loess.py'
 ]
 
-py.install_sources(
+py3.install_sources(
   python_sources,
   subdir: 'skmisc/loess/tests'
 )

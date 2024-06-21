@@ -307,8 +307,7 @@ void Recover(char *a, int *b)
     mail netlib@netlib.bell-labs.com
     send d1mach from core.
 */
-
-doublereal F77_SUB(d1mach) (integer *i)
+doublereal F77_SUB(d1mach)(integer *i)
 {
     switch(*i) {
         case 1: return DBL_MIN;

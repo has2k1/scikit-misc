@@ -45,26 +45,6 @@ CONFIG = _cleanup(
             },
         },
         "Build Dependencies": {
-            "blas": {
-                "name": "@BLAS_NAME@",
-                "found": bool("@BLAS_FOUND@".lower().replace('false', '')),
-                "version": "@BLAS_VERSION@",
-                "detection method": "@BLAS_TYPE_NAME@",
-                "include directory": r"@BLAS_INCLUDEDIR@",
-                "lib directory": r"@BLAS_LIBDIR@",
-                "openblas configuration": "@BLAS_OPENBLAS_CONFIG@",
-                "pc file directory": r"@BLAS_PCFILEDIR@",
-            },
-            "lapack": {
-                "name": "@LAPACK_NAME@",
-                "found": bool("@LAPACK_FOUND@".lower().replace('false', '')),
-                "version": "@LAPACK_VERSION@",
-                "detection method": "@LAPACK_TYPE_NAME@",
-                "include directory": r"@LAPACK_INCLUDEDIR@",
-                "lib directory": r"@LAPACK_LIBDIR@",
-                "openblas configuration": "@LAPACK_OPENBLAS_CONFIG@",
-                "pc file directory": r"@LAPACK_PCFILEDIR@",
-            },
         },
         "Machine Information": {
             "host": {

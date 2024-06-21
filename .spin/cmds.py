@@ -100,3 +100,17 @@ def sdist():
         "--sdist",
         ".",
     ], replace=True)
+
+
+@click.option(
+    "--clean", is_flag=True,
+    help="Clean build directory before build"
+)
+@click.option(
+    "-v", "--verbose", is_flag=True,
+    help="Print all build output, even installation"
+)
+@click.argument("meson_args", nargs=-1)
+@click.pass_context
+def build(ctx, meson_args, jobs=None, clean=False, verbose=False, quiet=False, *args, **kwargs):
+    ctx.forward(meson.build)

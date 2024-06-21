@@ -16,21 +16,21 @@ loess_cython_gen = generator(
 ###
 
 #### Fortran Loess into a static library
-floess_sources = [
-  'src/loessf.f',
-  'src/linpack_lite.f'
-]
 
 floess_lib = static_library(
   'floess',
-  floess_sources,
-  fortran_args: [fortran_ignore_warnings],
-  dependencies: [blas, lapack]
+  sources: [
+    'src/loessf.f',
+    'src/linpack_lite.f',
+    'src/blas_lite.f'
+  ],
+  fortran_args: [fortran_args, fortran_ignore_warnings],
+  link_args: [fortran_link_args],
 )
 ###
 
 #### Loess Extenstion Module
-py.extension_module(
+py3.extension_module(
   '_loess',
    sources: [
      'src/loess.c',
@@ -39,8 +39,8 @@ py.extension_module(
      'src/predict.c',
      loess_cython_gen.process('src/_loess.pyx')
    ],
-   c_args: [cython_c_args],
-   dependencies: [py_dep, npymath_lib, np_dep],
+   c_args: [c_args, cython_c_args],
+   dependencies: [py3_dep, npymath_lib, np_dep],
    link_with: [floess_lib],
    link_args: [cython_c_link_args],
    link_language: 'c',
@@ -55,7 +55,7 @@ python_sources = [
   '__init__.py'
 ]
 
-py.install_sources(
+py3.install_sources(
   python_sources,
   subdir: 'skmisc/loess'
 )

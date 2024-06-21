@@ -25,6 +25,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering",
 ]
 
@@ -75,7 +76,7 @@ changelog = "https://has2k1.github.io/scikit-misc/stable/changelog.html"
 build-backend = 'mesonpy'
 requires = [
     "meson-python>=0.15.0",
-    "Cython>=3.0.8",  # when updating version, also update check in meson.build
+    "Cython>=3.0.8",
     "setuptools",
     "wheel",
 
@@ -148,33 +149,47 @@ Environments = [
 
 ########## Tool - CIBuildWheel ##########
 [tool.cibuildwheel]
-skip = "pp* *_ppc64le *_i686 *_s390x *-musllinux*"
-build-verbosity = "3"
-# gmpy2 and scikit-umfpack are usually added for testing. However, there are
-# currently wheels missing that make the test script fail.
-test-requires = ["pytest", "pytest-cov"]
+# Note: the below skip command doesn't do much currently, the platforms to
+# build wheels for in CI are controlled in `.github/workflows/wheels.yml` and
+# `tools/ci/cirrus_wheels.yml`.
+build-frontend = "build"
+skip = "cp36-* cp37-* cp-38* pp37-* *-manylinux_i686 *_ppc64le *_s390x *_universal2"
+before-build = "bash {project}/tools/wheels/cibw_before_build.sh {project}"
 test-command = "bash {project}/tools/wheels/cibw_test_command.sh {project}"
+test-requires = [
+    "pytest",
+    "pytest-cov",
+]
 
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
-before-build = "bash {project}/tools/wheels/cibw_before_build_linux.sh {project}"
+
+[tool.cibuildwheel.linux.environment]
+# RUNNER_OS is a GitHub Actions specific env var; define it here so it works on Cirrus CI too
+RUNNER_OS="Linux"
+
 
 [tool.cibuildwheel.macos]
-before-build = "bash {project}/tools/wheels/cibw_before_build_macos.sh {project}"
+# universal2 wheels are not supported (see gh-21233), use `delocate-fuse` if you need them
+# note that universal2 wheels are not built, they're listed in the tool.cibuildwheel.skip
+# section
+# Not clear why the DYLD_LIBRARY_PATH is not passed through from the environment
+repair-wheel-command = [
+  "echo DYLD_LIBRARY_PATH $DYLD_LIBRARY_PATH",
+  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}",
+]
+
+
+[tool.cibuildwheel.macos.environment]
+PKG_CONFIG_PATH="{project}"
 
 [tool.cibuildwheel.windows]
-before-build = "bash {project}/tools/wheels/cibw_before_build_win.sh {project}"
-repair-wheel-command = "bash ./tools/wheels/repair_windows.sh {wheel} {dest_dir}"
+# This does not work, use CIBW_ENVIRONMENT_WINDOWS
+config-settings = "setup-args=--vsenv build-dir=build"
+repair-wheel-command = "bash -el ./tools/wheels/repair_windows.sh {wheel} {dest_dir}"
 
 [[tool.cibuildwheel.overrides]]
 select = "*-win32"
-
-[[tool.cibuildwheel.overrides]]
-select = "*-win_amd64"
-# can use pkg-config detection for win_amd64 because the installed rtools
-# provide a working pkg-config.
-# An alternative is to set CMAKE_PREFIX_PATH="c:/opt/openblas/if_32/32"
-# Don't use double backslash for path separators, they don't get passed
-# to the build correctly
-environment = { PKG_CONFIG_PATH="c:/opt/64/lib/pkgconfig" }
+config-settings = "setup-args=--vsenv build-dir=build"
+repair-wheel-command = ""

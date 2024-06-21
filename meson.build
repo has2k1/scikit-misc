@@ -4,84 +4,39 @@ project(
   'c', 'cython',
   version: run_command('skmisc/_build_utils/version_please.py', check: true).stdout().strip(),
   license: 'BSD-3',
-  meson_version: '>= 1.1.0',
+  meson_version: '>= 1.2.99',
   default_options: [
     'buildtype=debugoptimized',
     'c_std=c99',
     'fortran_std=legacy',
-    'blas=openblas',
-    'lapack=openblas'
+    'pkgconfig.relocatable=true',
   ],
 )
 
-# Adding at project level causes many spurious -lgfortran flags.
-add_languages('fortran', native: false)
-###
-
-#### Configuration Information
-conf_data = configuration_data()
-
-# The object above is stored so that we can write it to
-# a file.
-conf_data.set('VERSION', meson.project_version())
 ###
 
 #### Setup Python
 # https://mesonbuild.com/Python-module.html
-py_mod = import('python')
-py = py_mod.find_installation(pure: false)
-py_dep = py.dependency()
-
-skmisc_dir = py.get_install_dir() / 'skmisc'
-
-conf_data.set('PYTHON_PATH', py.full_path())
-conf_data.set('PYTHON_VERSION', py.language_version())
+py3 = import('python').find_installation(pure: false)
+py3_dep = py3.dependency()
 ###
 
-#### Setup Compilers
+#### Define Compilers
 cc = meson.get_compiler('c')
-ff = meson.get_compiler('fortran')
-# generator() doesn't accept compilers, only found programs. Cast it.
 cy = meson.get_compiler('cython')
+# generator() doesn't accept compilers, only found programs. Cast it.
 cython = find_program(cy.cmd_array()[0])
-
-compilers = {
-  'C': cc,
-  'CYTHON': cy,
-  'FORTRAN': ff
-}
-
-foreach name, compiler : compilers
-  # conf_data.set(name + '_COMP_CMD_ARRAY', compiler.cmd_array())
-  conf_data.set(name + '_COMP_CMD_ARRAY', compiler.get_id())
-  conf_data.set(name + '_COMP', compiler.get_id())
-  conf_data.set(name + '_COMP_LINKER_ID', compiler.get_linker_id())
-  conf_data.set(name + '_COMP_VERSION', compiler.version())
-  conf_data.set(name + '_COMP_CMD_ARRAY', ', '.join(compiler.cmd_array()))
-endforeach
-###
-
-#### Setup Machine CPU & System Information
-machines = {
-  'HOST': host_machine,
-  'BUILD': build_machine,
-}
-
-foreach name, machine : machines
-  conf_data.set(name + '_CPU', machine.cpu())
-  conf_data.set(name + '_CPU_FAMILY', machine.cpu_family())
-  conf_data.set(name + '_CPU_ENDIAN', machine.endian())
-  conf_data.set(name + '_CPU_SYSTEM', machine.system())
-endforeach
-
-conf_data.set('CROSS_COMPILED', meson.is_cross_build())
 ###
 
 #### Compiler Arguments and Settings
 # Check compiler is recent enough (see "Toolchain Roadmap" for details)
 if cc.get_id() == 'gcc'
-  if not cc.version().version_compare('>=8.0')
-    error('scikit-misc requires GCC >= 8.0')
+  if not cc.version().version_compare('>=9.1')
+    error('scikit-misc requires GCC >= 9.1')
+  endif
+elif cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
+  if not cc.version().version_compare('>=12.0')
+    error('scikit-misc requires clang >= 12.0')
   endif
 elif cc.get_id() == 'msvc'
   if not cc.version().version_compare('>=19.20')
@@ -90,20 +45,38 @@ elif cc.get_id() == 'msvc'
   endif
 endif
 
+if not cy.version().version_compare('>=3.0.6')
+  error('NumPy requires Cython >= 3.0.6')
+endif
+
+# Add default compile flags for any compiler that supports them.
+# Note that MSVC does not support strict aliasing at all, and neither do the
+# Intel compilers on Windows, so the `-fno` flavor of the flag should be fine.
+add_project_arguments(
+  cc.get_supported_arguments( '-fno-strict-aliasing'), language : 'c'
+)
+
 # link against the standard math library since we use it in c
 m_dep = cc.find_library('m', required : false)
 if m_dep.found()
   add_project_link_arguments('-lm', language : 'c')
 endif
 
+# Adding at project level causes many spurious -lgfortran flags.
 add_languages('fortran', native: false)
+ff = meson.get_compiler('fortran')
 if ff.has_argument('-Wno-conversion')
   add_project_arguments('-Wno-conversion', language: 'fortran')
 endif
 
-
 is_windows = host_machine.system() == 'windows'
 is_macos = host_machine.system() == 'darwin'
+
+if is_macos and cc.has_link_argument('-Wl,-ld_classic')
+  # New linker introduced in macOS 14 not working yet with at least OpenBLAS in Spack,
+  # see gh-24964 (and linked scipy issue from there).
+  add_project_link_arguments('-Wl,-ld_classic', language : ['c', 'cpp'])
+endif
 
 # Intel compilers default to fast-math, so disable it if we detect Intel
 # compilers. A word of warning: this may not work with the conda-forge
@@ -113,18 +86,18 @@ is_macos = host_machine.system() == 'darwin'
 # is actually needed, everything else shouldn't be there).
 _intel_cflags = []
 _intel_fflags = []
-if cc.get_id() == 'intel'
+if cc.get_id() in ['intel', 'intel-llvm']
   _intel_cflags += cc.get_supported_arguments('-fp-model=strict')
-elif cc.get_id() == 'intel-cl'
+elif cc.get_id() in ['intel-cl', 'intel-llvm-cl']
   _intel_cflags += cc.get_supported_arguments('/fp:strict')
 endif
-if ff.get_id() == 'intel'
+if ff.get_id() in ['intel', 'intel-llvm']
   _intel_fflags = ff.get_supported_arguments('-fp-model=strict')
   minus0_arg = ['-assume', 'minus0']
   if ff.has_multi_arguments(minus0_arg)
     _intel_fflags += minus0_arg
   endif
-elif ff.get_id() == 'intel-cl'
+elif ff.get_id() in ['intel-cl', 'intel-llvm-cl']
   # Intel Fortran on Windows does things differently, so deal with that
   # (also specify dynamic linking and the right name mangling)
   _intel_fflags = ff.get_supported_arguments(
@@ -134,10 +107,6 @@ elif ff.get_id() == 'intel-cl'
 endif
 add_project_arguments(_intel_cflags, language: ['c'])
 add_project_arguments(_intel_fflags, language: 'fortran')
-
-cython_c_args = []
-cython_args = ['-3', '--fast-fail', '--output-file', '@OUTPUT@', '--include-dir', '@BUILD_ROOT@', '@INPUT@']
-cython_c_link_args = []
 ###
 
 #### Include Main Package

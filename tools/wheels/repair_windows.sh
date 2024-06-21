@@ -5,10 +5,11 @@ DEST_DIR="$2"
 
 # create a temporary directory in the destination folder and unpack the wheel
 # into there
-pushd $DEST_DIR
+
+pushd "$DEST_DIR"
 mkdir -p tmp
 pushd tmp
-wheel unpack $WHEEL
+wheel unpack "$WHEEL"
 pushd scikit_misc*
 
 # To avoid DLL hell, the file name of libopenblas that's being vendored with
@@ -22,11 +23,9 @@ for f in $(find ./skmisc* -name '*.pyd'); do strip $f; done
 
 # now repack the wheel and overwrite the original
 wheel pack .
-mv -fv *.whl $WHEEL
+mv -fv ./*.whl "$WHEEL"
 
-cd $DEST_DIR
+cd "$DEST_DIR"
 rm -rf tmp
 
-# the libopenblas.dll is placed into this directory in the cibw_before_build
-# script.
-delvewheel repair --add-path /c/opt/openblas/openblas_dll -w $DEST_DIR $WHEEL
+delvewheel repair -w $DEST_DIR $WHEEL

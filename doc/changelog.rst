@@ -3,7 +3,7 @@ Changelog
 
 v0.4.0
 ------
-*(not-yet-released)*
+*(2024-06-22)*
 
 - Dropped support for python==3.9
 - Made compatible with numpy 2.0

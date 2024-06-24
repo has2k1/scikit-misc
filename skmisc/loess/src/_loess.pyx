@@ -680,7 +680,7 @@ cdef class loess_prediction:
         self.allocated = False
 
         # Note : we need a copy as we may have to normalize
-        p_ndr = np.asarray(newdata, copy=True, order='C')
+        p_ndr = np.array(newdata, copy=True, subok=True, order='C')
         p_ndr = p_ndr.astype(float)
 
         # Dimensions should match those of the input

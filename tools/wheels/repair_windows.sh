@@ -2,6 +2,7 @@ set -xe
 
 WHEEL="$1"
 DEST_DIR="$2"
+OPENBLAS_DIR=$(python -c"import scipy_openblas32 as sop; print(sop.get_lib_dir())")
 
 # create a temporary directory in the destination folder and unpack the wheel
 # into there
@@ -18,7 +19,7 @@ pushd scikit_misc*
 # We therefore find each PYD in the directory structure and strip them.
 
 for f in $(find ./skmisc* -name '*.pyd'); do strip $f; done
-
+for f in $(find ./scipy* -name '*.pyd'); do strip $f; done
 
 # now repack the wheel and overwrite the original
 wheel pack .
@@ -27,6 +28,4 @@ mv -fv *.whl $WHEEL
 cd $DEST_DIR
 rm -rf tmp
 
-# the libopenblas.dll is placed into this directory in the cibw_before_build
-# script.
-delvewheel repair --add-path /c/opt/openblas/openblas_dll -w $DEST_DIR $WHEEL
+delvewheel repair --add-path $OPENBLAS_DIR --no-dll libsf_error_state.dll -w $DEST_DIR $WHEEL

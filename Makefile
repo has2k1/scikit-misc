@@ -43,7 +43,7 @@ ruff:
 	ruff check . $(args)
 
 ruff-isort:
-	ruff --select I001 --quiet . $(args)
+	ruff check --select I001 --quiet . $(args)
 
 
 lint: ruff ruff-isort

@@ -25,8 +25,7 @@ floess_lib = static_library(
   'floess',
   floess_sources,
   fortran_args: [fortran_ignore_warnings],
-  dependencies: [cblas, blas_dep, lapack_dep],
-  gnu_symbol_visibility: 'hidden',
+  dependencies: [blas_dep, lapack_dep],
 )
 ###
 
@@ -43,6 +42,7 @@ py3.extension_module(
    c_args: [cython_c_args],
    dependencies: [py3_dep, npymath_lib, np_dep],
    link_with: [floess_lib],
+   link_args: [cython_c_link_args],
    link_language: 'c',
    install: true,
    subdir: 'skmisc/loess'

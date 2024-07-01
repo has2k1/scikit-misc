@@ -106,7 +106,7 @@ jobs:
         # [windows-2019, win*, "AMD64 x86"]. However, those two require a different compiler setup
         # so easier to separate out here.
         - [ubuntu-22.04, manylinux, x86_64, "", ""]
-        - [macos-12, macosx, x86_64, openblas, "10.9"]
+        - [macos-13, macosx, x86_64, openblas, "10.9"]
         - [macos-14, macosx, arm64, openblas, "12.0"]
         - [windows-2019, win, AMD64, "", "" ]
 
@@ -151,92 +151,47 @@ jobs:
           choco install rtools -y --no-progress --force --version=4.0.0.20220206
           echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
 
-      - name: windows - set PKG_CONFIG_PATH
-        if: ${{ runner.os == 'Windows' }}
+      - name: pkg-config-for-win
+        if: runner.os == 'windows'
         run: |
-          $env:CIBW = "${{ github.workspace }}"
+          choco install -y --no-progress --stoponfirstfailure --checksum 6004DF17818F5A6DBF19CB335CC92702 pkgconfiglite
+          $CIBW = "${{ github.workspace }}/.openblas"
+          # pkgconfig needs a complete path, and not just "./openblas since the
+          # build is run in a tmp dir (?)
           # It seems somewhere in the env passing, `\` is not
           # passed through, so convert it to '/'
-          $env:CIBW=$env:CIBW.replace("\","/")
-          echo "CIBW_ENVIRONMENT=PKG_CONFIG_PATH=$env:CIBW" >> $env:GITHUB_ENV
+          $CIBW = $CIBW.replace("\","/")
+          echo "CIBW_ENVIRONMENT_WINDOWS=PKG_CONFIG_PATH=$CIBW" >> $env:GITHUB_ENV
 
       - name: Setup macOS
-        if: startsWith( matrix.buildplat[0], 'macos-' )
+        if: matrix.buildplat[0] == 'macos-13' || matrix.buildplat[0] == 'macos-14'
         run: |
-          if [[ ${{ matrix.buildplat[4] }} == '10.9' ]]; then
-            # Newest version of Xcode that supports macOS 10.9
-            XCODE_VER='13.4.1'
-          else
-            XCODE_VER='15.2'
-          fi
-          CIBW="sudo xcode-select -s /Applications/Xcode_${XCODE_VER}.app"
-          echo "CIBW_BEFORE_ALL=$CIBW" >> $GITHUB_ENV
-          # setting SDKROOT necessary when using the gfortran compiler
-          # installed in cibw_before_build_macos.sh
-          sudo xcode-select -s /Applications/Xcode_${XCODE_VER}.app
-          CIBW="MACOSX_DEPLOYMENT_TARGET=${{ matrix.buildplat[4] }}\
-            SDKROOT=$(xcrun --sdk macosx --show-sdk-path)\
-            PKG_CONFIG_PATH=${{ github.workspace }}"
-          echo "CIBW_ENVIRONMENT_MACOS=$CIBW" >> "$GITHUB_ENV"
+          # Needed due to https://github.com/actions/runner-images/issues/3371
+          # Supported versions: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-arm64-Readme.md
+          echo "FC=gfortran-13" >> "$GITHUB_ENV"
+          echo "F77=gfortran-13" >> "$GITHUB_ENV"
+          echo "F90=gfortran-13" >> "$GITHUB_ENV"
 
-          echo "REPAIR_PATH=$LIB_PATH" >> "$GITHUB_ENV"
-
-          PREFIX=DYLD_LIBRARY_PATH="\$(dirname \$(gfortran --print-file-name libgfortran.dylib))"
-          # remove libgfortran from location used for linking (if any), to
-          # check wheel has bundled things correctly and all tests pass without
-          # needing installed gfortran
-          POSTFIX=" sudo rm -rf /opt/gfortran-darwin-x86_64-native &&\
-                    sudo rm -rf /usr/local/gfortran/lib"
-          CIBW="$PREFIX delocate-listdeps -d {wheel} && echo "-----------" &&\
-            $PREFIX delocate-wheel -v $EXCLUDE --require-archs \
-            {delocate_archs} -w {dest_dir} {wheel} && echo "-----------" &&\
-            delocate-listdeps -d {dest_dir}/*.whl && echo "-----------" &&\
-            $POSTFIX"
-
-          echo "CIBW_REPAIR_WHEEL_COMMAND_MACOS=$CIBW" >> "$GITHUB_ENV"
-
-      - name: Inject environment variable for python dev version
-        if: matrix.python[1] == '3.13'
-        shell: bash
-        run: |
-          # For dev versions of python need to use wheels from scientific-python-nightly-wheels
-          # When the python version is released please comment out this section, but do not remove
-          # (there will soon be another dev version to target).
-          DEPS0="pip install --pre -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple numpy"
-          DEPS1="pip install ninja meson-python cython"
-
-          CIBW="$DEPS0;$DEPS1;bash {project}/tools/wheels/cibw_before_build_linux.sh {project}"
-          echo "CIBW_BEFORE_BUILD_LINUX=$CIBW" >> "$GITHUB_ENV"
-
-          CIBW="$DEPS0 && $DEPS1 && bash {project}/tools/wheels/cibw_before_build_win.sh {project}"
-          echo "CIBW_BEFORE_BUILD_WINDOWS=$CIBW" >> "$GITHUB_ENV"
-
-          CIBW="$DEPS0;$DEPS1;bash {project}/tools/wheels/cibw_before_build_macos.sh {project}"
-          echo "CIBW_BEFORE_BUILD_MACOS=$CIBW" >> "$GITHUB_ENV"
-
-          echo "CIBW_BEFORE_TEST=$DEPS0" >> "$GITHUB_ENV"
-
-          CIBW="pip; args: --no-build-isolation"
-          echo "CIBW_BUILD_FRONTEND=$CIBW" >> "$GITHUB_ENV"
+          # macosx_x86_64 with OpenBLAS
+          # if INSTALL_OPENBLAS isn't specified then scipy-openblas is automatically installed
+          CIBW="RUNNER_OS=macOS"
+          PKG_CONFIG_PATH="$PWD/.openblas"
+          DYLD="$DYLD_LIBRARY_PATH:/$PWD/.openblas/lib"
+          echo "CIBW_ENVIRONMENT_MACOS=$CIBW PKG_CONFIG_PATH=$PKG_CONFIG_PATH DYLD_LIBRARY_PATH=$DYLD" >> "$GITHUB_ENV"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.17.0
+        uses: pypa/cibuildwheel@v2.19.1
         env:
           CIBW_BUILD: ${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}*
           CIBW_ARCHS: ${{ matrix.buildplat[2] }}
           CIBW_PRERELEASE_PYTHONS: True
 
-      - name: Check symbols
+      - name: Check Symbols
+        if: matrix.buildplat[1] == 'manylinux' || matrix.buildplat[1] == 'macosx'
         run: |
-          set -x
-          pip install delocate
-          ls -la
           pushd wheelhouse
           unzip *.whl
-          ls -la
-          delocate-listdeps *.whl
-          nm skmisc/loess/*.so | grep -v "^__?Py"
-          nm -gu *.so | grep -v "^__\?Py"
+          nm -g skmisc/loess/*.so
           popd
 
       - name: Check Package Version
@@ -249,7 +204,7 @@ jobs:
           # @v4 does not merge artifacts with the name (even if the contents)
           # are different. So in a matrix, we have to give each artifact a
           # unique name. We merge these later in another job.
-          name: wheel-${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}
+          name: wheel-${{ matrix.python[0] }}-${{ matrix.buildplat[1] }}-${{ matrix.buildplat[2] }}
           path: ./wheelhouse/*.whl
 
   build_sdist:

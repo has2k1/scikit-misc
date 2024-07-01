@@ -7,7 +7,7 @@ project(
   meson_version: '>= 1.1.0',
   default_options: [
     'buildtype=debugoptimized',
-    'c_std=c17',
+    'c_std=c99',
     'fortran_std=legacy',
     'blas=openblas',
     'lapack=openblas'
@@ -53,7 +53,7 @@ if m_dep.found()
 endif
 
 # Adding at project level causes many spurious -lgfortran flags.
-add_languages('fortran', native: true)
+add_languages('fortran', native: false)
 ff = meson.get_compiler('fortran')
 if ff.has_argument('-Wno-conversion')
   add_project_arguments('-Wno-conversion', language: 'fortran')

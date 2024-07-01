@@ -15,6 +15,7 @@ if is_mingw and ff.get_id() != 'gcc'
 endif
 
 cython_c_args = ['-DCYTHON_CCOMPLEX=0'] # see gh-18975 for why we need this
+cython_c_link_args = []
 if is_mingw
   # For mingw-w64, link statically against the UCRT.
   gcc_link_args = ['-lucrt', '-static']
@@ -34,6 +35,7 @@ if is_mingw
   #   https://github.com/wch/r-source/blob/838f9d5a7be08f2a8c08e47bcd28756f5d0aac90/src/gnuwin32/MkRules.rules#L121
   add_project_arguments('-fno-optimize-sibling-calls', language: ['fortran'])
 endif
+
 
 thread_dep = dependency('threads', required: false)
 
@@ -111,6 +113,16 @@ cython_args = ['-3', '--fast-fail', '--output-file', '@OUTPUT@', '--include-dir'
 # https://github.com/mesonbuild/meson/issues/2835
 blas_name = get_option('blas')
 lapack_name = get_option('lapack')
+# This is currently injected directly into CFLAGS/CXXFLAGS for wheel builds
+# (see cibuildwheel settings in pyproject.toml), but used by CI jobs already
+blas_symbol_suffix = get_option('blas-symbol-suffix')
+use_ilp64 = get_option('use-ilp64')
+
+# if use_ilp64
+#   blas_interface = ['interface: ilp64']
+# else
+#   blas_interface = ['interface: lp64']
+# endif
 
 macOS13_3_or_later = false
 if host_machine.system() == 'darwin'
@@ -120,8 +132,8 @@ if host_machine.system() == 'darwin'
   macOS13_3_or_later = sdkVersion.version_compare('>=13.3')
 endif
 
-_args_blas_lapack = []
-generate_blas_wrappers = false
+_args_blas = []
+_args_lapack = []
 
 # First try scipy-openblas, and if found don't look for cblas or lapack, we
 # know what's inside the scipy-openblas wheels already.
@@ -129,10 +141,10 @@ if blas_name == 'openblas' or blas_name == 'auto'
   blas = dependency('scipy-openblas', method: 'pkg-config', required: false)
   if blas.found()
     blas_name = 'scipy-openblas'
-    generate_blas_wrappers = true
   endif
 endif
 
+message(f'blas_name: @blas_name@')
 # pkg-config uses a lower-case name while CMake uses a capitalized name, so try
 # that too to make the fallback detection with CMake work
 if blas_name == 'openblas'
@@ -140,9 +152,30 @@ if blas_name == 'openblas'
 elif blas_name != 'scipy-openblas'  # if so, we found it already
   blas = dependency(blas_name)
 endif
+
+_args_blas += ['-DOPENBLAS_ILP64_NAMING_SCHEME']
+if use_ilp64
+  _args_blas += ['-DHAVE_BLAS_ILP64']
+  if 'openblas' in blas.name()
+    _args_blas += ['-DOPENBLAS_ILP64_NAMING_SCHEME']
+  endif
+endif
+
+if blas_symbol_suffix == 'auto'
+  if blas_name == 'scipy-openblas' and use_ilp64
+    blas_symbol_suffix = '64_'
+  else
+    blas_symbol_suffix = blas.get_variable('symbol_suffix', default_value: '')
+  endif
+  message(f'BLAS symbol suffix: @blas_symbol_suffix@')
+endif
+if blas_symbol_suffix != ''
+  _args_blas += ['-DBLAS_SYMBOL_SUFFIX=' + blas_symbol_suffix]
+endif
+
 blas_dep = declare_dependency(
-  dependencies: blas,
-  compile_args: _args_blas_lapack
+  dependencies: [blas],
+  compile_args: _args_blas
 )
 if blas_name == 'blas'
   # Netlib BLAS has a separate `libcblas.so` which we use directly in the g77
@@ -166,8 +199,8 @@ else
 endif
 
 lapack_dep = declare_dependency(
-  dependencies: lapack,
-  compile_args: _args_blas_lapack
+  dependencies: [lapack, blas_dep],
+  compile_args: _args_lapack
 )
 
 ###
@@ -245,6 +278,18 @@ if is_windows
   use_math_defines = ['-D_USE_MATH_DEFINES']
 else
   use_math_defines = []
+endif
+
+if is_macos
+  Wlno_compact_unwind = cc.get_supported_link_arguments('-Wl,-no_compact_unwind')
+  # TODO: This should not exist long term
+  # Disable warning about undefined dynamic lookup of symbols. It is harmless.
+  # https://github.com/python/cpython/issues/97524#issuecomment-1270616173
+  Wlno_fixup_chains = cc.get_supported_link_arguments('-Wl,-no_fixup_chains')
+  cython_c_link_args += [
+    Wlno_compact_unwind,
+    Wlno_fixup_chains
+  ]
 endif
 
 cython_c_args += [use_math_defines]

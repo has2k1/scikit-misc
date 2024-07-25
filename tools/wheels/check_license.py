@@ -7,10 +7,9 @@ and that it appears to contain text prevalent for a scikit-misc binary
 distribution.
 
 """
-import os
-import sys
-import re
 import argparse
+import re
+import sys
 from pathlib import Path
 
 

@@ -112,5 +112,14 @@ def sdist():
 )
 @click.argument("meson_args", nargs=-1)
 @click.pass_context
-def build(ctx, meson_args, jobs=None, clean=False, verbose=False, quiet=False, *args, **kwargs):
+def build(
+    ctx,
+    meson_args,
+    jobs=None,
+    clean=False,
+    verbose=False,
+    quiet=False,
+    *args,
+    **kwargs
+):
     ctx.forward(meson.build)

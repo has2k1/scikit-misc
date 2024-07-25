@@ -7,7 +7,6 @@ and that it appears to contain text prevalent for a scikit-misc binary
 distribution.
 
 """
-import os
 import sys
 import re
 import argparse

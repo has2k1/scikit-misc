@@ -229,7 +229,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     name: Upload Release to PyPI
-    needs: [parse_commit_info]
+    needs: [parse_commit_info, build_wheels, build_sdist]
     if: contains(needs.parse_commit_info.outputs.can_release, 'true')
     steps:
       - name: Checkout scikit-misc
@@ -267,7 +267,7 @@ jobs:
   pre_release:
     runs-on: ubuntu-latest
     name: Upload Release to TestPyPI
-    needs: [parse_commit_info]
+    needs: [parse_commit_info, build_wheels, build_sdist]
     if: contains(needs.parse_commit_info.outputs.can_pre_release, 'true')
     steps:
       - name: Checkout scikit-misc

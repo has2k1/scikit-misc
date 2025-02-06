@@ -22,7 +22,7 @@ fortran_link_args = []
 
 if is_mingw
   is_mingw_built_python = run_command(
-    py, ['-c', 'import sysconfig; print(sysconfig.get_platform())'],
+    py3, ['-c', 'import sysconfig; print(sysconfig.get_platform())'],
     check: true).stdout().strip().startswith('mingw')
   if not is_mingw_built_python
     # For mingw-w64, link statically against the UCRT.

@@ -52,7 +52,7 @@ class Git:
         """
         Return True if inside a git repo
         """
-        res = run(f"git checkout {committish}")
+        res = run(f"git checkout --force {committish}")
         return res
 
     @staticmethod

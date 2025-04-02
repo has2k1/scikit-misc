@@ -108,7 +108,8 @@ jobs:
         - [macos-14, macosx_arm64]
         - [windows-2019, win_amd64]
 
-        python: ["cp310", "cp311", "cp312", "cp313"]
+        # python: ["cp310", "cp311", "cp312", "cp313"]
+        python: ["cp313"]
 
     steps:
       - name: Checkout scikit-misc
@@ -132,6 +133,7 @@ jobs:
       - name: Checkout build target
         run: |
           python ../utils/please.py checkout_build_commit
+          git describe --long
 
       - name: Install pip packages
         run: |
@@ -143,6 +145,7 @@ jobs:
           # mingw-w64
           choco install rtools -y --no-progress --force --version=4.0.0.20220206
           echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
+
 
       - name: macOS - Setup
         if: matrix.buildplat[0] == 'macos-13' || matrix.buildplat[0] == 'macos-14'
@@ -156,7 +159,7 @@ jobs:
           echo "CIBW_ENVIRONMENT_MACOS=$CIBW" >> "$GITHUB_ENV"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.19.2
+        uses: pypa/cibuildwheel@v2.23.2
         env:
           CIBW_PRERELEASE_PYTHONS: True
           CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}

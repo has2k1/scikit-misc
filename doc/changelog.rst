@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.5.2
+------
+*(2025-10-31)*
+
+- Bumped minimum requred numpy to v1.26.4.
+
 v0.5.1
 ------
 *(2024-07-25)*

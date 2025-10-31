@@ -154,7 +154,6 @@ Environments = [
 # build wheels for in CI are controlled in `.github/workflows/wheels.yml` and
 # `tools/ci/cirrus_wheels.yml`.
 build-frontend = "build"
-skip = "cp36-* cp37-* cp-38* pp37-* *-manylinux_i686 *_ppc64le *_s390x *_universal2"
 before-build = "bash {project}/tools/wheels/cibw_before_build.sh {project}"
 test-command = "bash {project}/tools/wheels/cibw_test_command.sh {project}"
 test-requires = [
@@ -163,8 +162,8 @@ test-requires = [
 ]
 
 [tool.cibuildwheel.linux]
-manylinux-x86_64-image = "manylinux2014"
-manylinux-aarch64-image = "manylinux2014"
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux.environment]
 # RUNNER_OS is a GitHub Actions specific env var; define it here so it works on Cirrus CI too
@@ -187,10 +186,10 @@ PKG_CONFIG_PATH="{project}"
 
 [tool.cibuildwheel.windows]
 # This does not work, use CIBW_ENVIRONMENT_WINDOWS
-config-settings = "setup-args=--vsenv build-dir=build"
+config-settings = {setup-args = ["--vsenv"], build-dir="build"}
 repair-wheel-command = "bash -el ./tools/wheels/repair_windows.sh {wheel} {dest_dir}"
 
 [[tool.cibuildwheel.overrides]]
-select = "*-win32"
-config-settings = "setup-args=--vsenv build-dir=build"
+select = ["*-win32"]
+config-settings = {setup-args = ["--vsenv"], build-dir="build"}
 repair-wheel-command = ""

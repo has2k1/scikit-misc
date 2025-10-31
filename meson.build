@@ -4,10 +4,10 @@ project(
   'c', 'cython',
   version: run_command('skmisc/_build_utils/version_please.py', check: true).stdout().strip(),
   license: 'BSD-3',
-  meson_version: '>= 1.2.99',
+  meson_version: '>= 1.5.0',
   default_options: [
     'buildtype=debugoptimized',
-    'c_std=c99',
+    'c_std=c17',
     'fortran_std=legacy',
     'pkgconfig.relocatable=true',
   ],
@@ -35,8 +35,8 @@ if cc.get_id() == 'gcc'
     error('scikit-misc requires GCC >= 9.1')
   endif
 elif cc.get_id() == 'clang' or cc.get_id() == 'clang-cl'
-  if not cc.version().version_compare('>=12.0')
-    error('scikit-misc requires clang >= 12.0')
+  if not cc.version().version_compare('>=15.0')
+    error('scikit-misc requires clang >= 15.0')
   endif
 elif cc.get_id() == 'msvc'
   if not cc.version().version_compare('>=19.20')
@@ -45,8 +45,8 @@ elif cc.get_id() == 'msvc'
   endif
 endif
 
-if not cy.version().version_compare('>=3.0.6')
-  error('NumPy requires Cython >= 3.0.6')
+if not cy.version().version_compare('>=3.0.8')
+  error('NumPy requires Cython >= 3.0.8')
 endif
 
 # Add default compile flags for any compiler that supports them.
@@ -72,10 +72,11 @@ endif
 is_windows = host_machine.system() == 'windows'
 is_macos = host_machine.system() == 'darwin'
 
-if is_macos and cc.has_link_argument('-Wl,-ld_classic')
-  # New linker introduced in macOS 14 not working yet with at least OpenBLAS in Spack,
-  # see gh-24964 (and linked scipy issue from there).
-  add_project_link_arguments('-Wl,-ld_classic', language : ['c', 'cpp'])
+if is_macos
+  if cc.has_link_argument('-Wl,-dead_strip')
+    # Allow linker to strip unused symbols
+    add_project_link_arguments('-Wl,-dead_strip', language : ['c', 'fortran'])
+  endif
 endif
 
 # Intel compilers default to fast-math, so disable it if we detect Intel

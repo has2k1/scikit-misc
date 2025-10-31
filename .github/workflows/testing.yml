@@ -26,44 +26,42 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.10", 3.11, 3.12, 3.13]
+        include:
+          - python-version: "3.10"
+            resolution: "lowest-direct"
+          - python-version: 3.14
+            resolution: "highest"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Install a specific version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: "true"
+
       - name: Deepen Repository
         run: |
           python .github/utils/deepen-shallow-repo.py
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install Ubuntu dependencies
-        shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
+          sudo apt-get install gfortran ccache
 
       - name: Install Python Packages
-        shell: bash
-        run: |
-          pip install uv
-          uv pip install --system ".[build,test]"
+        run: uv pip install ".[build,test]"
 
       - name: Environment Information
-        shell: bash
         run: |
           git describe --tags
           ls -la
           uv pip list
 
       - name: Build Package
-        shell: bash
-        run: |
-          make build
+        run: make build
 
       - name: Upload meson log file
         uses: actions/upload-artifact@v4
@@ -74,7 +72,6 @@ jobs:
           if-no-files-found: ignore
 
       - name: Run Tests
-        shell: bash
         run: |
           coverage erase
           make test
@@ -98,28 +95,24 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.13]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install a specific version of uv
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
+          activate-environment: "true"
 
       - name: Install Packages
-        shell: bash
-        run: |
-          pip install uv
-          uv pip install --system ruff
+        run: uv pip install ruff
 
       - name: Environment Information
-        shell: bash
         run: uv pip list
 
       - name: Run Tests
-        shell: bash
         run: make lint
 
   # Documentation
@@ -134,39 +127,35 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.11]
+        python-version: [3.13]
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Install a specific version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: "true"
 
       - name: Deepen Repository
         run: |
           python .github/utils/deepen-shallow-repo.py
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install Ubuntu dependencies
-        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install libopenblas-dev liblapack-dev gfortran ccache
 
       - name: Install Python Packages
-        shell: bash
         run: |
-          pip install uv
-          uv pip install --system ".[build, doc]"
+          uv pip install ".[build, doc]"
 
       - name: Environment Information
-        shell: bash
         run: uv pip list
 
       - name: Build Documentation
-        shell: bash
         run: |
           pushd doc
           SPHINXOPTS=-W
@@ -199,7 +188,7 @@ jobs:
           ls -la "$HTML_DIR"
 
       - name: Check main repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Copy commit tools from main repository
         run: |
@@ -207,12 +196,11 @@ jobs:
           cp tools/deploy_documentation.sh "$DOC_TOOLS_DIR"
 
       - name: Checkout Documentation branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.DOC_BRANCH }}
 
       - name: Commit Documentation
-        shell: bash
         env:
           SOURCE_BRANCH: ${{ steps.branch_info.outputs.SOURCE_BRANCH }}
           SOURCE_TAG: ${{ steps.branch_info.outputs.SOURCE_TAG }}

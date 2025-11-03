@@ -104,7 +104,7 @@ jobs:
         # [windows-2019, win*, "AMD64 x86"]. However, those two require a different compiler setup
         # so easier to separate out here.
         - [ubuntu-24.04, manylinux_x86_64]
-        - [macos-13-intel, macosx_x86_64]
+        - [macos-13, macosx_x86_64]
         - [macos-14, macosx_arm64]
         - [windows-2025, win_amd64]
 

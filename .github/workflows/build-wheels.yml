@@ -39,8 +39,8 @@ jobs:
     if: github.repository == 'has2k1/scikit-misc'
     outputs:
       can_build: ${{ steps.decide.outputs.can_build }}
-      can_release: ${{ steps.decide.outputs.can_release }}
-      can_pre_release: ${{ steps.decide.outputs.can_pre_release }}
+      publish_index: ${{ steps.decide.outputs.publish_index }}
+      publish_url: ${{ steps.decide.outputs.publish_url }}
     steps:
       - name: Checkout scikit-misc
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -83,8 +83,19 @@ jobs:
           CAN_PRE_RELEASE=$(python ../utils/please.py can_i_pre_release)
 
           echo "can_build=$CAN_BUILD" >> $GITHUB_OUTPUT
-          echo "can_release=$CAN_RELEASE" >> $GITHUB_OUTPUT
-          echo "can_pre_release=$CAN_PRE_RELEASE" >> $GITHUB_OUTPUT
+
+          # The tag patterns for a release and a pre-release are exclusive
+          PUBLISH_INDEX=""
+          PUBLISH_URL=""
+          if [ "$CAN_RELEASE" = "true" ]; then
+            PUBLISH_INDEX="PyPI"
+            PUBLISH_URL="https://upload.pypi.org/legacy/"
+          elif [ "$CAN_PRE_RELEASE" = "true" ]; then
+            PUBLISH_INDEX="TestPyPI"
+            PUBLISH_URL="https://test.pypi.org/legacy/"
+          fi
+          echo "publish_index=$PUBLISH_INDEX" >> $GITHUB_OUTPUT
+          echo "publish_url=$PUBLISH_URL" >> $GITHUB_OUTPUT
           echo github.ref ${{ github.ref }}
 
   build_wheels:
@@ -317,84 +328,47 @@ jobs:
           name: skmisc-sdist
           path: dist/*.tar.gz
 
-  release:
+  # Ref: https://github.com/pypa/gh-action-pypi-publish
+  publish:
     runs-on: ubuntu-latest
-    name: Upload Release to PyPI
+    name: Upload Release to ${{ needs.parse_commit_info.outputs.publish_index }}
     needs: [parse_commit_info, build_wheels, build_sdist]
-    if: contains(needs.parse_commit_info.outputs.can_release, 'true')
-    strategy:
-      matrix:
-        python-version: [3.13]
+
+    if: needs.parse_commit_info.outputs.publish_url != ''
+
+    environment:
+      name: release
+      url: https://github.com/has2k1/scikit-misc
+
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+
     steps:
-      - name: Checkout scikit-misc
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install a specific version of uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: "true"
-
-      - name: Install Release Requirements
-        run: |
-          uv pip install twine
-
-      - name: Download wheels & sdist
+      - name: Download wheels
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: skmisc-*
-          path: dist
+          pattern: skmisc-wheel-*
+          path: dist/wheels
           merge-multiple: true
 
-      - name: Publish to PyPI
-        run: |
-          ls -la ${{ github.workspace }}/dist
-
-          # publish wheels first so that there is no window where users
-          # may accidentally install an sdist instead of a wheel
-          twine upload --skip-existing ${{ github.workspace }}/dist/*.whl
-          twine upload --skip-existing ${{ github.workspace }}/dist/*.tar.gz
-        env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
-
-  pre_release:
-    runs-on: ubuntu-latest
-    name: Upload Release to TestPyPI
-    needs: [parse_commit_info, build_wheels, build_sdist]
-    if: contains(needs.parse_commit_info.outputs.can_pre_release, 'true')
-    strategy:
-      matrix:
-        python-version: [3.13]
-    steps:
-      - name: Checkout scikit-misc
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Install a specific version of uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: "true"
-
-      - name: Install Release Requirements
-        run: |
-          uv pip install twine
-
-      - name: Download wheels & sdist
+      - name: Download sdist
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          pattern: skmisc-*
-          path: dist
-          merge-multiple: true
+          name: skmisc-sdist
+          path: dist/sdist
 
-      - name: Publish to TestPyPI
-        run: |
-          ls -la ${{ github.workspace }}/dist
+      # Publish wheels first so that there is no window where users
+      # may accidentally install an sdist instead of a wheel
+      - name: Publish wheels
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          repository-url: ${{ needs.parse_commit_info.outputs.publish_url }}
+          packages-dir: dist/wheels
+          skip-existing: true
 
-          # publish wheels first so that there is no window where users
-          # may accidentally install an sdist instead of a wheel
-          twine upload --skip-existing --repository testpypi ${{ github.workspace }}/dist/*.whl
-          twine upload --skip-existing --repository testpypi ${{ github.workspace }}/dist/*.tar.gz
-        env:
-          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME_TEST }}
-          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD_TEST }}
+      - name: Publish sdist
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          repository-url: ${{ needs.parse_commit_info.outputs.publish_url }}
+          packages-dir: dist/sdist
+          skip-existing: true

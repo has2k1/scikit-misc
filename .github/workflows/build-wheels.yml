@@ -217,10 +217,24 @@ jobs:
           python ../utils/please.py checkout_build_commit
           git describe --long
 
+      - name: Build f2c
+        # Pyodide translates Fortran to C with f2c. Build the fork that
+        # Pyodide uses for SciPy.
+        run: |
+          git clone https://github.com/hoodmane/f2c.git --depth 1 ../f2c
+          cd ../f2c/src
+          cp makefile.u makefile
+          sed -i "s/gram.c:/gram.c1:/" makefile
+          make
+          echo "$PWD" >> "$GITHUB_PATH"
+          echo "CPATH=$PWD" >> "$GITHUB_ENV"
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.3.0
         env:
           CIBW_PLATFORM: pyodide
+          # Latest Pyodide
+          CIBW_BUILD: cp314-pyodide_wasm32
 
       - name: Check Package Version
         run: |

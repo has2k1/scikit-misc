@@ -170,6 +170,12 @@ manylinux-aarch64-image = "manylinux_2_28"
 RUNNER_OS="Linux"
 
 
+[tool.cibuildwheel.pyodide]
+before-build = [
+    "bash {project}/tools/wheels/cibw_before_build.sh {project}",
+    "python {project}/tools/wheels/pyodide_f2c_patch.py {project}",
+]
+
 [tool.cibuildwheel.pyodide.environment]
 RUNNER_OS="Linux"
 

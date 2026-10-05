@@ -332,7 +332,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     name: Upload Release to ${{ needs.parse_commit_info.outputs.publish_index }}
-    needs: [parse_commit_info, build_wheels, build_sdist]
+    needs: [parse_commit_info, build_wheels, build_pyodide_wheels, build_sdist]
 
     if: needs.parse_commit_info.outputs.publish_url != ''
 

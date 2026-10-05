@@ -90,8 +90,7 @@ jobs:
   build_wheels:
     name: Wheel, ${{ matrix.python }}-${{ matrix.buildplat[1] }}
     needs: parse_commit_info
-    # Temporarily disabled to focus on pyodide
-    if: false && contains(needs.parse_commit_info.outputs.can_build, 'true')
+    if: contains(needs.parse_commit_info.outputs.can_build, 'true')
     runs-on: ${{ matrix.buildplat[0] }}
 
     strategy:

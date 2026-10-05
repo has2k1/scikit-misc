@@ -153,7 +153,6 @@ Environments = [
 # Note: the below skip command doesn't do much currently, the platforms to
 # build wheels for in CI are controlled in `.github/workflows/wheels.yml` and
 # `tools/ci/cirrus_wheels.yml`.
-build-frontend = "build"
 before-build = "bash {project}/tools/wheels/cibw_before_build.sh {project}"
 test-command = "bash {project}/tools/wheels/cibw_test_command.sh {project}"
 test-requires = [

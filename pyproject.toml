@@ -170,6 +170,9 @@ manylinux-aarch64-image = "manylinux_2_28"
 RUNNER_OS="Linux"
 
 
+[tool.cibuildwheel.pyodide.environment]
+RUNNER_OS="Linux"
+
 [tool.cibuildwheel.macos]
 # universal2 wheels are not supported (see gh-21233), use `delocate-fuse` if you need them
 # note that universal2 wheels are not built, they're listed in the tool.cibuildwheel.skip

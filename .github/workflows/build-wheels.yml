@@ -90,7 +90,8 @@ jobs:
   build_wheels:
     name: Wheel, ${{ matrix.python }}-${{ matrix.buildplat[1] }}
     needs: parse_commit_info
-    if: contains(needs.parse_commit_info.outputs.can_build, 'true')
+    # Temporarily disabled to focus on pyodide
+    if: false && contains(needs.parse_commit_info.outputs.can_build, 'true')
     runs-on: ${{ matrix.buildplat[0] }}
 
     strategy:
@@ -178,6 +179,59 @@ jobs:
           # are different. So in a matrix, we have to give each artifact a
           # unique name. We merge these later in another job.
           name: skmisc-wheel-${{ matrix.python }}-${{ matrix.buildplat[1] }}
+          path: ./wheelhouse/*.whl
+
+  build_pyodide_wheels:
+    name: Wheel, pyodide
+    needs: parse_commit_info
+    if: contains(needs.parse_commit_info.outputs.can_build, 'true')
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        python-version: [3.13]
+
+    steps:
+      - name: Checkout scikit-misc
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install a specific version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: "true"
+
+      - name: Fetch all Tags
+        run: |
+          git fetch --tags --force
+          echo "git describe: $(git describe --long)"
+
+      - name: Copy build utils
+        run: |
+          cp -r .github/utils ../utils
+
+      - name: Checkout build target
+        run: |
+          python ../utils/please.py checkout_build_commit
+          git describe --long
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.3.0
+        env:
+          CIBW_PLATFORM: pyodide
+
+      - name: Check Package Version
+        run: |
+          ls wheelhouse/*.whl
+          python ../utils/check_package_version.py
+
+      - uses: actions/upload-artifact@v4
+        with:
+          # Not prefixed with "skmisc-" so that the release jobs, which
+          # download skmisc-*, do not upload these wheels to PyPI.
+          name: pyodide-wheel
           path: ./wheelhouse/*.whl
 
   build_sdist:

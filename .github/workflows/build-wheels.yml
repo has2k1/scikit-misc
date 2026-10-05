@@ -228,20 +228,6 @@ jobs:
           python ../utils/please.py checkout_build_commit
           git describe --long
 
-      - name: Backport pyodide support to the build target
-        # TEMPORARY: v0.5.2 predates the pyodide support. Copy the files
-        # that add it from the commit that triggered this run (the tip of
-        # the wheels branch) into the working tree, without committing, so
-        # that the version reported by git is still that of the tag.
-        # Remove this step together with the "[wheel build: v0.5.2]" commit.
-        run: |
-          git restore --source="$GITHUB_SHA" --worktree -- \
-            pyproject.toml \
-            tools/wheels/f2c_runtime.c \
-            tools/wheels/pyodide_f2c_patch.py
-          git status --short
-          git describe --long
-
       - name: Build f2c
         # Pyodide translates Fortran to C with f2c. Build the fork that
         # Pyodide uses for SciPy.

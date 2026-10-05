@@ -175,9 +175,10 @@ jobs:
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          # @v4 does not merge artifacts with the name (even if the contents)
-          # are different. So in a matrix, we have to give each artifact a
-          # unique name. We merge these later in another job.
+          # upload-artifact v4 and later do not merge artifacts with the same
+          # name (even if the contents are different). So in a matrix, we have
+          # to give each artifact a unique name. We merge these later in
+          # another job.
           name: skmisc-wheel-${{ matrix.python }}-${{ matrix.buildplat[1] }}
           path: ./wheelhouse/*.whl
 

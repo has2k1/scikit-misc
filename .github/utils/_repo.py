@@ -56,6 +56,13 @@ class Git:
         return res
 
     @staticmethod
+    def branch() -> str:
+        """
+        Name of the current branch, empty if HEAD is detached
+        """
+        return run("git branch --show-current")
+
+    @staticmethod
     def commit_subjects(n=1) -> list[str]:
         """
         Return a list n of commit subjects

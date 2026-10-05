@@ -142,6 +142,17 @@ def is_wheel_build() -> bool:
     return True
 
 
+def is_wheels_branch_push() -> bool:
+    """
+    Return True if the event is a push to the wheels branch
+    """
+    return (
+        not skip_build()
+        and os.environ.get("GITHUB_EVENT_NAME") == "push"
+        and Git.branch() == "wheels"
+    )
+
+
 def is_release_tag(tag: str) -> bool:
     """
     Return True if the ref is a tag that is a releasible version
@@ -172,6 +183,7 @@ def can_build() -> bool:
     """
     tag = get_build_tag()
     return (
+        is_wheels_branch_push() or
         is_wheel_build() or
         is_release_tag(tag) or
         is_pre_release_tag(tag) or

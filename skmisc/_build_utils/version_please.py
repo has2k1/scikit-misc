@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
-import os
 import re
 import shlex
 from pathlib import Path
@@ -44,7 +43,9 @@ NULL_VERSION = "0.0.0"
 
 
 def run(cmd: str | Sequence[str]) -> str:
-    if isinstance(cmd, str) and os.name == "posix":
+    # Split on every OS. Windows does not treat single quotes as quoting, so
+    # passing the string through would break arguments that contain spaces.
+    if isinstance(cmd, str):
         cmd = shlex.split(cmd)
     with Popen(
         cmd,

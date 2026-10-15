@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
-import os
 import re
 import shlex
 from subprocess import PIPE, Popen
@@ -32,7 +31,9 @@ DESCRIBE_PATTERN = re.compile(
 
 
 def run(cmd: str | Sequence[str]) -> str:
-    if isinstance(cmd, str) and os.name == "posix":
+    # Split on every OS. Windows does not treat single quotes as quoting, so
+    # passing the string through would break arguments that contain spaces.
+    if isinstance(cmd, str):
         cmd = shlex.split(cmd)
     with Popen(
         cmd,
@@ -142,6 +143,15 @@ class Git:
         Return True if repo can be "described" from a semver tag
         """
         return bool(DESCRIBE_PATTERN.match(Git.describe()))
+
+    @staticmethod
+    def commit_hash(committish: str) -> str:
+        """
+        Return the hash of the commit that `committish` points to
+
+        Return an empty string if `committish` does not resolve to a commit.
+        """
+        return run(f"git rev-parse --verify --quiet {committish}^{{commit}}")
 
     @staticmethod
     def get_tag_at_commit(committish: str) -> str:

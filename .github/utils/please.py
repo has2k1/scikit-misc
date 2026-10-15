@@ -68,11 +68,22 @@ def get_build_ref() -> str:
 def checkout_build_commit() -> str:
     """
     Checkout commit to build wheels for
+
+    Exit with an error if the commit message cannot be read or the
+    requested ref is not checked out. Either failure would otherwise
+    build the wrong commit and give the wheels the wrong version.
     """
+    if not Git.commit_message():
+        raise SystemExit("Could not read the commit message of HEAD.")
+
     ref = get_build_ref()
-    if ref:
-        return Git.checkout(ref)
-    return ""
+    if not ref:
+        return ""
+
+    output = Git.checkout(ref)
+    if Git.commit_hash("HEAD") != Git.commit_hash(ref):
+        raise SystemExit(f"Could not checkout the build ref {ref!r}.")
+    return output
 
 
 def get_build_tag():

@@ -23,6 +23,7 @@ on:
       - v*
     branches:
       - wheels
+      - ci/python-3.15
   workflow_dispatch:
 
 permissions:
@@ -114,13 +115,14 @@ jobs:
         # should also be able to do multi-archs on a single entry, e.g.
         # [windows-2019, win*, "AMD64 x86"]. However, those two require a different compiler setup
         # so easier to separate out here.
-        - [ubuntu-24.04, manylinux_x86_64]
-        - [ubuntu-24.04-arm, manylinux_aarch64]
+        # - [ubuntu-24.04, manylinux_x86_64]
+        # - [ubuntu-24.04-arm, manylinux_aarch64]
         # - [macos-13, macosx_x86_64]
-        - [macos-14, macosx_arm64]
+        # - [macos-14, macosx_arm64]
         - [windows-2025, win_amd64]
+        - [windows-11-arm, win_arm64]
 
-        python: ["cp310", "cp311", "cp312", "cp313", "cp314", "cp315"]
+        python: ["cp315"]
         python-version: [3.13]
 
     steps:
@@ -154,7 +156,7 @@ jobs:
           uv pip install wheel
 
       - name: Windows - Install rtools
-        if: runner.os == 'Windows'
+        if: matrix.buildplat[1] == 'win_amd64'
         run: |
           # mingw-w64
           choco install rtools -y --no-progress --force --version=4.0.0.20220206
@@ -192,132 +194,133 @@ jobs:
           name: skmisc-wheel-${{ matrix.python }}-${{ matrix.buildplat[1] }}
           path: ./wheelhouse/*.whl
 
-  build_pyodide_wheels:
-    name: Wheel, pyodide
-    needs: parse_commit_info
-    if: contains(needs.parse_commit_info.outputs.can_build, 'true')
-    runs-on: ubuntu-24.04
-
-    strategy:
-      matrix:
-        python-version: [3.13]
-
-    steps:
-      - name: Checkout scikit-misc
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Install a specific version of uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: "true"
-
-      - name: Fetch all Tags
-        run: |
-          git fetch --tags --force
-          echo "git describe: $(git describe --long)"
-
-      - name: Copy build utils
-        run: |
-          cp -r .github/utils ../utils
-
-      - name: Checkout build target
-        run: |
-          python ../utils/please.py checkout_build_commit
-          git describe --long
-
-      - name: Build f2c
-        # Pyodide translates Fortran to C with f2c. Build the fork that
-        # Pyodide uses for SciPy.
-        run: |
-          git clone https://github.com/hoodmane/f2c.git --depth 1 ../f2c
-          cd ../f2c/src
-          cp makefile.u makefile
-          sed -i "s/gram.c:/gram.c1:/" makefile
-          make
-          echo "$PWD" >> "$GITHUB_PATH"
-          echo "CPATH=$PWD" >> "$GITHUB_ENV"
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@b3395e271a35f73dad77f21802abe9b986dfe299 # v4.3.1
-        env:
-          CIBW_PLATFORM: pyodide
-          # Latest Pyodide
-          CIBW_BUILD: cp314-pyodide_wasm32
-
-      - name: Check Package Version
-        run: |
-          ls wheelhouse/*.whl
-          python ../utils/check_package_version.py
-
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          # Matches skmisc-wheel-* so that the publish job uploads it.
-          name: skmisc-wheel-pyodide
-          path: ./wheelhouse/*.whl
-
-  build_sdist:
-    runs-on: ubuntu-latest
-    name: Build Source Distribution
-    needs: [build_wheels]
-    strategy:
-      matrix:
-        python-version: [3.13]
-    steps:
-      - name: Checkout scikit-misc
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Install a specific version of uv
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: "true"
-
-      - name: Fetch all Tags
-        run: |
-          git fetch --tags --force
-
-      - name: Copy build utils
-        run: |
-          cp -r .github/utils ../utils
-
-      - name: Checkout build target
-        run: |
-          python ../utils/please.py checkout_build_commit
-
-      - name: Install Ubuntu dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install gfortran
-
-      - name: Install requirements
-        run: |
-          uv pip install ".[build]"
-
-      - name: Create Source Distribution
-        run: |
-          make sdist
-
-      - name: Check Package Version
-        run: |
-          ls dist/*.tar.gz
-          python ../utils/check_package_version.py
-
-      - name: Upload Source dist
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: skmisc-sdist
-          path: dist/*.tar.gz
+  # build_pyodide_wheels:
+  #   name: Wheel, pyodide
+  #   needs: parse_commit_info
+  #   if: contains(needs.parse_commit_info.outputs.can_build, 'true')
+  #   runs-on: ubuntu-24.04
+  #
+  #   strategy:
+  #     matrix:
+  #       python-version: [3.13]
+  #
+  #   steps:
+  #     - name: Checkout scikit-misc
+  #       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  #       with:
+  #         fetch-depth: 0
+  #
+  #     - name: Install a specific version of uv
+  #       uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #         activate-environment: "true"
+  #
+  #     - name: Fetch all Tags
+  #       run: |
+  #         git fetch --tags --force
+  #         echo "git describe: $(git describe --long)"
+  #
+  #     - name: Copy build utils
+  #       run: |
+  #         cp -r .github/utils ../utils
+  #
+  #     - name: Checkout build target
+  #       run: |
+  #         python ../utils/please.py checkout_build_commit
+  #         git describe --long
+  #
+  #     - name: Build f2c
+  #       # Pyodide translates Fortran to C with f2c. Build the fork that
+  #       # Pyodide uses for SciPy.
+  #       run: |
+  #         git clone https://github.com/hoodmane/f2c.git --depth 1 ../f2c
+  #         cd ../f2c/src
+  #         cp makefile.u makefile
+  #         sed -i "s/gram.c:/gram.c1:/" makefile
+  #         make
+  #         echo "$PWD" >> "$GITHUB_PATH"
+  #         echo "CPATH=$PWD" >> "$GITHUB_ENV"
+  #
+  #     - name: Build wheels
+  #       uses: pypa/cibuildwheel@b3395e271a35f73dad77f21802abe9b986dfe299 # v4.3.1
+  #       env:
+  #         CIBW_PLATFORM: pyodide
+  #         # Latest Pyodide
+  #         CIBW_BUILD: cp314-pyodide_wasm32
+  #
+  #     - name: Check Package Version
+  #       run: |
+  #         ls wheelhouse/*.whl
+  #         python ../utils/check_package_version.py
+  #
+  #     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+  #       with:
+  #         # Matches skmisc-wheel-* so that the publish job uploads it.
+  #         name: skmisc-wheel-pyodide
+  #         path: ./wheelhouse/*.whl
+  #
+  # build_sdist:
+  #   runs-on: ubuntu-latest
+  #   name: Build Source Distribution
+  #   needs: [build_wheels]
+  #   strategy:
+  #     matrix:
+  #       python-version: [3.13]
+  #   steps:
+  #     - name: Checkout scikit-misc
+  #       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  #       with:
+  #         fetch-depth: 0
+  #
+  #     - name: Install a specific version of uv
+  #       uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
+  #         activate-environment: "true"
+  #
+  #     - name: Fetch all Tags
+  #       run: |
+  #         git fetch --tags --force
+  #
+  #     - name: Copy build utils
+  #       run: |
+  #         cp -r .github/utils ../utils
+  #
+  #     - name: Checkout build target
+  #       run: |
+  #         python ../utils/please.py checkout_build_commit
+  #
+  #     - name: Install Ubuntu dependencies
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install gfortran
+  #
+  #     - name: Install requirements
+  #       run: |
+  #         uv pip install ".[build]"
+  #
+  #     - name: Create Source Distribution
+  #       run: |
+  #         make sdist
+  #
+  #     - name: Check Package Version
+  #       run: |
+  #         ls dist/*.tar.gz
+  #         python ../utils/check_package_version.py
+  #
+  #     - name: Upload Source dist
+  #       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+  #       with:
+  #         name: skmisc-sdist
+  #         path: dist/*.tar.gz
 
   # Ref: https://github.com/pypa/gh-action-pypi-publish
   publish:
     runs-on: ubuntu-latest
     name: Upload Release to ${{ needs.parse_commit_info.outputs.publish_index }}
-    needs: [parse_commit_info, build_wheels, build_pyodide_wheels, build_sdist]
+    # needs: [parse_commit_info, build_wheels, build_pyodide_wheels, build_sdist]
+    needs: [parse_commit_info, build_wheels]
 
     if: needs.parse_commit_info.outputs.publish_url != ''
 
